@@ -37,7 +37,7 @@ namespace lh_pipeline {
 		template <typename A, typename B, typename C>
 		constexpr LhVertex3(A a, B b, C c);
 		template <Precision Q>
-		constexpr LhVertex3(tvec3<T, Q> const & v);
+		constexpr LhVertex3(LhVerTex<T, Q> const & v);
 	public:
 		LhVertex3<T, P> & operator=(LhVertex3<T, P> const & v);
 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lhdetail\lhvertex.h" />
     <ClInclude Include="lhdetail\lhvertex.hpp" />
     <ClInclude Include="lhmath_common.h" />
     <ClInclude Include="lhmatrix.h" />

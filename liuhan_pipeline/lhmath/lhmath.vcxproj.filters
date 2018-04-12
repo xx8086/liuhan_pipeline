@@ -30,6 +30,9 @@
     <ClInclude Include="lhdetail\lhvertex.hpp">
       <Filter>lhdetail</Filter>
     </ClInclude>
+    <ClInclude Include="lhdetail\lhvertex.h">
+      <Filter>lhdetail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lhvertex.cpp">

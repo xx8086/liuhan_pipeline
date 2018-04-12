@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{9CDC3E38-EB00-4FA3-921F-1363415A9834}</ProjectGuid>
-    <RootNamespace>lhrender</RootNamespace>
+    <ProjectGuid>{28AD1884-04DD-48D3-85B9-44561D7E983B}</ProjectGuid>
+    <RootNamespace>lhpipeline</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,13 +70,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>..\..\..\liuhan_pipeline_middle\render\$(Configuration)\</IntDir>
     <TargetExt>.lib</TargetExt>
+    <IntDir>..\..\..\liuhan_pipeline_middle\lhpipeline\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\..\liuhan_pipeline_bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>..\..\..\liuhan_pipeline_middle\render\$(Configuration)\</IntDir>
     <TargetExt>.lib</TargetExt>
+    <IntDir>..\..\..\liuhan_pipeline_middle\lhpipeline\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\..\liuhan_pipeline_bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

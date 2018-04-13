@@ -42,8 +42,8 @@ namespace lh_pipeline {
     void LhQuaternion::rotate(LhVertex<float, 3>& vf3,
         const LhVertex<float, 3>& axis,
         const float angle) {//vf3ÈÆaxisÖáÐý×ªangle¶È
-        const float sin_half_angle = sinf(ToRadianF(angle / 2.0));
-        const float cos_half_angle = cosf(ToRadianF(angle / 2.0));
+        const float sin_half_angle = sinf(ToRadianF(angle / 2.0f));
+        const float cos_half_angle = cosf(ToRadianF(angle / 2.0f));
 
         const float rx = axis.get_x() * sin_half_angle;
         const float ry = axis.get_y() * sin_half_angle;

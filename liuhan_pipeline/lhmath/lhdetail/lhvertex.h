@@ -1,5 +1,7 @@
 #pragma once
 #include "lhvertex\lhvertex.hpp"
+#include"..\lhmath_common.h"
+
 namespace lh_pipeline {
 
     typedef LhVertex<float, 2> LhVertexFloat2;
@@ -25,11 +27,11 @@ namespace lh_pipeline {
     }
 */
     //²æ³Ë
-    LhVertex<float, 3> cross(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right) {
-        float _x = left.get_y() * right.get_z() - left.get_z() * right.get_y();
-        float _y = left.get_z() * right.get_x() - left.get_x() * right.get_z();
-        float _z = left.get_x() * right.get_y() - left.get_y() * right.get_x();
-        return LhVertex<float, 3>(_x, _y, _z);
+    inline LhVertex<float, 3> cross(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right) {
+        return LhVertex<float, 3>(
+            left.get_y() * right.get_z() - left.get_z() * right.get_y(), 
+            left.get_z() * right.get_x() - left.get_x() * right.get_z(), 
+            left.get_x() * right.get_y() - left.get_y() * right.get_x());
     }
 
 }

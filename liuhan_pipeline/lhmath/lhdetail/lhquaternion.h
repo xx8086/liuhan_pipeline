@@ -12,6 +12,9 @@ namespace lh_pipeline {
         void normalize();
         LhQuaternion conjugate();
         LhVertexFloat3 todegrees();
+        static void rotate(LhVertex<float, 3>& vf3,
+            const LhVertex<float, 3>& axis,
+            const float angle);//vf3ÈÆaxisÖáÐý×ªangle¶È
 
     public:
         float _x;

@@ -39,6 +39,22 @@ namespace lh_pipeline {
         return LhVertexFloat3(f[0], f[1], f[2]);
     }
 
+    void LhQuaternion::rotate(LhVertex<float, 3>& vf3,
+        const LhVertex<float, 3>& axis,
+        const float angle) {//vf3ÈÆaxisÖáÐý×ªangle¶È
+        const float sin_half_angle = sinf(ToRadianF(angle / 2.0));
+        const float cos_half_angle = cosf(ToRadianF(angle / 2.0));
+
+        const float rx = axis.get_x() * sin_half_angle;
+        const float ry = axis.get_y() * sin_half_angle;
+        const float rz = axis.get_z() * sin_half_angle;
+        const float rw = cos_half_angle;
+        LhQuaternion rotateq(rx, ry, rz, rw);
+        LhQuaternion rotatew = rotateq * vf3 * rotateq.conjugate();
+        vf3.set_x(rotatew._x);
+        vf3.set_y(rotatew._y);
+        vf3.set_z(rotatew._z);
+    }
 
     LhQuaternion operator*(const LhQuaternion& l, const LhQuaternion& r)
     {

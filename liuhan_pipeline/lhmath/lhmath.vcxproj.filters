@@ -22,6 +22,9 @@
     <Filter Include="lhdetail\lhmatrix">
       <UniqueIdentifier>{4cece7a3-5d95-484f-93a3-c208feccccd3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lhdraw">
+      <UniqueIdentifier>{52979bf4-7734-48c1-9404-f48a81f3c231}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhmath_common.h">
@@ -54,16 +57,22 @@
     <ClInclude Include="lhdetail\lhquaternion.h">
       <Filter>lhdetail</Filter>
     </ClInclude>
+    <ClInclude Include="lhdraw\lhdraw_line.h">
+      <Filter>lhdraw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lhvertex.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="lhdetail\lhmatrix_float4.cpp">
       <Filter>lhdetail</Filter>
     </ClCompile>
     <ClCompile Include="lhdetail\lhquaternion.cpp">
       <Filter>lhdetail</Filter>
+    </ClCompile>
+    <ClCompile Include="lhdetail\lhvertex.cpp">
+      <Filter>lhdetail</Filter>
+    </ClCompile>
+    <ClCompile Include="lhdraw\lhdraw_line.cpp">
+      <Filter>lhdraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

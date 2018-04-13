@@ -77,6 +77,8 @@
         }
     }
 */
+
+/*
     template <typename T, unsigned int N>
     T LhVertex<T, N>::dot(LhVertex<T, N> const & other) {
         assert(counts > 0);
@@ -100,4 +102,6 @@
         }
         return true;
     }
+*/
+
 //}

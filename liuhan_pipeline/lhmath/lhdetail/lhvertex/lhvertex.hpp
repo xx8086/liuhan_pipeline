@@ -26,9 +26,10 @@
 */
 
     public:
+/*
         T dot(LhVertex<T, N> const & other);//点乘
         bool normalize();//单位化
-
+*/
     protected:
         unsigned int _counts = N;
         T _datas[N];

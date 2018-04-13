@@ -16,22 +16,28 @@
     <Filter Include="lhdetail">
       <UniqueIdentifier>{057d77cc-4a47-4e90-8dc0-e9286108d10a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lhdetail\lhvertex">
+      <UniqueIdentifier>{5307e95c-ce78-439b-a028-6893872cc0a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lhvertex.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="lhmatrix.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="lhmath_common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="lhdetail\lhvertex.hpp">
-      <Filter>lhdetail</Filter>
-    </ClInclude>
     <ClInclude Include="lhdetail\lhvertex.h">
       <Filter>lhdetail</Filter>
+    </ClInclude>
+    <ClInclude Include="lhdetail\lhvertex\lhvertex.hpp">
+      <Filter>lhdetail\lhvertex</Filter>
+    </ClInclude>
+    <ClInclude Include="lhdetail\lhvertex\lhvertex_binary.hpp">
+      <Filter>lhdetail\lhvertex</Filter>
+    </ClInclude>
+    <ClInclude Include="lhdetail\lhvertex\lhvertex_specialization.hpp">
+      <Filter>lhdetail\lhvertex</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -43,8 +49,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="lhdetail\lhvertex.inl">
-      <Filter>lhdetail</Filter>
+    <None Include="lhdetail\lhvertex\lhvertex.inl">
+      <Filter>lhdetail\lhvertex</Filter>
     </None>
   </ItemGroup>
 </Project>

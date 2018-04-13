@@ -1,31 +1,13 @@
 #pragma once
-
+#include "lhvertex\lhvertex.hpp"
 namespace lh_pipeline {
 
-	template <typename T, unsigned int N>
-	class LhVerTex {
-	public:
-		typedef T value_type;
-	public:
-		~LhVerTex() {}
-		constexpr LhVerTex() {
-			for (int i = 0; i < N; i++) {
-				datas[i] = 0;
-			}
-		}
-		constexpr LhVerTex(T scalar) {
-			for (int i = 0; i < N; i++) {
-				datas[i] = scalar;
-			}
-		}
-		constexpr LhVerTex(LhVerTex<T, N> const & v) {
-			for (int i = 0; i < N; i++) {
-				datas[i] = v.datas[i];
-			}
-		}
+	typedef LhVertex<float, 2> LhVertexFloat2;
+	typedef LhVertex<float, 3> LhVertexFloat3;
+	typedef LhVertex<float, 4> LhVertexFloat4;
 
-	public:
-		T datas[N];
-		unsigned int counts = N;
-	};
+	typedef LhVertex<int, 2> LhVertexInt2;
+	typedef LhVertex<int, 3> LhVertexInt3;
+	typedef LhVertex<int, 4> LhVertexInt4;
+
 }

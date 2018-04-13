@@ -20,17 +20,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhdetail\lhvertex.h" />
-    <ClInclude Include="lhdetail\lhvertex.hpp" />
+    <ClInclude Include="lhdetail\lhvertex\lhvertex.hpp" />
+    <ClInclude Include="lhdetail\lhvertex\lhvertex_binary.hpp" />
+    <ClInclude Include="lhdetail\lhvertex\lhvertex_specialization.hpp" />
     <ClInclude Include="lhmath_common.h" />
     <ClInclude Include="lhmatrix.h" />
-    <ClInclude Include="lhvertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lhmatrix.cpp" />
     <ClCompile Include="lhvertex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="lhdetail\lhvertex.inl" />
+    <None Include="lhdetail\lhvertex\lhvertex.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

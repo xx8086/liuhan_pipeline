@@ -19,18 +19,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lhdetail\lhmatrix.h" />
+    <ClInclude Include="lhdetail\lhmatrix\lhmatrix.hpp" />
+    <ClInclude Include="lhdetail\lhmatrix\lhmatrix_operator.hpp" />
+    <ClInclude Include="lhdetail\lhmatrix_float4.h" />
+    <ClInclude Include="lhdetail\lhquaternion.h" />
     <ClInclude Include="lhdetail\lhvertex.h" />
     <ClInclude Include="lhdetail\lhvertex\lhvertex.hpp" />
     <ClInclude Include="lhdetail\lhvertex\lhvertex_binary.hpp" />
     <ClInclude Include="lhdetail\lhvertex\lhvertex_specialization.hpp" />
     <ClInclude Include="lhmath_common.h" />
-    <ClInclude Include="lhmatrix.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lhmatrix.cpp" />
+    <ClCompile Include="lhdetail\lhmatrix_float4.cpp" />
+    <ClCompile Include="lhdetail\lhquaternion.cpp" />
     <ClCompile Include="lhvertex.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="lhdetail\lhmatrix\lhmatrix.inl" />
     <None Include="lhdetail\lhvertex\lhvertex.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

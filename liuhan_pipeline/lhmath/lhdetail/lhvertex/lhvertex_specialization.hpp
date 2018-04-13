@@ -1,24 +1,25 @@
 #pragma once
+#include <cmath>
 
 //namespace lh_pipeline {
 #define EXTENDED_IMPLEMENTATION_SPECIALIZATION_LHVERTEX
 
-	//float
+//float
 #define OperatorValueSpecializationF2 \
 public:\
-float get_x(){return _datas[0];}\
+float get_x() const {return _datas[0];}\
 void set_x(float x){_datas[0]= x;}\
-float get_y(){return _datas[1];}\
+float get_y() const{return _datas[1];}\
 void set_y(float y){_datas[1]= y;}
 
 #define OperatorValueSpecializationF3 \
 OperatorValueSpecializationF2 \
-float get_z(){return _datas[2];}\
+float get_z() const {return _datas[2];}\
 void set_z(float z){_datas[2]= z;}
 
 #define OperatorValueSpecializationF4 \
 OperatorValueSpecializationF3 \
-float get_w(){return _datas[3];}\
+float get_w() const {return _datas[3];}\
 void set_w(float w){_datas[3]= w;}
 
 #define EndSpecializationF2 \
@@ -67,19 +68,19 @@ EndSpecializationF##n
 //int
 #define OperatorValueSpecializationI2 \
 public:\
-int get_x(){return _datas[0];}\
+int get_x() const {return _datas[0];}\
 void set_x(int x){_datas[0]= x;}\
-int get_y(){return _datas[1];}\
+int get_y() const {return _datas[1];}\
 void set_y(int y){_datas[1]= y;}
 
 #define OperatorValueSpecializationI3 \
 OperatorValueSpecializationI2 \
-int get_z(){return _datas[2];}\
+int get_z() const {return _datas[2];}\
 void set_z(int z){_datas[2]= z;}
 
 #define OperatorValueSpecializationI4 \
 OperatorValueSpecializationI3 \
-int get_w(){return _datas[3];}\
+int get_w() const {return _datas[3];}\
 void set_w(int w){_datas[3]= w;}
 
 #define EndSpecializationI2 \

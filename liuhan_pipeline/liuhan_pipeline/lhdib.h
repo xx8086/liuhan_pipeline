@@ -11,6 +11,8 @@ public:
     void destroy();
     void release();
 private:
+    void setpixel(int, int, unsigned int);
+    void device_draw_line(int x1, int y1, int x2, int y2, unsigned int c);
     void load_dib_texture(TCHAR* img);
 private:
     HDC _frame_dc = nullptr;
@@ -19,5 +21,6 @@ private:
     int _width = 0;
     int _height = 0;
     unsigned char *_frame_buffers = nullptr;
+    unsigned int* _frame_rgba = nullptr;
 };
 

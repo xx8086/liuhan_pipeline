@@ -88,7 +88,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -153,12 +153,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="lhdib.h" />
+    <ClInclude Include="lhframe_buffer\lhdevice.h" />
+    <ClInclude Include="lhframe_buffer\lhframe_buffer.h" />
     <ClInclude Include="liuhan_pipeline.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lhdib.cpp" />
+    <ClCompile Include="lhframe_buffer\lhdevice.cpp" />
+    <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp" />
     <ClCompile Include="liuhan_pipeline.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

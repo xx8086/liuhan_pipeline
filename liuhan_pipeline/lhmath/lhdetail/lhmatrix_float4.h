@@ -36,8 +36,8 @@ namespace lh_pipeline {
         void init_identity();
         float determinant() const;
         LhMatrixFloat4& inverse();
-        LhMatrixFloat4 transpose() const;
-        LhMatrixFloat4 operator*(const LhMatrixFloat4& Right) const;
+        LhMatrixFloat4 transpose() ;
+        LhMatrixFloat4 operator*(const LhMatrixFloat4& right);
     public:
         void init_scale_transform(float, float, float);
         void init_rotate_transform(float, float, float);

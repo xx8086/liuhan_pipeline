@@ -26,7 +26,7 @@ namespace lh_pipeline {
         memset(_m, 0, sizeof(_m));
     }
 
-    LhMatrixFloat4 LhMatrixFloat4::transpose() const {
+    LhMatrixFloat4 LhMatrixFloat4::transpose() {
         LhMatrixFloat4 n;
         for (unsigned int i = 0; i < 4; i++) {
             for (unsigned int j = 0; j < 4; j++) {
@@ -44,7 +44,7 @@ namespace lh_pipeline {
         _m[3][0] = 0.0f; _m[3][1] = 0.0f; _m[3][2] = 0.0f; _m[3][3] = 1.0f;
     }
 
-    LhMatrixFloat4 LhMatrixFloat4::operator*(const LhMatrixFloat4& right) const
+    LhMatrixFloat4 LhMatrixFloat4::operator*(const LhMatrixFloat4& right) 
     {
         LhMatrixFloat4 ret;
         for (unsigned int i = 0; i < 4; i++)

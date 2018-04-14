@@ -18,6 +18,14 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lhframe_buffer\lhdevice.cpp" />
+    <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lhframe_buffer\lhdevice.h" />
+    <ClInclude Include="lhframe_buffer\lhframe_buffer.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{28AD1884-04DD-48D3-85B9-44561D7E983B}</ProjectGuid>

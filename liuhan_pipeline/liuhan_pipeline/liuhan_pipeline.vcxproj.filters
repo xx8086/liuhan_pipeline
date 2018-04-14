@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="lhframe_buffer">
-      <UniqueIdentifier>{de81a836-1199-489b-b6b9-d5fe52b29af0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -30,12 +27,6 @@
     <ClInclude Include="liuhan_pipeline.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
-      <Filter>lhframe_buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="lhframe_buffer\lhdevice.h">
-      <Filter>lhframe_buffer</Filter>
-    </ClInclude>
     <ClInclude Include="lhdib.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -46,12 +37,6 @@
     </ClCompile>
     <ClCompile Include="liuhan_pipeline.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp">
-      <Filter>lhframe_buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="lhframe_buffer\lhdevice.cpp">
-      <Filter>lhframe_buffer</Filter>
     </ClCompile>
     <ClCompile Include="lhdib.cpp">
       <Filter>源文件</Filter>

@@ -1,36 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="rasterization">
-      <UniqueIdentifier>{3e1e83db-0b0e-4a64-8a68-a29a24d56259}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="render">
-      <UniqueIdentifier>{da84c33c-8e60-47c1-a82a-e7a6c8930093}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lights">
-      <UniqueIdentifier>{0151a9bd-b910-4392-bccb-6299e3026364}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="camera">
-      <UniqueIdentifier>{0d98a869-3a6b-45cb-ba1b-d72ef374b0c3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="framebuffer">
+    <Filter Include="lhframe_buffer">
       <UniqueIdentifier>{63b22de2-868f-4e4f-a0f2-c8ce80dd908e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lhcamera">
+      <UniqueIdentifier>{0d98a869-3a6b-45cb-ba1b-d72ef374b0c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lhlights">
+      <UniqueIdentifier>{0151a9bd-b910-4392-bccb-6299e3026364}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lhrasterization">
+      <UniqueIdentifier>{3e1e83db-0b0e-4a64-8a68-a29a24d56259}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lhframe_buffer\lhdevice.cpp">
-      <Filter>framebuffer</Filter>
-    </ClCompile>
     <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp">
-      <Filter>framebuffer</Filter>
+      <Filter>lhframe_buffer</Filter>
     </ClCompile>
+    <ClCompile Include="lhdevice.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lhframe_buffer\lhdevice.h">
-      <Filter>framebuffer</Filter>
-    </ClInclude>
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
-      <Filter>framebuffer</Filter>
+      <Filter>lhframe_buffer</Filter>
     </ClInclude>
+    <ClInclude Include="lhdevice.h" />
   </ItemGroup>
 </Project>

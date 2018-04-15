@@ -17,14 +17,14 @@ void LhDib::init(HWND hwnd, int w, int h) {
     load_dib_texture("D:\\liuhan.dib");
 #else
     BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB,
-        w * h * 4, 0, 0, 0, 0 } };
+        DWORD(w * h * 4), 0, 0, 0, 0 } };
     void* ptr;
     _dib = CreateDIBSection(_frame_dc, &bi, DIB_RGB_COLORS, &ptr, 0, 0);
     if (_dib == nullptr) return;
     _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);    
 
-    set_buffer(w, h, ptr);
-    draw_line(0, 0, get_width() - 1, get_height() - 1, 1);
+    update_buffer(w, h, ptr);
+    draw(0, 0, get_width() - 1, get_height() - 1, 1);
 #endif
     ReleaseDC(hwnd, hdc);
 }
@@ -57,7 +57,7 @@ void LhDib::release() {
     ;
 }
 
-void LhDib::load_dib_texture(TCHAR* img) {
+bool LhDib::load_dib_texture(TCHAR* img) {
 /*
     ------------------------
     | BITMAPFILEHEADER |
@@ -107,8 +107,11 @@ void LhDib::load_dib_texture(TCHAR* img) {
     void* ptr = nullptr;
     int w = pbmi->bmiHeader.biWidth;
     int h = pbmi->bmiHeader.biHeight;
-    BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, h, 1, pbmi->bmiHeader.biBitCount, BI_RGB,
-        w * h * pbmi->bmiHeader.biBitCount / 8, 0, 0, 0, 0 } };
+    BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, h, 1, 
+        DWORD(pbmi->bmiHeader.biBitCount), 
+        BI_RGB,
+        DWORD(w * h * pbmi->bmiHeader.biBitCount / 8),
+        0, 0, 0, 0 } };
     _dib = CreateDIBSection(_frame_dc, &bi, DIB_RGB_COLORS, &ptr, 0, 0);
     if (_dib == nullptr) return false;
     _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);
@@ -116,7 +119,7 @@ void LhDib::load_dib_texture(TCHAR* img) {
     bSuccess = ReadFile(hFile, ptr, bmfh.bfSize - bmfh.bfOffBits, &dwBytesRead, NULL);
     CloseHandle(hFile);
 
-    set_buffer(w, h, ptr);
+    update_buffer(w, h, ptr);
     //for (int i = 0; i < _width / 2; i++) {
     //    for (int j = 0; j < _height / 2; j++) {
     //        _frame_buffers[(i*_width + j + 1) * 3] = 255;//b

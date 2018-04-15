@@ -1,7 +1,7 @@
 #pragma once
-#include "..\lhpipeline\lhframe_buffer\lhframe_buffer.h"
+#include "..\lhpipeline\lhdevice.h"
 
-class LhDib : protected LhFrameBuffer
+class LhDib : protected LhDevice
 {
 public:
     LhDib();

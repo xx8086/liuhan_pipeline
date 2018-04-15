@@ -42,10 +42,10 @@
     <ClInclude Include="lhdetail\lhquaternion.h">
       <Filter>lhdetail</Filter>
     </ClInclude>
-    <ClInclude Include="lhdraw\lhdraw_line.h">
+    <ClInclude Include="lhmath_common.h" />
+    <ClInclude Include="lhdraw\lhdraw_primitive.h">
       <Filter>lhdraw</Filter>
     </ClInclude>
-    <ClInclude Include="lhmath_common.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lhdetail\lhmatrix_float4.cpp">
@@ -57,7 +57,7 @@
     <ClCompile Include="lhdetail\lhvertex.cpp">
       <Filter>lhdetail</Filter>
     </ClCompile>
-    <ClCompile Include="lhdraw\lhdraw_line.cpp">
+    <ClCompile Include="lhdraw\lhdraw_primitive.cpp">
       <Filter>lhdraw</Filter>
     </ClCompile>
   </ItemGroup>

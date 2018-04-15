@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lhframe_buffer\lhdevice.cpp" />
+    <ClCompile Include="lhdevice.cpp" />
     <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lhframe_buffer\lhdevice.h" />
+    <ClInclude Include="lhdevice.h" />
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -81,6 +81,7 @@
     <TargetExt>.lib</TargetExt>
     <IntDir>..\..\..\liuhan_pipeline_middle\lhpipeline\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\..\liuhan_pipeline_bin\$(Configuration)\</OutDir>
+    <LibraryPath>$(SolutionDir)..\..\liuhan_pipeline_bin\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.lib</TargetExt>

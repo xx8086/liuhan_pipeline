@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <cmath>
 #include"..\lhmath_common.h"
+#include "lhvertex.h"
 
 namespace lh_pipeline {
     LhMatrixFloat4::LhMatrixFloat4() {
@@ -12,7 +13,8 @@ namespace lh_pipeline {
     LhMatrixFloat4::~LhMatrixFloat4() {
     }
 
-    LhMatrixFloat4::LhMatrixFloat4(float a00, float a01, float a02, float a03,
+    LhMatrixFloat4::LhMatrixFloat4(
+        float a00, float a01, float a02, float a03,
         float a10, float a11, float a12, float a13,
         float a20, float a21, float a22, float a23,
         float a30, float a31, float a32, float a33) {
@@ -42,6 +44,24 @@ namespace lh_pipeline {
         _m[1][0] = 0.0f; _m[1][1] = 1.0f; _m[1][2] = 0.0f; _m[1][3] = 0.0f;
         _m[2][0] = 0.0f; _m[2][1] = 0.0f; _m[2][2] = 1.0f; _m[2][3] = 0.0f;
         _m[3][0] = 0.0f; _m[3][1] = 0.0f; _m[3][2] = 0.0f; _m[3][3] = 1.0f;
+    }
+
+    LhVertexFloat4 LhMatrixFloat4::operator*(const LhVertexFloat3& right) {
+        LhVertexFloat4 r;
+        r.set_x(_m[0][0] * right.get_x() + _m[0][1] * right.get_y() + _m[0][2] * right.get_z() + _m[0][3]);
+        r.set_y(_m[1][0] * right.get_x() + _m[1][1] * right.get_y() + _m[1][2] * right.get_z() + _m[1][3]);
+        r.set_z(_m[2][0] * right.get_x() + _m[2][1] * right.get_y() + _m[2][2] * right.get_z() + _m[2][3]);
+        r.set_w(_m[3][0] * right.get_x() + _m[3][1] * right.get_y() + _m[3][2] * right.get_z() + _m[3][3]);
+        return r;
+    }
+
+    LhVertexFloat4 LhMatrixFloat4::operator*(const LhVertexFloat4& right) {
+        LhVertexFloat4 r;
+        r.set_x(_m[0][0] * right.get_x() + _m[0][1] * right.get_y() + _m[0][2] * right.get_z() + _m[0][3] * right.get_w());
+        r.set_y(_m[1][0] * right.get_x() + _m[1][1] * right.get_y() + _m[1][2] * right.get_z() + _m[1][3] * right.get_w());
+        r.set_z(_m[2][0] * right.get_x() + _m[2][1] * right.get_y() + _m[2][2] * right.get_z() + _m[2][3] * right.get_w());
+        r.set_w(_m[3][0] * right.get_x() + _m[3][1] * right.get_y() + _m[3][2] * right.get_z() + _m[3][3] * right.get_w());
+        return r;
     }
 
     LhMatrixFloat4 LhMatrixFloat4::operator*(const LhMatrixFloat4& right) 
@@ -142,15 +162,38 @@ namespace lh_pipeline {
         _m[3][0] = 0.0f; _m[3][1] = 0.0f; _m[3][2] = 0.0f; _m[3][3] = 1.0f;
     }
 
+
+    //µ¥Î»»¯
+    bool lh_normalize(LhVertex<float, 3>& vf3) {
+        const float length = sqrtf(vf3.get_x() * vf3.get_x() + vf3.get_y() * vf3.get_y() + vf3.get_z() * vf3.get_z());
+        if (length > 0.00001) {
+            vf3.set_x(vf3.get_x() / length);
+            vf3.set_y(vf3.get_y() / length);
+            vf3.set_z(vf3.get_z() / length);
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+
+    //²æ³Ë
+    inline LhVertex<float, 3> lh_cross(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right) {
+        return LhVertex<float, 3>(
+            left.get_y() * right.get_z() - left.get_z() * right.get_y(),
+            left.get_z() * right.get_x() - left.get_x() * right.get_z(),
+            left.get_x() * right.get_y() - left.get_y() * right.get_x());
+    }
+
     void LhMatrixFloat4::init_camera_transform(const LhVertex<float, 3>& target,
         const LhVertex<float, 3>& up) {
         LhVertex<float, 3> N = target;
         LhVertex<float, 3> U = up;
 
-        normalize(N);
-        U = cross(U, N);
-        normalize(U);
-        LhVertex<float, 3> V = cross(N, U);
+        lh_normalize(N);
+        U = lh_cross(U, N);
+        lh_normalize(U);
+        LhVertex<float, 3> V = lh_cross(N, U);
 
         _m[0][0] = U.get_x();   _m[0][1] = U.get_y();   _m[0][2] = U.get_z();   _m[0][3] = 0.0f;
         _m[1][0] = V.get_x();   _m[1][1] = V.get_y();   _m[1][2] = V.get_z();   _m[1][3] = 0.0f;

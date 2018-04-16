@@ -19,11 +19,13 @@
       <Filter>lhframe_buffer</Filter>
     </ClCompile>
     <ClCompile Include="lhdevice.cpp" />
+    <ClCompile Include="lhpipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
       <Filter>lhframe_buffer</Filter>
     </ClInclude>
     <ClInclude Include="lhdevice.h" />
+    <ClInclude Include="lhpipeline.h" />
   </ItemGroup>
 </Project>

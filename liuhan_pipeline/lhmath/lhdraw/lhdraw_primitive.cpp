@@ -77,54 +77,6 @@ void LhDrawPrimitive::line_dda(int x1, int y1, int x2, int y2, lh_color color) {
     }
 }
 
-
-void LhDrawPrimitive::line_lh(int x1, int y1, int x2, int y2, lh_color color) {
-    int x, y, rem = 0;
-    if (x1 == x2 && y1 == y2) {
-        setpixel(x1, y1, color);
-    }
-    else if (x1 == x2) {
-        int inc = (y1 <= y2) ? 1 : -1;
-        for (y = y1; y != y2; y += inc) setpixel(x1, y, color);
-        setpixel(x2, y2, color);
-    }
-    else if (y1 == y2) {
-        int inc = (x1 <= x2) ? 1 : -1;
-        for (x = x1; x != x2; x += inc) setpixel(x, y1, color);
-        setpixel(x2, y2, color);
-    }
-    else {
-        int dx = (x1 < x2) ? x2 - x1 : x1 - x2;
-        int dy = (y1 < y2) ? y2 - y1 : y1 - y2;
-        if (dx >= dy) {
-            if (x2 < x1) x = x1, y = y1, x1 = x2, y1 = y2, x2 = x, y2 = y;
-            for (x = x1, y = y1; x <= x2; x++) {
-                setpixel(x, y, color);
-                rem += dy;
-                if (rem >= dx) {
-                    rem -= dx;
-                    y += (y2 >= y1) ? 1 : -1;
-                    setpixel(x, y, color);
-                }
-            }
-            setpixel(x2, y2, color);
-        }
-        else {
-            if (y2 < y1) x = x1, y = y1, x1 = x2, y1 = y2, x2 = x, y2 = y;
-            for (x = x1, y = y1; y <= y2; y++) {
-                setpixel(x, y, color);
-                rem += dx;
-                if (rem >= dy) {
-                    rem -= dy;
-                    x += (x2 >= x1) ? 1 : -1;
-                    setpixel(x, y, color);
-                }
-            }
-            setpixel(x2, y2, color);
-        }
-    }
-}
-
 template <typename T>
 void LhDrawPrimitive::swap_vaue(T& a, T& b) {
     T temp = a;
@@ -170,7 +122,6 @@ d(i+1) - di = 2*dy*(x(i+1) - xi) - 2*dx(y(i+1) - yi)
 即d(i+1) = di + 2*(dy - dx)
 当di<0时s-t<0,P = S,所以y(i+1) - yi == 0
 即d(i+1) = di + 2*dy
-
 */
 void LhDrawPrimitive::line_bresenham(int x1, int y1, int x2, int y2, lh_color color) {
     setpixel(x1, y1, color);

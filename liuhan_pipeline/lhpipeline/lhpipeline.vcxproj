@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClCompile Include="lhdevice.cpp" />
     <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp" />
+    <ClCompile Include="lhpipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhdevice.h" />
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h" />
+    <ClInclude Include="lhpipeline.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

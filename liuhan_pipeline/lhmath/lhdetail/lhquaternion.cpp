@@ -15,7 +15,7 @@ namespace lh_pipeline {
     LhQuaternion::LhQuaternion(float x, float y, float z, float w)
         :_x(x), _y(y), _z(z), _w(w) {}
 
-    void LhQuaternion::normalize() {
+    void LhQuaternion::_normalize() {
         float length = sqrtf(_x * _x + _y * _y + _z * _z + _w * _w);
         _x /= length;
         _y /= length;

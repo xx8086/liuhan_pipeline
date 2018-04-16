@@ -9,7 +9,7 @@ namespace lh_pipeline {
         ~LhQuaternion();
     public:
         LhQuaternion(float _x, float _y, float _z, float _w);
-        void normalize();
+        void _normalize();
         LhQuaternion conjugate();
         LhVertexFloat3 todegrees();
         static void rotate(LhVertex<float, 3>& vf3,

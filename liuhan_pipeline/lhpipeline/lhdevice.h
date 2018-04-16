@@ -15,7 +15,7 @@ public:
     ~ LhDevice();
 public:
     void update_buffer(int w, int h, void* pbits);
-    void draw(int x1, int x2, int y1, int y2, int color);
+    void draw(int x1, int y1, int x2, int y2, int color);
 public:
     LHRENDER_STATE _render_state = LH_LINES;
 };

@@ -24,7 +24,7 @@ void LhDib::init(HWND hwnd, int w, int h) {
     _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);    
 
     update_buffer(w, h, ptr);
-    draw(0, 0, get_width() - 1, get_height() - 1, 1);
+    draw(0, 0, get_width() - 2, get_height() - 2, 1);
 #endif
     ReleaseDC(hwnd, hdc);
 }

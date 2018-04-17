@@ -9,6 +9,11 @@ namespace lh_pipeline {
         float height;
         float z_near;
         float z_far;
+        PersProjInfo() {}
+        PersProjInfo(float f, float w, float h, float near, float far) :
+            fov(f), width(w), height(h), z_near(near), z_far(far) {
+            ;
+        }
     };
 
     struct OrthoProjInfo
@@ -44,9 +49,9 @@ namespace lh_pipeline {
         void init_scale_transform(float, float, float);
         void init_rotate_transform(float, float, float);
         void init_translation_transform(float, float, float);
-        void init_camera_transform(const LhVertex<float, 3>& target, const LhVertex<float, 3>& up);
         void init_persproj_transform(const PersProjInfo& p);
         void init_orthoproj_transform(const OrthoProjInfo& p);
+        void coordinate_space_rotate(const LhVertex<float, 3>& target, const LhVertex<float, 3>& up);
     protected:
         float _m[4][4];
     };

@@ -162,38 +162,15 @@ namespace lh_pipeline {
         _m[3][0] = 0.0f; _m[3][1] = 0.0f; _m[3][2] = 0.0f; _m[3][3] = 1.0f;
     }
 
-
-    //µ¥Î»»¯
-    bool lh_normalize(LhVertex<float, 3>& vf3) {
-        const float length = sqrtf(vf3.get_x() * vf3.get_x() + vf3.get_y() * vf3.get_y() + vf3.get_z() * vf3.get_z());
-        if (length > 0.00001) {
-            vf3.set_x(vf3.get_x() / length);
-            vf3.set_y(vf3.get_y() / length);
-            vf3.set_z(vf3.get_z() / length);
-        }
-        else {
-            return false;
-        }
-        return true;
-    }
-
-    //²æ³Ë
-    inline LhVertex<float, 3> lh_cross(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right) {
-        return LhVertex<float, 3>(
-            left.get_y() * right.get_z() - left.get_z() * right.get_y(),
-            left.get_z() * right.get_x() - left.get_x() * right.get_z(),
-            left.get_x() * right.get_y() - left.get_y() * right.get_x());
-    }
-
-    void LhMatrixFloat4::init_camera_transform(const LhVertex<float, 3>& target,
+    void LhMatrixFloat4::coordinate_space_rotate(const LhVertex<float, 3>& target,
         const LhVertex<float, 3>& up) {
         LhVertex<float, 3> N = target;
         LhVertex<float, 3> U = up;
 
-        lh_normalize(N);
-        U = lh_cross(U, N);
-        lh_normalize(U);
-        LhVertex<float, 3> V = lh_cross(N, U);
+        normalize(N);
+        U = cross(U, N);
+        normalize(U);
+        LhVertex<float, 3> V = cross(N, U);
 
         _m[0][0] = U.get_x();   _m[0][1] = U.get_y();   _m[0][2] = U.get_z();   _m[0][3] = 0.0f;
         _m[1][0] = V.get_x();   _m[1][1] = V.get_y();   _m[1][2] = V.get_z();   _m[1][3] = 0.0f;

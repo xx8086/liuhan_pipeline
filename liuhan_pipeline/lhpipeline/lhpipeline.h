@@ -58,8 +58,8 @@ namespace lh_pipeline {
         LhMatrixFloat4 _proj_transformation;
         LhMatrixFloat4 _ortho_transformation;
 
-        float _width = 0.0f;
-        float _height = 0.0f;
+        int _width = 0;
+        int _height = 0;
     };
 }
 

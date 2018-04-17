@@ -12,12 +12,16 @@ namespace lh_pipeline {
     typedef LhVertex<int, 4> LhVertexInt4;
 
     //单位化
-    inline bool normalize(LhVertex<float, 3>& vf3);
+    bool normalize(LhVertex<float, 3>& vf3);
 
     //点乘
-    inline float dot(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right);
+    float dot(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right);
 
-    //叉乘
-    inline LhVertex<float, 3> cross(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right);
-
+    // 叉乘
+    static LhVertex<float, 3> cross(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right) {
+        return LhVertex<float, 3>(
+            left.get_y() * right.get_z() - left.get_z() * right.get_y(),
+            left.get_z() * right.get_x() - left.get_x() * right.get_z(),
+            left.get_x() * right.get_y() - left.get_y() * right.get_x());
+    }
 }

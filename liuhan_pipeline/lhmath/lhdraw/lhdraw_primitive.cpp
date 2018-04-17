@@ -17,7 +17,7 @@ void LhDrawPrimitive::set_buffer(int w, int h, void* pbits) {
     _frame_buffers = static_cast<unsigned char*>(pbits);
 }
 
-void LhDrawPrimitive::setpixel(int x, int y, lh_color color) {
+void LhDrawPrimitive::setpixel(int y, int x, lh_color color) {
     _frame_buffers[(x * _width + y + 1) * 4 + 0] = color.blue;//b
     _frame_buffers[(x * _width + y + 1) * 4 + 1] = color.green;//g
     _frame_buffers[(x * _width + y + 1) * 4 + 2] = color.red;//r

@@ -1,8 +1,9 @@
 #pragma once
 #include "..\lhpipeline\lhdevice.h"
+#include <vector>
 
 namespace lh_pipeline {
-    class LhDib : protected LhDevice
+    class LhDib: public LhDevice
     {
     public:
         LhDib();

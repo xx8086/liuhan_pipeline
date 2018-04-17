@@ -22,11 +22,5 @@ namespace lh_pipeline {
             left.get_z() * right.get_z();
     }
 
-    //²æ³Ë
-    inline LhVertex<float, 3> cross(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right) {
-        return LhVertex<float, 3>(
-            left.get_y() * right.get_z() - left.get_z() * right.get_y(),
-            left.get_z() * right.get_x() - left.get_x() * right.get_z(),
-            left.get_x() * right.get_y() - left.get_y() * right.get_x());
-    }
+    
 }

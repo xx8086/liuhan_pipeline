@@ -32,6 +32,7 @@ public:
     void set_buffer(int w, int h, void* pbits);
     void line_dda(int x1, int y1, int x2, int y2, lh_color color);
     void line_bresenham(int x1, int y1, int x2, int y2, lh_color color);
+    void line(int x1, int y1, int x2, int y2, lh_color c);
 private:
     template <typename T>
     void swap_vaue(T& a, T& b);

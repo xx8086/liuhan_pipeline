@@ -21,21 +21,19 @@ namespace lh_pipeline {
 
     void LhDevice::draw_line(int x1, int y1, int x2, int y2, int color) {
         line_bresenham(x1, y1, x2, y2, lh_color(color));
-        //line(x1, y1, x2, y2, lh_color(color));
     }
 
-    void LhDevice::bind_vertex(float* vertex, int triangle_counts) {
+    void LhDevice::bind_vertex(float* vertex, int vertex_size) {
         assert(nullptr != vertex);
-        assert(triangle_counts > 0);
-        update_triangle_vertex(vertex, triangle_counts);
+        assert(vertex_size > 0);
+        update_vertex(vertex, vertex_size);
 
-        _piple.set_rotate(60.0f, 30.0f, 0.0f);
+        //_piple.set_rotate(0.0f, 10.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(1, 0, 0);
         _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, -4.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
-        PersProjInfo per(60.0f, get_width(), get_height(), 1.0f, 100.0f);
+        PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
-
     }
 
     bool LhDevice::get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3) {
@@ -49,9 +47,51 @@ namespace lh_pipeline {
 
     //#include <windows.h> 
     void LhDevice::draw() {
-        const float* v = get_vertex_buffers();
-        const int counts = get_triangle_counts() * 9;
         _piple.get_wvp();
+        switch (_render_state) {
+        case LH_LINES:
+            draw_line();
+            break;
+        case LH_LINES_LOOP:
+            draw_line(true);
+            break;
+        case LH_TRIANGLES:
+            draw_triangles();
+            break;
+        case LH_TRIANGLES_FILL:
+            draw_triangles_fill();
+            break;
+        }
+
+    }
+
+    void LhDevice::draw_line(bool loop) {
+        const float* v = get_vertex_buffers();
+        const int counts = get_vertex_buffers_size() - 3;
+        lh_color lc(255, 0, 0);
+        int color = lc.get_t<int>();
+        for (int i = 0; i < counts; i += 3) {
+            LhVertexFloat4 p1;
+            LhVertexFloat4 p2;
+            if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
+                get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]))) {
+                draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+            }
+        }
+
+        if (loop) {
+            LhVertexFloat4 p1;
+            LhVertexFloat4 p2;
+            if (get_pos(p1, LhVertexFloat3(v[counts], v[counts + 1], v[counts + 2])) &&
+                get_pos(p2, LhVertexFloat3(v[0], v[1], v[2]))) {
+                draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+            }
+        }
+    }
+    void LhDevice::draw_triangles_fill() {
+        //triangle_fill;
+        const float* v = get_vertex_buffers();
+        const int counts = get_vertex_buffers_size();
         lh_color lc(255, 0, 0);
         int color = lc.get_t<int>();
         //TCHAR info[1024] = { 0 };
@@ -62,17 +102,42 @@ namespace lh_pipeline {
             if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
                 get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
                 get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
-                draw_line(p1.get_x(), p1.get_y(), p2.get_x(), p2.get_y(), color);
-                draw_line(p2.get_x(), p2.get_y(), p3.get_x(), p3.get_y(), color);
-                draw_line(p1.get_x(), p1.get_y(), p3.get_x(), p3.get_y(), color);
+                /*triangle_fill(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), lh_color(255, 0, 0),
+                    LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), lh_color(0, 255, 0),
+                    LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), lh_color(0, 0, 255));*/
+                //lh_color(float(rand()) / 255.0f, float(rand()) / 255.0f, float(rand()) / 255.0f)
+                draw_triangle(p1.get_x(), p1.get_y(), p2.get_x(), p2.get_y(), p3.get_x(), p3.get_y(), lh_color(255.0f, 0.0f, 0.0f));
+            }
+        }
+    }
+    void LhDevice::draw_triangles() {
+        const float* v = get_vertex_buffers();
+        const int counts = get_vertex_buffers_size();
+        lh_color lc(255, 0, 0);
+        int color = lc.get_t<int>();
+        //TCHAR info[1024] = { 0 };
+        for (int i = 0; i < counts; i += 9) {
+            LhVertexFloat4 p1;
+            LhVertexFloat4 p2;
+            LhVertexFloat4 p3;
+            if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
+                get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
+                get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
+                draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+                draw_line((int)p2.get_x(), (int)p2.get_y(), (int)p3.get_x(), (int)p3.get_y(), color);
+                draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p3.get_x(), (int)p3.get_y(), color);
 
                 /*snprintf(info, 1024 * sizeof(TCHAR),
-                    "p1:%.3f, %.3f, %.3f, p2:%.3f, %.3f, %.3f, p3:%.3f, %.3f, %.3f\n",
-                    p1.get_x(), p1.get_y(), p1.get_z(),
-                    p2.get_x(), p2.get_y(), p2.get_z(),
-                    p3.get_x(), p3.get_y(), p3.get_z());
+                "p1:%.3f, %.3f, %.3f, p2:%.3f, %.3f, %.3f, p3:%.3f, %.3f, %.3f\n",
+                p1.get_x(), p1.get_y(), p1.get_z(),
+                p2.get_x(), p2.get_y(), p2.get_z(),
+                p3.get_x(), p3.get_y(), p3.get_z());
                 OutputDebugString(info);*/
             }
         }
+    }
+
+    void LhDevice::set_render_state(LHRENDER_STATE state) {
+        _render_state = state;
     }
 }

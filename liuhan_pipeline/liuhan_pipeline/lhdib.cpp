@@ -23,9 +23,9 @@ namespace lh_pipeline {
         if (_dib == nullptr) return;
         _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);
 
-        update_buffer(w, h, ptr);
+        LhDevice::update_buffer(w, h, ptr);
+        LhDevice::set_render_state(LH_TRIANGLES_FILL);
         update_vertex();
-        //draw_line(0, 0, get_width() - 2, get_height() - 2, 1);
 #endif
         ReleaseDC(hwnd, hdc);
     }
@@ -169,6 +169,6 @@ namespace lh_pipeline {
         insert_quadrilateral(vecs, vertex[4], vertex[5], vertex[7], vertex[6]);
         insert_quadrilateral(vecs, vertex[1], vertex[3], vertex[7], vertex[5]);
         insert_quadrilateral(vecs, vertex[2], vertex[6], vertex[7], vertex[3]);
-        bind_vertex(vecs.data(), 12);
+        LhDevice::bind_vertex(vecs.data(), vecs.size());
     }
 }

@@ -11,6 +11,7 @@ namespace lh_pipeline {
     typedef LhVertex<int, 3> LhVertexInt3;
     typedef LhVertex<int, 4> LhVertexInt4;
 
+    
     //µ¥Î»»¯
     bool normalize(LhVertex<float, 3>& vf3);
 

@@ -9,6 +9,10 @@ LhFrameBuffer::LhFrameBuffer()
 
 LhFrameBuffer::~LhFrameBuffer()
 {
+    if (nullptr != _frame_deep) {
+        delete[] _frame_deep;
+        _frame_deep = nullptr;
+    }
 }
 
 int LhFrameBuffer::get_width() const {
@@ -27,16 +31,35 @@ void LhFrameBuffer::set_buffer(int w, int h,  void* pbits) {
     _width = w;
     _height = h;
     _frame_buffers = static_cast<unsigned char*>(pbits);
+
+    if (nullptr != _frame_deep) {
+        delete[] _frame_deep;
+        _frame_deep = nullptr;
+    }
+
+    _frame_deep = new float[w * h];
 }
-void LhFrameBuffer::update() {
+void LhFrameBuffer::clear_deep() {
+    if (nullptr != _frame_deep) {
+        memset(_frame_deep, 0, _width * _height * sizeof(float));
+    }
 }
 
-void LhFrameBuffer::update_triangle_vertex(float* vertex_buffer, /*float* color_buffer,*/ int triangle_counts) {
+bool LhFrameBuffer::deep_test(int x, int y, float z) {
+    bool r = false;
+    if (*(_frame_deep + x * _width + y) < z) {
+        *(_frame_deep + x * _width + y) = z;
+        r = true;
+    }
+    return r;
+}
+
+void LhFrameBuffer::update_vertex(float* vertex_buffer, /*float* color_buffer,*/ int counts) {
     assert(vertex_buffer);
     //assert(color_buffer);
-    assert(triangle_counts >= 0);
+    assert(counts >= 0);
 
-    if (_triangle_counts < triangle_counts) {
+    if (_vertex_buffers_size < counts) {
         if (nullptr != _vertex_buffers) {
             delete[] _vertex_buffers;
             _vertex_buffers = nullptr;
@@ -48,13 +71,13 @@ void LhFrameBuffer::update_triangle_vertex(float* vertex_buffer, /*float* color_
     }
 
     if (nullptr == _vertex_buffers) {
-        _vertex_buffers = new float[9 * triangle_counts];//三个float确定一个顶点，三个顶点确定一个三角形
+        _vertex_buffers = new float[counts];
     }
     /*if (nullptr == _vertex_color_buffers) {
-        _vertex_color_buffers = new float[3 * triangle_counts];
+        _vertex_color_buffers = new float[counts];
     }*/
 
-    memcpy(_vertex_buffers, vertex_buffer, 9 * triangle_counts * sizeof(float));
-    //memcpy(_vertex_color_buffers, color_buffer, 3 * triangle_counts);
-    _triangle_counts = triangle_counts;
+    memcpy(_vertex_buffers, vertex_buffer, counts * sizeof(float));
+    //memcpy(_vertex_color_buffers, color_buffer, counts / 3);
+    _vertex_buffers_size = counts;
 }

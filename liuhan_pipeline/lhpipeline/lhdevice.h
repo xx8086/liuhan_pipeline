@@ -11,6 +11,7 @@ namespace lh_pipeline {
         LH_LINES_LOOP = 2,
         LH_TRIANGLES = 3,
         LH_TRIANGLES_FILL = 4,
+        LG_TEST = 5,
     }LHRENDER_STATE;
 
     class  LhDevice : protected LhFrameBuffer, LhDrawPrimitive

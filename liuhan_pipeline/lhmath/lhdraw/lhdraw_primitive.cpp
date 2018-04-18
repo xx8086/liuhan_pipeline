@@ -15,20 +15,21 @@ void LhDrawPrimitive::set_buffer(int w, int h, void* pbits) {
     _width = w;
     _height = h;
     _frame_buffers = static_cast<unsigned char*>(pbits);
+    set_clip_window(0, 0, w, h);
 }
 
-void LhDrawPrimitive::setpixel(int y, int x, lh_color color) {
-    _frame_buffers[(x * _width + y + 1) * 4 + 0] = color.blue;//b
-    _frame_buffers[(x * _width + y + 1) * 4 + 1] = color.green;//g
-    _frame_buffers[(x * _width + y + 1) * 4 + 2] = color.red;//r
-    _frame_buffers[(x * _width + y + 1) * 4 + 3] = color.alph;//a
+void LhDrawPrimitive::setpixel(int x, int y, lh_color color) {
+    _frame_buffers[(y * _width + x + 1) * 4 + 0] = color.blue;//b
+    _frame_buffers[(y * _width + x + 1) * 4 + 1] = color.green;//g
+    _frame_buffers[(y * _width + x + 1) * 4 + 2] = color.red;//r
+    _frame_buffers[(y * _width + x + 1) * 4 + 3] = color.alph;//a
 }
 
 /*
 dx = (x(i+1) - x(i)) / (t(i+1) - t(i))
 dy = (y(i+1) - y(i)) / (t(i+1) - t(i))
 dm = max(|dx|, |dy|)
-∴ 
+∴
 x(i+1) = x(i) + dx / dm
 y(i+1) = y(i) + dy / dm
 
@@ -44,15 +45,15 @@ y(i+1) = y(i) + dy / dm
   /       |
  /        |
 .P1--------
-dx / dm 
+dx / dm
 
-|k| < 1 (dy < dx, dm = dx) 
+|k| < 1 (dy < dx, dm = dx)
                                        .P2
                                     /  |
                                 /      |
                             /          |
                         /              |
-                   /                   | dy / dm 
+                   /                   | dy / dm
               /                        |
          /                             |
     /                                  |
@@ -104,7 +105,7 @@ P = s > t ? T : P// T.S谁距离P点进选谁作为P点
 (yp) = k*(xp) + b  = k*(xi + 1) + b
 s - t = (yp - yi) - (yi + 1 - yp) = 2*yp - 2*yi - 1
       = 2*k(xi + 1) + 2*b - 2*yi -1
-dx = x2 - x1 
+dx = x2 - x1
 dy = y2 - y1
 k = dy / dx
 
@@ -249,7 +250,11 @@ VertexColor LhDrawPrimitive::interp(const VertexColor& from, const VertexColor& 
     return vc;
 }
 
-void LhDrawPrimitive::left_top_fill() {
+void LhDrawPrimitive::set_clip_window(float x_min, float y_min, float x_max, float y_max) {
+    _x_min_clip = x_min;
+    _y_min_clip = y_min;
+    _x_max_clip = x_max;
+    _y_max_clip = y_max;
 }
 
 void LhDrawPrimitive::draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color) {
@@ -267,13 +272,9 @@ void LhDrawPrimitive::draw_triangle(float x1, float y1, float x2, float y2, floa
         swap_vaue(y2, y3);
     }
 
-    float x_min_clip = 0;
-    float y_min_clip = 0;
-    float x_max_clip = _width;
-    float y_max_clip = _height;
-    if (y3 < y_min_clip || y1 > y_max_clip ||
-        (x1 < x_min_clip && x2 < x_min_clip && x3 < x_min_clip) ||
-        (x1 > x_max_clip && x2 > x_max_clip && x3> x_max_clip))return;
+    if (y3 < _y_min_clip || y1 > _y_max_clip ||
+        (x1 < _x_min_clip && x2 < _x_min_clip && x3 < _x_min_clip) ||
+        (x1 > _x_max_clip && x2 > _x_max_clip && x3 > _x_max_clip))return;
 
     if (y1 == y2) {//平顶
         top_triangle(x1, y1, x2, y2, x3, y3, color);
@@ -303,15 +304,8 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
     float x_satrt;
     float x_end;
     float triangle_height;
-    float x_min_clip = 0;
-    float y_min_clip = 0;
-    float x_max_clip = _width;
-    float y_max_clip = _height;
-    float right;
-    float left;
     int iy1;
     int iy3;
-    int y_loop;
 
     if (x2 < x1) {
         swap_vaue(x1, x2);
@@ -322,79 +316,72 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
     dx_right = (x3 - x2) / triangle_height;
     x_satrt = x1;
     x_end = x2;
-
-    // 垂直裁剪
-    if (y1 < y_min_clip) {
-        x_satrt = x_satrt + dx_left * (-y1 + y_min_clip);
-        x_end = x_end + dx_right * (-y1 + y_min_clip);
-        y1 = y_min_clip;
+    //垂直裁剪
+    if (y1 < _y_min_clip) {
+        x_satrt = x_satrt + dx_left * (-y1 + _y_min_clip);
+        x_end = x_end + dx_right * (-y1 + _y_min_clip);
+        y1 = _y_min_clip;
         iy1 = y1;
     }
     else {
         iy1 = ceil(y1);
-        x_satrt = x1 + dx_left * (iy1 - y1);
-        x_end = x2 + dx_right * (iy1 - y1);
+        x_satrt = x_satrt + dx_left * (iy1 - y1);
+        x_end = x_end + dx_right * (iy1 - y1);
     }
 
-    if (y3 > y_max_clip) {
-        y3 = y_max_clip;
+    if (y3 > _y_max_clip) {
+        y3 = _y_max_clip;
         iy3 = y3 - 1;
     }
     else {
-        iy3 = ceil(y3) - 1;
+        iy3 = y3;// ceil(y3) - 1;
     }
-    //---垂直裁剪--end
+    //-- - 垂直裁剪--end
 
-    // 执行垂直裁剪
-    if (y1 < y_min_clip) {
-        x_satrt = x1 + dx_left * (-y1 + y_min_clip);
-        x_end = x2 + dx_right * (-y1 + y_min_clip);
-        y1 = y_min_clip;
+    //    执行垂直裁剪
+    if (y1 < _y_min_clip) {
+        x_satrt = x_satrt + dx_left * (-y1 + _y_min_clip);
+        x_end = x_end + dx_right * (-y1 + _y_min_clip);
+        y1 = _y_min_clip;
     }
-    if (y3 > y_max_clip) {
-        y3 = y_max_clip;
+    if (y3 > _y_max_clip) {
+        y3 = _y_max_clip;
     }
 
     iy1 = ceil(y1);
-    iy3 = ceil(y3) - 1;
-    // 执行垂直裁剪---end
+    iy3 = ceil(y3);
+    //执行垂直裁剪-- - end
 
-
-    if (x1 >= x_min_clip && x_max_clip >= x1 &&
-        x2 >= x_min_clip && x_max_clip >= x2 &&
-        x3 >= x_min_clip && x_max_clip >= x3) {//不需要水平裁剪
-        for (y_loop = iy1; y_loop <= iy3; y_loop++) {
+    if (x1 >= _x_min_clip && _x_max_clip >= x1 &&
+        x2 >= _x_min_clip && _x_max_clip >= x2 &&
+        x3 >= _x_min_clip && _x_max_clip >= x3) {//不需要水平裁剪
+        for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
             line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
             x_satrt += dx_left;
             x_end += dx_right;
         }
     }
     else {
-        for (y_loop = iy1; y_loop <= iy3; y_loop++) {
-            left = x_satrt;
-            right = x_end;
-
+        for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
+            float left = x_satrt;
+            float right = x_end;
             x_satrt += dx_left;
             x_end += dx_right;
 
-            line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
-            x_satrt += dx_left;
-            x_end += dx_right;
-            if (left < x_min_clip) {
-                left = x_min_clip;
+            if (left < _x_min_clip) {
+                left = _x_min_clip;
             }
-            if (right > x_max_clip) {
-                right = x_max_clip;
+            if (right > _x_max_clip) {
+                right = _x_max_clip;
             }
 
-            if (right <= x_min_clip || x_max_clip <= left) {
+            if (right <= _x_min_clip || _x_max_clip <= left) {
                 continue;
             }
-            line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
+            line_bresenham(left, y_loop, right, y_loop, color);
         }
     }
 }
-
 
 /*
     v1
@@ -410,20 +397,13 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
     float x_satrt;
     float x_end;
     float triangle_height;
-    float x_min_clip = 0;
-    float y_min_clip = 0;
-    float x_max_clip = _width;
-    float y_max_clip = _height;
-    float right;
-    float left;
     int iy1;
     int iy3;
-    int y_loop;
 
     if (x3 < x2) {
         swap_vaue(x2, x3);
     }
-    
+
     triangle_height = y3 - y1;
     dx_left = (x2 - x1) / triangle_height;
     dx_right = (x3 - x1) / triangle_height;
@@ -431,20 +411,20 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
     x_end = x1;
 
     // 垂直裁剪
-    if (y1 < y_min_clip) {
-        x_satrt = x_satrt + dx_left * (-y1 + y_min_clip);
-        x_end = x_end + dx_right * (-y1 + y_min_clip);
-        y1 = y_min_clip;
+    if (y1 < _y_min_clip) {
+        x_satrt = x_satrt + dx_left * (_y_min_clip - y1);
+        x_end = x_end + dx_right * (_y_min_clip - y1);
+        y1 = _y_min_clip;
         iy1 = y1;
     }
     else {
         iy1 = ceil(y1);
-        x_satrt = x1 + dx_left * (iy1 - y1);
-        x_end = x1 + dx_right * (iy1 - y1);
+        x_satrt = x_satrt + dx_left * (iy1 - y1);
+        x_end = x_end + dx_right * (iy1 - y1);
     }
 
-    if (y3 > y_max_clip) {
-        y3 = y_max_clip;
+    if (y3 > _y_max_clip) {
+        y3 = _y_max_clip;
         iy3 = y3 - 1;
     }
     else {
@@ -453,51 +433,47 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
     //---垂直裁剪--end
 
     // 执行垂直裁剪
-    if (y1 < y_min_clip) {
-        x_satrt = x1 + dx_left * (-y1 + y_min_clip);
-        x_end = x1 + dx_right * (-y1 + y_min_clip);
-        y1 = y_min_clip;
+    if (y1 < _y_min_clip) {
+        x_satrt = x_satrt + dx_left * (_y_min_clip - y1);
+        x_end = x_end + dx_right * (_y_min_clip - y1);
+        y1 = _y_min_clip;
     }
-    if (y3 > y_max_clip) {
-        y3 = y_max_clip;
+    if (y3 > _y_max_clip) {
+        y3 = _y_max_clip;
     }
 
     iy1 = ceil(y1);
     iy3 = ceil(y3) - 1;
     // 执行垂直裁剪---end
 
-
-    if (x1 >= x_min_clip && x_max_clip >= x1 &&
-        x2 >= x_min_clip && x_max_clip >= x2 &&
-        x3 >= x_min_clip && x_max_clip >= x3) {//不需要水平裁剪
-        for (y_loop = iy1; y_loop <= iy3; y_loop++) {
+    if (x1 >= _x_min_clip && _x_max_clip >= x1 &&
+        x2 >= _x_min_clip && _x_max_clip >= x2 &&
+        x3 >= _x_min_clip && _x_max_clip >= x3) {//不需要水平裁剪
+        for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
             line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
             x_satrt += dx_left;
             x_end += dx_right;
         }
     }
     else {
-        for (y_loop = iy1; y_loop <= iy3; y_loop++) {
-            left = x_satrt;
-            right = x_end;
+        for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
+            float left = x_satrt;
+            float right = x_end;
 
             x_satrt += dx_left;
             x_end += dx_right;
 
-            line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
-            x_satrt += dx_left;
-            x_end += dx_right;
-            if (left < x_min_clip) {
-                left = x_min_clip;
+            if (left < _x_min_clip) {
+                left = _x_min_clip;
             }
-            if (right > x_max_clip) {
-                right = x_max_clip;
+            if (right > _x_max_clip) {
+                right = _x_max_clip;
             }
 
-            if (right <= x_min_clip || x_max_clip <= left) {
+            if (right <= _x_min_clip || _x_max_clip <= left) {
                 continue;
             }
-            line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
+            line_bresenham(left, y_loop, right, y_loop, color);
         }
     }
 }

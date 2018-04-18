@@ -64,6 +64,12 @@ struct lh_color {
 struct VertexColor {
     LhVertex<float, 3> postion;
     lh_color color;
+    VertexColor operator= (const VertexColor &v) {
+        postion = v.postion;
+        color = v.color;
+        return *this;
+    }
+    VertexColor():color(0){}
     VertexColor(LhVertex<float, 3> v, lh_color c):
         postion(v), color(c){};
 };
@@ -87,17 +93,22 @@ private:
     void setpixel(int x, int y, lh_color color);//trapezoid
     
     VertexColor interp(const VertexColor& from, const VertexColor& to, float factor);
-
 private:
-    void left_top_fill();
     void top_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
     void bottom_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
-    
 private:
     void scanline(float left, float right, float y, lh_color left_color,  lh_color right_color);
+    void set_clip_window(float x_min, float y_min, float x_max, float y_max);
+
+private:
+
 private:
     int _width = 0;
     int _height = 0;
     unsigned char *_frame_buffers = nullptr;
+    float _x_min_clip = 0;
+    float _y_min_clip = 0;
+    float _x_max_clip = 0;
+    float _y_max_clip = 0;
 };
 

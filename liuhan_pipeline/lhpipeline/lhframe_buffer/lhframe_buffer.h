@@ -8,6 +8,7 @@ public:
 protected:
     void set_buffer(int w, int h, void* pbits);
     void update_vertex(float* vertex_buffer, /*float* color_buffer,*/ int counts);
+    void clear_buffer();
     void clear_deep();
     bool deep_test(int x, int y, float z);
     const float* get_vertex_buffers() { return _vertex_buffers; }

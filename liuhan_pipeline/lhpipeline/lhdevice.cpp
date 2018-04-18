@@ -20,7 +20,7 @@ namespace lh_pipeline {
     }
 
     void LhDevice::draw_line(int x1, int y1, int x2, int y2, int color) {
-        line_bresenham(x1, y1, x2, y2, lh_color(color));
+        line(x1, y1, x2, y2, lh_color(color));
     }
 
     void LhDevice::bind_vertex(float* vertex, int vertex_size) {
@@ -28,10 +28,10 @@ namespace lh_pipeline {
         assert(vertex_size > 0);
         update_vertex(vertex, vertex_size);
 
-        //_piple.set_rotate(0.0f, 10.0f, 0.0f);
+        _piple.set_rotate(30.0f, 30.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(1, 0, 0);
-        _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, -4.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
+        _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, 6.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
     }
@@ -47,8 +47,9 @@ namespace lh_pipeline {
 
     //#include <windows.h> 
     void LhDevice::draw() {
+        //clear_buffer();
         _piple.get_wvp();
-        switch (_render_state) {
+        switch (LG_TEST) {
         case LH_LINES:
             draw_line();
             break;
@@ -60,6 +61,38 @@ namespace lh_pipeline {
             break;
         case LH_TRIANGLES_FILL:
             draw_triangles_fill();
+            break;
+        case LG_TEST:
+            static float roat_x = 0;
+            static float roat_y = 0;
+            static float roat_z = 0;
+            static int count = 0;
+            if (count < 200) {
+                count++;
+                break;
+            }
+            count = 0;
+            clear_buffer();
+            //roat_x += 1;
+            roat_y += 1;
+            //roat_z += 1;
+            _piple.set_rotate(roat_x, roat_y, roat_z);
+            _piple.set_worldpos(3, 0, 0);
+            _piple.get_wvp();
+            draw_triangles();
+
+            _piple.set_rotate(roat_x, roat_y, roat_z);
+            _piple.set_worldpos(1, 0, 0);
+            _piple.get_wvp();
+            draw_triangles_fill();
+            draw_triangles();
+            
+            _piple.set_rotate(roat_x, roat_y, roat_z);
+            _piple.set_worldpos(-2, 0, 0);
+            _piple.get_wvp();
+            draw_triangles_fill();
+            draw_triangles();
+
             break;
         }
 
@@ -92,9 +125,9 @@ namespace lh_pipeline {
         //triangle_fill;
         const float* v = get_vertex_buffers();
         const int counts = get_vertex_buffers_size();
-        lh_color lc(255, 0, 0);
+        
+        lh_color lc(0, 0, 255);
         int color = lc.get_t<int>();
-        //TCHAR info[1024] = { 0 };
         for (int i = 0; i < counts; i += 9) {
             LhVertexFloat4 p1;
             LhVertexFloat4 p2;
@@ -102,11 +135,13 @@ namespace lh_pipeline {
             if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
                 get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
                 get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
-                /*triangle_fill(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), lh_color(255, 0, 0),
-                    LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), lh_color(0, 255, 0),
-                    LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), lh_color(0, 0, 255));*/
-                //lh_color(float(rand()) / 255.0f, float(rand()) / 255.0f, float(rand()) / 255.0f)
-                draw_triangle(p1.get_x(), p1.get_y(), p2.get_x(), p2.get_y(), p3.get_x(), p3.get_y(), lh_color(255.0f, 0.0f, 0.0f));
+                //
+                draw_triangle(p1.get_x(), p1.get_y(), p2.get_x(), p2.get_y(), p3.get_x(), p3.get_y(),
+                    //lh_color(float(rand()) / 255.0f, float(rand()) / 255.0f, float(rand()) / 255.0f));
+                    lh_color(0.0f, 255.0f, 0.0f));
+                /*triangle_fill(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), lh_color(0.0f, 255.0f, 0.0f)),
+                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), lh_color(0.0f, 255.0f, 0.0f)),
+                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), lh_color(0.0f, 255.0f, 0.0f)));*/
             }
         }
     }

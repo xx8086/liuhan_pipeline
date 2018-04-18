@@ -45,6 +45,10 @@ void LhFrameBuffer::clear_deep() {
     }
 }
 
+void LhFrameBuffer::clear_buffer() {
+    memset(_frame_buffers, 0, _width * _height * sizeof(float));
+}
+
 bool LhFrameBuffer::deep_test(int x, int y, float z) {
     bool r = false;
     if (*(_frame_deep + x * _width + y) < z) {

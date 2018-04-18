@@ -20,7 +20,7 @@ namespace lh_pipeline {
     }
 
     void LhDevice::draw_line(int x1, int y1, int x2, int y2, int color) {
-        line(x1, y1, x2, y2, lh_color(color));
+        LhDrawPrimitive::draw_line(x1, y1, x2, y2, lh_color(color));
     }
 
     void LhDevice::bind_vertex(float* vertex, int vertex_size) {

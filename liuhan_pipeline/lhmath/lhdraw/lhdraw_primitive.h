@@ -80,12 +80,8 @@ public:
     LhDrawPrimitive();
     ~LhDrawPrimitive();
 public:
-    //std::function<void(int, int, int)> setpixel;
     void set_buffer(int w, int h, void* pbits);
-    void line_dda(int x1, int y1, int x2, int y2, lh_color color);
-    void line_bresenham(int x1, int y1, int x2, int y2, lh_color color);
-    void line(int x1, int y1, int x2, int y2, lh_color c);
-public:
+    void draw_line(int x1, int y1, int x2, int y2, lh_color c);
     void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
 private:
     template <typename T>
@@ -93,6 +89,12 @@ private:
     void setpixel(int x, int y, lh_color color);//trapezoid
     
     VertexColor interp(const VertexColor& from, const VertexColor& to, float factor);
+private:
+    //std::function<void(int, int, int)> setpixel;
+    
+    void line_dda(int x1, int y1, int x2, int y2, lh_color color);
+    void line_bresenham(int x1, int y1, int x2, int y2, lh_color color);
+    void line(int x1, int y1, int x2, int y2, lh_color c);
 private:
     void top_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
     void bottom_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);

@@ -52,6 +52,7 @@ namespace lh_pipeline {
         init_view();
         init_proj();
         _wvp_transformation = _proj_transformation * _view_transformation * _world_transformation;
+        //_wvp_transformation = _wvp_transformation.transpose();
         return _wvp_transformation;
     }
 
@@ -77,6 +78,7 @@ namespace lh_pipeline {
         translation_trans.init_translation_transform(_worldpos.get_x(), _worldpos.get_y(), _worldpos.get_z());
 
         _world_transformation = translation_trans * rotate_trans * scale_trans;
+        //_world_transformation = _world_transformation.transpose();
     }
     void LhPipeLine::init_view() {
         LhMatrixFloat4 camera_translation_trans;
@@ -87,9 +89,11 @@ namespace lh_pipeline {
             -_camera.pos.get_z());//移到相机位置
         camera_rotate_trans.coordinate_space_rotate(_camera.target, _camera.up);//旋转和相机轴重合
         _view_transformation = camera_rotate_trans * camera_translation_trans;
+        //_view_transformation = _view_transformation.transpose();
     }
     void LhPipeLine::init_proj() {
         _proj_transformation.init_persproj_transform(_pers_projinfo);
+        //_proj_transformation = _proj_transformation.transpose();
     }
     void LhPipeLine::init_ortho() {
         _ortho_transformation.init_orthoproj_transform(_orthoprojinfo);

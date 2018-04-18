@@ -19,6 +19,8 @@ void LhDrawPrimitive::set_buffer(int w, int h, void* pbits) {
 }
 
 void LhDrawPrimitive::setpixel(int x, int y, lh_color color) {
+    if (y >= 600 || y < 0)return;
+    if (x >= 800 || x < 0) return;
     _frame_buffers[(y * _width + x + 1) * 4 + 0] = color.blue;//b
     _frame_buffers[(y * _width + x + 1) * 4 + 1] = color.green;//g
     _frame_buffers[(y * _width + x + 1) * 4 + 2] = color.red;//r
@@ -209,6 +211,10 @@ void LhDrawPrimitive::line(int x1, int y1, int x2, int y2, lh_color c) {
     }
 }
 
+
+void LhDrawPrimitive::draw_line(int x1, int y1, int x2, int y2, lh_color c) {
+    line(x1, y1, x2, y2, c);
+}
 struct Scanline
 {
     Scanline(lh_color color_, lh_color step_) :color(color_), step(step_) {}
@@ -356,7 +362,7 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
         x2 >= _x_min_clip && _x_max_clip >= x2 &&
         x3 >= _x_min_clip && _x_max_clip >= x3) {//不需要水平裁剪
         for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-            line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
+            draw_line(x_satrt, y_loop, x_end, y_loop, color);
             x_satrt += dx_left;
             x_end += dx_right;
         }
@@ -378,7 +384,7 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
             if (right <= _x_min_clip || _x_max_clip <= left) {
                 continue;
             }
-            line_bresenham(left, y_loop, right, y_loop, color);
+            draw_line(left, y_loop, right, y_loop, color);
         }
     }
 }
@@ -450,7 +456,7 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
         x2 >= _x_min_clip && _x_max_clip >= x2 &&
         x3 >= _x_min_clip && _x_max_clip >= x3) {//不需要水平裁剪
         for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-            line_bresenham(x_satrt, y_loop, x_end, y_loop, color);
+            draw_line(x_satrt, y_loop, x_end, y_loop, color);
             x_satrt += dx_left;
             x_end += dx_right;
         }
@@ -473,7 +479,7 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
             if (right <= _x_min_clip || _x_max_clip <= left) {
                 continue;
             }
-            line_bresenham(left, y_loop, right, y_loop, color);
+            draw_line(left, y_loop, right, y_loop, color);
         }
     }
 }

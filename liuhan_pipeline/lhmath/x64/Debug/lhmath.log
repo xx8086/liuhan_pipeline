@@ -1,9 +1,0 @@
-﻿  lhmatrix_float4.cpp
-e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdetail\lhmatrix_float4.cpp(206): fatal error C1010: 在查找预编译头时遇到意外的文件结尾。是否忘记了向源中添加“#include "stdafx.h"”?
-  lhquaternion.cpp
-e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdetail\lhquaternion.cpp(77): fatal error C1010: 在查找预编译头时遇到意外的文件结尾。是否忘记了向源中添加“#include "stdafx.h"”?
-  lhvertex.cpp
-e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdetail\lhvertex.cpp(27): fatal error C1010: 在查找预编译头时遇到意外的文件结尾。是否忘记了向源中添加“#include "stdafx.h"”?
-  lhdraw_primitive.cpp
-e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.cpp(498): fatal error C1010: 在查找预编译头时遇到意外的文件结尾。是否忘记了向源中添加“#include "stdafx.h"”?
-  正在生成代码...

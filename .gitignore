@@ -37,3 +37,7 @@
 *.db
 *.db-shm
 *.db-wal
+*.tlog
+*.pdb
+*.idb
+*.log

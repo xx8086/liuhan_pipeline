@@ -1,0 +1,11 @@
+﻿  lhdevice.cpp
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(46): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(45): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(44): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(43): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(54): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhpipeline\lhdevice.cpp(141): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+  lhframe_buffer.cpp
+  lhpipeline.cpp
+  正在生成代码...
+LINK : fatal error LNK1561: 必须定义入口点

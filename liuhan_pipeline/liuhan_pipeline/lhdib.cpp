@@ -169,10 +169,10 @@ namespace lh_pipeline {
         insert_quadrilateral(vecs, vertex[4], vertex[5], vertex[7], vertex[6]);
         insert_quadrilateral(vecs, vertex[1], vertex[3], vertex[7], vertex[5]);
         insert_quadrilateral(vecs, vertex[2], vertex[6], vertex[7], vertex[3]);
-        //LhDevice::bind_vertex(vecs.data(), vecs.size());
+        LhDevice::bind_vertex(vecs.data(), vecs.size());
 
 
-        float v[] = {
+        /*float v[] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
             -0.5f, 0.5f, -0.5f,
@@ -181,6 +181,6 @@ namespace lh_pipeline {
             -0.5f, 0.5f, -0.5f,
             0.5f, 0.5f, -0.5f
         };
-        LhDevice::bind_vertex(v, 9);
+        LhDevice::bind_vertex(v, 18);*/
     }
 }

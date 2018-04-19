@@ -1,0 +1,23 @@
+﻿  stdafx.cpp
+  lhdib.cpp
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(46): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(45): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(44): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(43): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(54): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+  liuhan_pipeline.cpp
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(46): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(45): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(44): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(43): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+e:\liuhan_pipeline\liuhan_pipeline\lhmath\lhdraw\lhdraw_primitive.h(54): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
+  正在生成代码...
+lhdib.obj : error LNK2019: 无法解析的外部符号 "protected: int __cdecl LhFrameBuffer::get_width(void)const " (?get_width@LhFrameBuffer@@IEBAHXZ)，该符号在函数 "public: void __cdecl lh_pipeline::LhDib::bitblt(struct HWND__ *)" (?bitblt@LhDib@lh_pipeline@@QEAAXPEAUHWND__@@@Z) 中被引用
+lhdib.obj : error LNK2019: 无法解析的外部符号 "protected: int __cdecl LhFrameBuffer::get_height(void)const " (?get_height@LhFrameBuffer@@IEBAHXZ)，该符号在函数 "public: void __cdecl lh_pipeline::LhDib::bitblt(struct HWND__ *)" (?bitblt@LhDib@lh_pipeline@@QEAAXPEAUHWND__@@@Z) 中被引用
+lhdib.obj : error LNK2019: 无法解析的外部符号 "public: __cdecl lh_pipeline::LhDevice::LhDevice(void)" (??0LhDevice@lh_pipeline@@QEAA@XZ)，该符号在函数 "public: __cdecl lh_pipeline::LhDib::LhDib(void)" (??0LhDib@lh_pipeline@@QEAA@XZ) 中被引用
+lhdib.obj : error LNK2019: 无法解析的外部符号 "public: __cdecl lh_pipeline::LhDevice::~LhDevice(void)" (??1LhDevice@lh_pipeline@@QEAA@XZ)，该符号在函数 "public: __cdecl lh_pipeline::LhDib::~LhDib(void)" (??1LhDib@lh_pipeline@@QEAA@XZ) 中被引用
+lhdib.obj : error LNK2019: 无法解析的外部符号 "public: void __cdecl lh_pipeline::LhDevice::set_render_state(enum lh_pipeline::lh_render_state)" (?set_render_state@LhDevice@lh_pipeline@@QEAAXW4lh_render_state@2@@Z)，该符号在函数 "public: void __cdecl lh_pipeline::LhDib::init(struct HWND__ *,int,int)" (?init@LhDib@lh_pipeline@@QEAAXPEAUHWND__@@HH@Z) 中被引用
+lhdib.obj : error LNK2019: 无法解析的外部符号 "public: void __cdecl lh_pipeline::LhDevice::update_buffer(int,int,void *)" (?update_buffer@LhDevice@lh_pipeline@@QEAAXHHPEAX@Z)，该符号在函数 "public: void __cdecl lh_pipeline::LhDib::init(struct HWND__ *,int,int)" (?init@LhDib@lh_pipeline@@QEAAXPEAUHWND__@@HH@Z) 中被引用
+lhdib.obj : error LNK2019: 无法解析的外部符号 "public: void __cdecl lh_pipeline::LhDevice::bind_vertex(float *,int)" (?bind_vertex@LhDevice@lh_pipeline@@QEAAXPEAMH@Z)，该符号在函数 "private: void __cdecl lh_pipeline::LhDib::update_vertex(void)" (?update_vertex@LhDib@lh_pipeline@@AEAAXXZ) 中被引用
+lhdib.obj : error LNK2019: 无法解析的外部符号 "public: void __cdecl lh_pipeline::LhDevice::draw(void)" (?draw@LhDevice@lh_pipeline@@QEAAXXZ)，该符号在函数 "public: void __cdecl lh_pipeline::LhDib::bitblt(struct HWND__ *)" (?bitblt@LhDib@lh_pipeline@@QEAAXPEAUHWND__@@@Z) 中被引用
+E:\liuhan_pipeline\liuhan_pipeline\x64\Debug\liuhan_pipeline.exe : fatal error LNK1120: 8 个无法解析的外部命令

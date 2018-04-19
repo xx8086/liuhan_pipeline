@@ -73,26 +73,19 @@ namespace lh_pipeline {
             }
             count = 0;
             clear_buffer();
-            //roat_x += 1;
+            roat_x += 1;
             roat_y += 1;
-            //roat_z += 1;
-            _piple.set_rotate(roat_x, roat_y, roat_z);
+            roat_z += 1;
+            /*_piple.set_rotate(roat_x, roat_y, roat_z);
             _piple.set_worldpos(3, 0, 0);
             _piple.get_wvp();
-            draw_triangles();
+            draw_triangles();*/
 
             _piple.set_rotate(roat_x, roat_y, roat_z);
-            _piple.set_worldpos(1, 0, 0);
+            _piple.set_worldpos(0, 0, 0);
             _piple.get_wvp();
             draw_triangles_fill();
             draw_triangles();
-            
-            _piple.set_rotate(roat_x, roat_y, roat_z);
-            _piple.set_worldpos(-2, 0, 0);
-            _piple.get_wvp();
-            draw_triangles_fill();
-            draw_triangles();
-
             break;
         }
 

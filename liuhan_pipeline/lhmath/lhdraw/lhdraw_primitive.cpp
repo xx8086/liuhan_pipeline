@@ -289,9 +289,25 @@ void LhDrawPrimitive::draw_triangle(float x1, float y1, float x2, float y2, floa
         bottom_triangle(x1, y1, x2, y2, x3, y3, color);
     }
     else {
-        float x_new = x1 + (y2 - y1)*(x3 - x1) / (y3 - y1);
-        top_triangle(x1, y1, x_new, y2, x3, y3, color);
-        bottom_triangle(x1, x_new, x2, y2, x3, y3, color);
+        assert(y2 >= y1);
+        float line_x = x1 + (x3 - x1)*(y2 - y1) / (y3 - y1);
+        bottom_triangle(x1, y1,
+            line_x, y2,
+            x2, y2,
+            color);
+        top_triangle(line_x, y2,
+            x2, y2,
+            x3, y3,
+            color);
+
+        if (x2 > x1)
+        {//right
+            
+        }
+        else {//left
+            ;
+        }
+
     }
 }
 

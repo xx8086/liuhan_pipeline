@@ -162,15 +162,15 @@ namespace lh_pipeline {
         _m[3][0] = 0.0f; _m[3][1] = 0.0f; _m[3][2] = 0.0f; _m[3][3] = 1.0f;
     }
 
-    void LhMatrixFloat4::coordinate_space_rotate(const LhVertex<float, 3>& target,
-        const LhVertex<float, 3>& up) {
-        LhVertex<float, 3> N = target;
-        LhVertex<float, 3> U = up;
+    void LhMatrixFloat4::coordinate_space_rotate(const LhVertexFloat3& target,
+        const LhVertexFloat3& up) {
+        LhVertexFloat3 N = target;
+        LhVertexFloat3 U = up;
 
         normalize(N);
         U = cross(U, N);
         normalize(U);
-        LhVertex<float, 3> V = cross(N, U);
+        LhVertexFloat3 V = cross(N, U);
 
         _m[0][0] = U.get_x();   _m[0][1] = U.get_y();   _m[0][2] = U.get_z();   _m[0][3] = 0.0f;
         _m[1][0] = V.get_x();   _m[1][1] = V.get_y();   _m[1][2] = V.get_z();   _m[1][3] = 0.0f;

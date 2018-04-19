@@ -18,9 +18,18 @@ void LhDrawPrimitive::set_buffer(int w, int h, void* pbits) {
     set_clip_window(0, 0, w, h);
 }
 
+void LhDrawPrimitive::setpixel(float x, float y, lh_color color) {
+    setpixel((int)x, (int)y, color);
+}
+
 void LhDrawPrimitive::setpixel(int x, int y, lh_color color) {
-    if (y >= 600 || y < 0)return;
-    if (x >= 800 || x < 0) return;
+    if (y >= _y_max_clip ||
+        y < _y_min_clip ||
+        x >= _x_max_clip ||
+        x < _x_min_clip) {
+        return;
+    }
+
     _frame_buffers[(y * _width + x + 1) * 4 + 0] = color.blue;//b
     _frame_buffers[(y * _width + x + 1) * 4 + 1] = color.green;//g
     _frame_buffers[(y * _width + x + 1) * 4 + 2] = color.red;//r
@@ -74,7 +83,7 @@ void LhDrawPrimitive::line_dda(int x1, int y1, int x2, int y2, lh_color color) {
     float dy = (float)ty / dm;
 
     for (int i = 0; i < dm; i++) {
-        setpixel((int)x, (int)y, color);
+        setpixel(x, y, color);
         x += dx;
         y += dy;
     }
@@ -126,7 +135,7 @@ d(i+1) - di = 2*dy*(x(i+1) - xi) - 2*dx(y(i+1) - yi)
 当di<0时s-t<0,P = S,所以y(i+1) - yi == 0
 即d(i+1) = di + 2*dy
 */
-void LhDrawPrimitive::line_bresenham(int x1, int y1, int x2, int y2, lh_color color) {
+void LhDrawPrimitive::line_bresenham(float x1, float y1, float x2, float y2, lh_color color) {
     setpixel(x1, y1, color);
     int dx = abs(x2 - x1);
     int dy = abs(y2 - y1);
@@ -215,46 +224,6 @@ void LhDrawPrimitive::line(int x1, int y1, int x2, int y2, lh_color c) {
 void LhDrawPrimitive::draw_line(int x1, int y1, int x2, int y2, lh_color c) {
     line(x1, y1, x2, y2, c);
 }
-struct Scanline
-{
-    Scanline(lh_color color_, lh_color step_) :color(color_), step(step_) {}
-    void to_next_color()
-    {
-        color += step;
-    }
-    int x;
-    int y;
-    lh_color color;
-    lh_color step;
-    int width;
-};
-
-void LhDrawPrimitive::scanline(float left, float right, float y, lh_color left_color, lh_color right_color) {
-    float divide = 1.0f / (right - left);
-    lh_color step_color = (right_color - left_color) * divide;
-    lh_color color = left_color;
-    int begin_x = static_cast<int>(left + 0.5f);
-    int width = abs(right - left);
-    int b = right > left ? 1 : -1;
-    for (int i = 0; i <= width; i++) {
-        setpixel(begin_x + b * i, y, color);
-        color += step_color;
-    }
-}
-
-//插值
-VertexColor LhDrawPrimitive::interp(const VertexColor& from, const VertexColor& to, float factor)
-{
-    LhVertex<float, 3> postion;
-    postion.set_x(from.postion.get_x() + (to.postion.get_x() - from.postion.get_x())*factor);
-    postion.set_y(from.postion.get_y() + (to.postion.get_y() - from.postion.get_y())*factor);
-    postion.set_z(from.postion.get_z() + (to.postion.get_z() - from.postion.get_z())*factor);
-
-    lh_color color = from.color;
-    VertexColor vc(postion, color.interp(to.color, factor));
-
-    return vc;
-}
 
 void LhDrawPrimitive::set_clip_window(float x_min, float y_min, float x_max, float y_max) {
     _x_min_clip = x_min;
@@ -338,6 +307,7 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
     dx_right = (x3 - x2) / triangle_height;
     x_satrt = x1;
     x_end = x2;
+    /*
     //垂直裁剪
     if (y1 < _y_min_clip) {
         x_satrt = x_satrt + dx_left * (-y1 + _y_min_clip);
@@ -368,7 +338,7 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
     }
     if (y3 > _y_max_clip) {
         y3 = _y_max_clip;
-    }
+    }*/
 
     iy1 = ceil(y1);
     iy3 = ceil(y3);
@@ -378,12 +348,14 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
         x2 >= _x_min_clip && _x_max_clip >= x2 &&
         x3 >= _x_min_clip && _x_max_clip >= x3) {//不需要水平裁剪
         for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-            draw_line(x_satrt, y_loop, x_end, y_loop, color);
+            for (int x = x_satrt; x < x_end; x++) {
+                setpixel(x, y_loop, color);
+            }
             x_satrt += dx_left;
             x_end += dx_right;
         }
     }
-    else {
+    else {/*
         for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
             float left = x_satrt;
             float right = x_end;
@@ -401,7 +373,7 @@ void LhDrawPrimitive::top_triangle(float x1, float y1, float x2, float y2, float
                 continue;
             }
             draw_line(left, y_loop, right, y_loop, color);
-        }
+        }*/
     }
 }
 
@@ -432,6 +404,7 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
     x_satrt = x1;
     x_end = x1;
 
+    /*
     // 垂直裁剪
     if (y1 < _y_min_clip) {
         x_satrt = x_satrt + dx_left * (_y_min_clip - y1);
@@ -462,7 +435,7 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
     }
     if (y3 > _y_max_clip) {
         y3 = _y_max_clip;
-    }
+    } */
 
     iy1 = ceil(y1);
     iy3 = ceil(y3) - 1;
@@ -472,12 +445,14 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
         x2 >= _x_min_clip && _x_max_clip >= x2 &&
         x3 >= _x_min_clip && _x_max_clip >= x3) {//不需要水平裁剪
         for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-            draw_line(x_satrt, y_loop, x_end, y_loop, color);
+            for (int x = x_satrt; x < x_end; x++) {
+                setpixel(x, y_loop, color);
+            }
             x_satrt += dx_left;
             x_end += dx_right;
         }
     }
-    else {
+    else {/*
         for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
             float left = x_satrt;
             float right = x_end;
@@ -496,6 +471,109 @@ void LhDrawPrimitive::bottom_triangle(float x1, float y1, float x2, float y2, fl
                 continue;
             }
             draw_line(left, y_loop, right, y_loop, color);
-        }
+        }*/
+    }
+}
+
+
+void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor v3) {
+    if (v2.postion.get_y() < v1.postion.get_y()) {
+        swap_vaue(v1.postion, v2.postion);
+    }
+    if (v3.postion.get_y() < v1.postion.get_y()) {
+        swap_vaue(v1.postion, v3.postion);
+    }
+    if (v3.postion.get_y() < v2.postion.get_y()) {
+        swap_vaue(v2.postion, v3.postion);
+    }//v3.y > v2.y > v1.y
+
+    if (v3.postion.get_y() < _y_min_clip || v1.postion.get_y() > _y_max_clip ||
+        (v1.postion.get_x() < _x_min_clip && v2.postion.get_x() < _x_min_clip && v3.postion.get_x() < _x_min_clip) ||
+        (v1.postion.get_x() > _x_max_clip && v2.postion.get_x() > _x_max_clip && v3.postion.get_x() > _x_max_clip)) {
+        return;
+    }
+
+    if (v2.postion.get_y() == v1.postion.get_y()) {//平顶
+        top_triangle(v1, v2, v3);
+    }
+    else if (v3.postion.get_y() == v2.postion.get_y()) {
+        bottom_triangle(v1, v2, v3);
+    }
+    else {
+        assert(v2.postion.get_y() > v1.postion.get_y());
+        //float line_x = x1 + (x3 - x1)*(y2 - y1) / (y3 - y1);
+        float factor = (v2.postion.get_y() - v1.postion.get_y()) / (v3.postion.get_y() - v1.postion.get_y());
+        float line_x = v1.postion.get_x() + (v3.postion.get_x() - v1.postion.get_x()) * factor;
+        float line_z = v1.postion.get_z() + (v3.postion.get_z() - v1.postion.get_z()) * factor;
+        lh_color line_color = v1.color + (v3.color - v1.color) * factor;
+        VertexColor interp_v(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), line_color);
+        bottom_triangle(v1, interp_v, v2);
+        top_triangle(interp_v, v3, v2);
+    }
+}
+
+void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v3) {
+    if (v2.postion.get_x() < v1.postion.get_x()) {
+        swap_vaue(v1, v2);
+    }
+
+    float tan_left = (v3.postion.get_x() - v1.postion.get_x()) / (v3.postion.get_y() - v1.postion.get_y());
+    float tan_right = (v3.postion.get_x() - v2.postion.get_x()) / (v3.postion.get_y() - v2.postion.get_y());
+    float tan_left_z = (v3.postion.get_z() - v1.postion.get_z()) / (v3.postion.get_y() - v1.postion.get_y());
+    float tan_right_z = (v3.postion.get_z() - v2.postion.get_z()) / (v3.postion.get_y() - v2.postion.get_y());
+    lh_color tan_left_color = (v3.color - v1.color) / (v3.postion.get_y() - v1.postion.get_y());
+    lh_color tan_right_color = (v3.color - v2.color) / (v3.postion.get_y() - v2.postion.get_y());
+
+    int iy1 = ceil(v1.postion.get_y());
+    int iy3 = ceil(v3.postion.get_y()) - 1;
+    for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
+        float left_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_left;
+        float right_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_right;
+        float left_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_left_z;
+        float right_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_right_z;
+        lh_color left_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
+        lh_color right_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
+        draw_interp_scanline(
+            VertexColor(LhVertex<float, 3>(left_x, y_loop, left_z), left_color),
+            VertexColor(LhVertex<float, 3>(right_x, y_loop, right_z), right_color));
+    }
+}
+void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3) {
+    if (v3.postion.get_x() < v2.postion.get_x()) {
+        swap_vaue(v2, v3);
+    }
+
+    float tan_left = (v2.postion.get_x() - v1.postion.get_x()) / (v2.postion.get_y() - v1.postion.get_y());
+    float tan_right = (v3.postion.get_x() - v1.postion.get_x()) / (v3.postion.get_y() - v1.postion.get_y());
+    float tan_left_z = (v2.postion.get_z() - v1.postion.get_z()) / (v2.postion.get_y() - v1.postion.get_y());
+    float tan_right_z = (v3.postion.get_z() - v1.postion.get_z()) / (v3.postion.get_y() - v1.postion.get_y());
+    lh_color tan_left_color = (v2.color - v1.color) / (v2.postion.get_y() - v1.postion.get_y());
+    lh_color tan_right_color = (v3.color - v1.color) / (v3.postion.get_y() - v1.postion.get_y());
+    
+    int iy1 = ceil(v1.postion.get_y());
+    int iy3 = ceil(v3.postion.get_y()) - 1;
+    for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
+        float left_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_left;
+        float right_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_right;
+        float left_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_left_z;
+        float right_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_right_z;
+        lh_color left_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
+        lh_color right_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
+
+        draw_interp_scanline(
+            VertexColor(LhVertex<float, 3>(left_x, y_loop, left_z), left_color),
+            VertexColor(LhVertex<float, 3>(right_x, y_loop, right_z), right_color));
+    }
+}
+
+void LhDrawPrimitive::draw_interp_scanline(VertexColor left, VertexColor right) {
+    int y = left.postion.get_y();
+    int x_begin = left.postion.get_x();
+    int x_end = right.postion.get_x();
+    lh_color dcolor = (right.color - left.color) / (x_end - x_begin);
+    lh_color color = left.color;
+    for (int i = x_begin; i < x_end; i++) {
+        setpixel(i, y, color);
+        color += dcolor;
     }
 }

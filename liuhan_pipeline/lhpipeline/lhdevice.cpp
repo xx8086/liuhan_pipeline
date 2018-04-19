@@ -128,13 +128,16 @@ namespace lh_pipeline {
             if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
                 get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
                 get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
-                //
-                draw_triangle(p1.get_x(), p1.get_y(), p2.get_x(), p2.get_y(), p3.get_x(), p3.get_y(),
-                    //lh_color(float(rand()) / 255.0f, float(rand()) / 255.0f, float(rand()) / 255.0f));
+#if 0
+                draw_triangle(p1.get_x(), p1.get_y(), 
+                    p2.get_x(), p2.get_y(), 
+                    p3.get_x(), p3.get_y(),
                     lh_color(0.0f, 255.0f, 0.0f));
-                /*triangle_fill(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), lh_color(0.0f, 255.0f, 0.0f)),
+#else
+                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), lh_color(255.0f, 0.0f, 0.0f)),
                     VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), lh_color(0.0f, 255.0f, 0.0f)),
-                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), lh_color(0.0f, 255.0f, 0.0f)));*/
+                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), lh_color(0.0f, 0.0f, 255.0f)));
+#endif
             }
         }
     }

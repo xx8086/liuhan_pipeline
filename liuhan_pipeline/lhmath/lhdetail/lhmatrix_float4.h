@@ -51,7 +51,7 @@ namespace lh_pipeline {
         void init_translation_transform(float, float, float);
         void init_persproj_transform(const PersProjInfo& p);
         void init_orthoproj_transform(const OrthoProjInfo& p);
-        void coordinate_space_rotate(const LhVertex<float, 3>& target, const LhVertex<float, 3>& up);
+        void coordinate_space_rotate(const LhVertexFloat3& target, const LhVertexFloat3& up);
     protected:
         float _m[4][4];
     };

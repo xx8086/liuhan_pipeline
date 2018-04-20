@@ -96,9 +96,13 @@ public:
     void draw_line(int x1, int y1, int x2, int y2, lh_color c);
     void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
     void draw_triangle(VertexColor v1, VertexColor v2, VertexColor v3);
+protected:
+    void clear_deep();
 private:
     template <typename T> 
     void swap_vaue(T& a, T& b); 
+    bool deeptest(int x, int y, float z, lh_color color);
+    void setpixel(int x, int y, float z, lh_color color);
     void setpixel(float x, float y, lh_color color);
     void setpixel(int x, int y, lh_color color);//trapezoid
     void draw_interp_scanline(VertexColor left, VertexColor right);
@@ -116,9 +120,13 @@ private:
     int _width = 0;
     int _height = 0;
     unsigned char *_frame_buffers = nullptr;
+    float* _frame_deep_buffers = nullptr;
     float _x_min_clip = 0;
     float _y_min_clip = 0;
     float _x_max_clip = 0;
     float _y_max_clip = 0;
+    float _z_near_clip = 100.0;
+    float _z_far_clip = -1.0;
+    bool _deep_test = true;
 };
 

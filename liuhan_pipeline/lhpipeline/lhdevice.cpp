@@ -31,7 +31,7 @@ namespace lh_pipeline {
         _piple.set_rotate(30.0f, 30.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(1, 0, 0);
-        _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, 3.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
+        _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, -3.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
     }
@@ -73,6 +73,7 @@ namespace lh_pipeline {
             }
             count = 0;
             clear_buffer();
+            clear_deep();
             roat_x += 1;
             roat_y += 1;
             roat_z += 1;
@@ -85,7 +86,7 @@ namespace lh_pipeline {
             _piple.set_worldpos(0, 0, 0);
             _piple.get_wvp();
             draw_triangles_fill();
-            draw_triangles();
+            //draw_triangles();
             break;
         }
 

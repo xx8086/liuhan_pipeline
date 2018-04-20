@@ -39,14 +39,12 @@ void LhFrameBuffer::set_buffer(int w, int h,  void* pbits) {
 
     _frame_deep = new float[w * h];
 }
-void LhFrameBuffer::clear_deep() {
-    if (nullptr != _frame_deep) {
-        memset(_frame_deep, 0, _width * _height * sizeof(float));
-    }
-}
 
 void LhFrameBuffer::clear_buffer() {
-    memset(_frame_buffers, 0, _width * _height * sizeof(float));
+    if (nullptr != _frame_buffers) {
+        memset(_frame_buffers, 0, _width * _height * sizeof(float));
+    }
+    
 }
 
 bool LhFrameBuffer::deep_test(int x, int y, float z) {

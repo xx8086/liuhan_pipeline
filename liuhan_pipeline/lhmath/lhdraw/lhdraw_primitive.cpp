@@ -1,6 +1,6 @@
 #include "lhdraw_primitive.h"
 #include <cmath>
-
+#include <memory.h>
 
 LhDrawPrimitive::LhDrawPrimitive()
 {
@@ -9,16 +9,65 @@ LhDrawPrimitive::LhDrawPrimitive()
 
 LhDrawPrimitive::~LhDrawPrimitive()
 {
+    if (nullptr != _frame_deep_buffers) {
+        delete[] _frame_deep_buffers;
+        _frame_deep_buffers = nullptr;
+    }
 }
 
 void LhDrawPrimitive::set_buffer(int w, int h, void* pbits) {
+    if (_width*_height < w) {
+        delete[] _frame_deep_buffers;
+    }
+    _frame_deep_buffers = new float[w*h];
+
     _width = w;
     _height = h;
+    _z_far_clip = 100.0f;
+    _z_near_clip = 1.0f;
     _frame_buffers = static_cast<unsigned char*>(pbits);
     set_clip_window(0, 0, w, h);
 }
 
+void LhDrawPrimitive::clear_deep() {
+    /*if (nullptr != _frame_deep_buffers) {
+        memset(_frame_deep_buffers, 0, sizeof(float) * _width * _height);
+    }*/
+   
+    int size = _width * _height -1;
+    while (size-- > 0)
+    {
+        _frame_deep_buffers[size] = 100.0f;
+    }
+    
+}
+
+bool LhDrawPrimitive::deeptest(int x, int y, float z, lh_color color) {
+    if (!_deep_test) {
+        return true;
+    }
+
+    int deep_pos = y * _width + x + 1;
+    if (/*z < _z_far_clip &&
+        _z_near_clip < z &&*/
+        _frame_deep_buffers[deep_pos] > z) {//z÷·≥Ø¿Ô
+        _frame_deep_buffers[deep_pos] = z;
+    }
+    else {
+        return false;
+    }
+
+    return true;
+}
+
+void LhDrawPrimitive::setpixel(int x, int y, float z, lh_color color) {
+    if (deeptest(x, y, z, color)) {
+        setpixel(x, y, color);
+    }
+}
+
 void LhDrawPrimitive::setpixel(float x, float y, lh_color color) {
+    
     setpixel((int)x, (int)y, color);
 }
 
@@ -30,10 +79,11 @@ void LhDrawPrimitive::setpixel(int x, int y, lh_color color) {
         return;
     }
 
-    _frame_buffers[(y * _width + x + 1) * 4 + 0] = color.blue;//b
-    _frame_buffers[(y * _width + x + 1) * 4 + 1] = color.green;//g
-    _frame_buffers[(y * _width + x + 1) * 4 + 2] = color.red;//r
-    _frame_buffers[(y * _width + x + 1) * 4 + 3] = color.alph;//a
+    int pos = (y * _width + x + 1) * 4;
+    _frame_buffers[pos] = color.blue;//b
+    _frame_buffers[pos + 1] = color.green;//g
+    _frame_buffers[pos + 2] = color.red;//r
+    _frame_buffers[pos + 3] = color.alph;//a
 }
 
 /*
@@ -512,18 +562,6 @@ void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor 
         VertexColor interp_v(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), line_color);
         bottom_triangle(v1, interp_v, v2);
         top_triangle(interp_v, v2, v3);
-
-        /*
-        float line_x = x1 + (x3 - x1)*(y2 - y1) / (y3 - y1);
-        bottom_triangle(x1, y1,
-            line_x, y2,
-            x2, y2,
-            color);
-        top_triangle(line_x, y2,
-            x2, y2,
-            x3, y3,
-            color);
-        */
     }
 }
 
@@ -598,10 +636,14 @@ void LhDrawPrimitive::draw_interp_scanline(VertexColor left, VertexColor right) 
     int y = left.postion.get_y();
     int x_begin = left.postion.get_x();
     int x_end = right.postion.get_x();
+    float z_begin = left.postion.get_z();
+    float z_end = right.postion.get_z();
+    float fctor = (z_end - z_begin)/(x_end - x_begin);
     lh_color dcolor = (right.color - left.color) / (x_end - x_begin);
     lh_color color = left.color;
     for (int i = x_begin; i < x_end; i++) {
-        setpixel(i, y, color);
+        float z = z_begin + (i - x_begin)*fctor;
+        setpixel(i, y, z,color);
         color += dcolor;
     }
 }

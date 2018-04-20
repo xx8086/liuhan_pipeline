@@ -151,7 +151,7 @@ namespace lh_pipeline {
     }
 
     void LhDib::update_vertex() {
-#if 0
+#if 1
         float vertex[8][3] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,

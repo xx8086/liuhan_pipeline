@@ -151,6 +151,7 @@ namespace lh_pipeline {
     }
 
     void LhDib::update_vertex() {
+#if 0
         float vertex[8][3] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
@@ -170,9 +171,8 @@ namespace lh_pipeline {
         insert_quadrilateral(vecs, vertex[1], vertex[3], vertex[7], vertex[5]);
         insert_quadrilateral(vecs, vertex[2], vertex[6], vertex[7], vertex[3]);
         LhDevice::bind_vertex(vecs.data(), vecs.size());
-
-
-        /*float v[] = {
+#else
+        float v[] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
             -0.5f, 0.5f, -0.5f,
@@ -181,6 +181,7 @@ namespace lh_pipeline {
             -0.5f, 0.5f, -0.5f,
             0.5f, 0.5f, -0.5f
         };
-        LhDevice::bind_vertex(v, 18);*/
+        LhDevice::bind_vertex(v, 18);
+#endif
     }
 }

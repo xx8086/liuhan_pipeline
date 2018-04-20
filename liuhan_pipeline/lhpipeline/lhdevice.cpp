@@ -31,7 +31,7 @@ namespace lh_pipeline {
         _piple.set_rotate(30.0f, 30.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(1, 0, 0);
-        _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, 6.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
+        _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, 3.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
     }
@@ -64,8 +64,8 @@ namespace lh_pipeline {
             break;
         case LG_TEST:
             static float roat_x = 0;
-            static float roat_y = 0;
-            static float roat_z = 0;
+            static float roat_y = 70;
+            static float roat_z = 60;
             static int count = 0;
             if (count < 200) {
                 count++;

@@ -502,13 +502,28 @@ void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor 
     else {
         assert(v2.postion.get_y() > v1.postion.get_y());
         //float line_x = x1 + (x3 - x1)*(y2 - y1) / (y3 - y1);
-        float factor = (v2.postion.get_y() - v1.postion.get_y()) / (v3.postion.get_y() - v1.postion.get_y());
-        float line_x = v1.postion.get_x() + (v3.postion.get_x() - v1.postion.get_x()) * factor;
-        float line_z = v1.postion.get_z() + (v3.postion.get_z() - v1.postion.get_z()) * factor;
-        lh_color line_color = v1.color + (v3.color - v1.color) * factor;
+        float tan_x = (v3.postion.get_x() - v1.postion.get_x()) / (v3.postion.get_y() - v1.postion.get_y());
+        float tan_z = (v3.postion.get_z() - v1.postion.get_z()) / (v3.postion.get_y() - v1.postion.get_y());
+        lh_color tan_color = (v3.color - v1.color) / (v3.postion.get_y() - v1.postion.get_y());
+
+        float line_x = v1.postion.get_x() + (v2.postion.get_y() - v1.postion.get_y()) * tan_x;
+        float line_z = v1.postion.get_z() + (v2.postion.get_y() - v1.postion.get_y()) * tan_z;
+        lh_color line_color = v1.color + tan_color * (v2.postion.get_y() - v1.postion.get_y());
         VertexColor interp_v(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), line_color);
         bottom_triangle(v1, interp_v, v2);
-        top_triangle(interp_v, v3, v2);
+        top_triangle(interp_v, v2, v3);
+
+        /*
+        float line_x = x1 + (x3 - x1)*(y2 - y1) / (y3 - y1);
+        bottom_triangle(x1, y1,
+            line_x, y2,
+            x2, y2,
+            color);
+        top_triangle(line_x, y2,
+            x2, y2,
+            x3, y3,
+            color);
+        */
     }
 }
 
@@ -524,18 +539,25 @@ void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v
     lh_color tan_left_color = (v3.color - v1.color) / (v3.postion.get_y() - v1.postion.get_y());
     lh_color tan_right_color = (v3.color - v2.color) / (v3.postion.get_y() - v2.postion.get_y());
 
+    float left_x = v1.postion.get_x();
+    float right_x = v2.postion.get_x();
+    float left_z = v1.postion.get_z();
+    float right_z = v2.postion.get_z();
+    lh_color left_color = v1.color;
+    lh_color right_color = v2.color;
+
     int iy1 = ceil(v1.postion.get_y());
     int iy3 = ceil(v3.postion.get_y()) - 1;
     for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-        float left_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_left;
-        float right_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_right;
-        float left_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_left_z;
-        float right_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_right_z;
-        lh_color left_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
-        lh_color right_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
         draw_interp_scanline(
             VertexColor(LhVertex<float, 3>(left_x, y_loop, left_z), left_color),
             VertexColor(LhVertex<float, 3>(right_x, y_loop, right_z), right_color));
+        left_x = left_x + tan_left;
+        right_x = right_x + tan_right;
+        left_z = left_z + tan_left_z;
+        right_z = right_z + tan_right_z;
+        left_color = left_color + tan_right_color;
+        right_color = right_color + tan_right_color;
     }
 }
 void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3) {
@@ -550,19 +572,25 @@ void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColo
     lh_color tan_left_color = (v2.color - v1.color) / (v2.postion.get_y() - v1.postion.get_y());
     lh_color tan_right_color = (v3.color - v1.color) / (v3.postion.get_y() - v1.postion.get_y());
     
+    float left_x = v1.postion.get_x();
+    float right_x = v1.postion.get_x();
+    float left_z = v1.postion.get_z();
+    float right_z = v1.postion.get_z();
+    lh_color left_color = v1.color;
+    lh_color right_color = v1.color;
+
     int iy1 = ceil(v1.postion.get_y());
     int iy3 = ceil(v3.postion.get_y()) - 1;
     for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-        float left_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_left;
-        float right_x = v1.postion.get_x() + (y_loop - v1.postion.get_y()) * tan_right;
-        float left_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_left_z;
-        float right_z = v1.postion.get_z() + (y_loop - v1.postion.get_y()) * tan_right_z;
-        lh_color left_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
-        lh_color right_color = v1.color + tan_right_color * (y_loop - v1.postion.get_y());
-
         draw_interp_scanline(
             VertexColor(LhVertex<float, 3>(left_x, y_loop, left_z), left_color),
             VertexColor(LhVertex<float, 3>(right_x, y_loop, right_z), right_color));
+        left_x = left_x + tan_left;
+        right_x = right_x + tan_right;
+        left_z = left_z + tan_left_z;
+        right_z = right_z + tan_right_z;
+        left_color = left_color + tan_right_color;
+        right_color = right_color + tan_right_color;
     }
 }
 

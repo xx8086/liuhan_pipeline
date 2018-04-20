@@ -567,7 +567,7 @@ void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor 
 
 void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v3) {
     if (v2.postion.get_x() < v1.postion.get_x()) {
-        swap_vaue(v1, v2);
+        swap_vaue(v1.postion, v2.postion);
     }
 
     float tan_left = (v3.postion.get_x() - v1.postion.get_x()) / (v3.postion.get_y() - v1.postion.get_y());
@@ -594,13 +594,13 @@ void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v
         right_x = right_x + tan_right;
         left_z = left_z + tan_left_z;
         right_z = right_z + tan_right_z;
-        left_color = left_color + tan_right_color;
+        left_color = left_color + tan_left_color;
         right_color = right_color + tan_right_color;
     }
 }
 void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3) {
     if (v3.postion.get_x() < v2.postion.get_x()) {
-        swap_vaue(v2, v3);
+        swap_vaue(v2.postion, v3.postion);
     }
 
     float tan_left = (v2.postion.get_x() - v1.postion.get_x()) / (v2.postion.get_y() - v1.postion.get_y());
@@ -627,7 +627,7 @@ void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColo
         right_x = right_x + tan_right;
         left_z = left_z + tan_left_z;
         right_z = right_z + tan_right_z;
-        left_color = left_color + tan_right_color;
+        left_color = left_color + tan_left_color;
         right_color = right_color + tan_right_color;
     }
 }

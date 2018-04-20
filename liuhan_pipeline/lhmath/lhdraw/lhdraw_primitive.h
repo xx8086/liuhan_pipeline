@@ -3,24 +3,24 @@
 #include "../lhdetail/lhvertex.h"
 
 struct lh_color {
-    unsigned char red = 0;
-    unsigned char green = 0;
-    unsigned char blue = 0;
-    unsigned char alph = 0;
-    lh_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255):
+    float red = 0;
+    float green = 0;
+    float blue = 0;
+    float alph = 0;
+    lh_color(float r, float g, float b, float a = 255):
     red(r), green(g), blue(b){}
 
     template <typename T>
     lh_color(T rgba) {
         alph = rgba;
-        blue = rgba >> 8;
-        green = rgba >> 16;
-        red = rgba >> 24;
+        blue = (int)rgba >> 8;
+        green = (int)rgba >> 16;
+        red = (int)rgba >> 24;
     }
 
     template <typename T>
     T get_t() {
-        return T(alph | blue << 8 | green << 16 | red << 24);
+        return T((int)alph | (int)blue << 8 | (int)green << 16 | (int)red << 24);
     }
 
     lh_color& operator+=(const lh_color &v){

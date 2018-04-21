@@ -15,14 +15,29 @@ protected:
     unsigned char * get_frame_buffers();
     int get_width() const;
     int get_height() const;
+   
+protected:
+    typedef enum TextureLevel {
+        TEXTURE_LEVEL_0 = 0,
+        TEXTURE_LEVEL_1 = 1,
+        TEXTURE_LEVEL_2 = 2,
+        TEXTURE_LEVEL_3 = 3,
+        TEXTURE_LEVEL_4 = 4,
+        TEXTURE_LEVEL_MAX,
+    }TEXTURE_LEVEL;
+    void set_texture(unsigned char* texture_datas, int texture_size);
 private:
+    int texture_size_check(int texture_size);
     void release();
 private:
     int _width = 0;
     int _height = 0;
     unsigned char* _frame_buffers = nullptr;
-    float* _vertex_buffers = nullptr;
     unsigned int* _vertex_color_buffers = nullptr;
+    float* _vertex_buffers = nullptr;
     int _vertex_buffers_size = 0;
+    unsigned char* _texture[TEXTURE_LEVEL_MAX] = { nullptr };
+    int _texture_size[TEXTURE_LEVEL_MAX] = { 0 };
+    
 };
 

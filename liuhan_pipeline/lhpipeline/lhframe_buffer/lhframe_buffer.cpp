@@ -21,6 +21,14 @@ void LhFrameBuffer::release() {
         delete[] _vertex_buffers;
         _vertex_buffers = nullptr;
     }
+
+    for (int i = TEXTURE_LEVEL_0; i < TEXTURE_LEVEL_MAX; i++) {
+        _texture_size[i] = 0;
+        if (nullptr != _texture[i]) {
+            delete[] _texture[i];
+            _texture[i] = nullptr;
+        }
+    }
 }
 int LhFrameBuffer::get_width() const {
     return _width;
@@ -72,4 +80,41 @@ void LhFrameBuffer::update_vertex(const float* vertex_buffer, const unsigned int
     memcpy(_vertex_buffers, vertex_buffer, counts * sizeof(float));
     memcpy(_vertex_color_buffers, vertex_buffer_color, counts * sizeof(unsigned int));
     _vertex_buffers_size = counts;
+}
+
+int LhFrameBuffer::texture_size_check(int texture_size) {
+    int level = TEXTURE_LEVEL_MAX;
+    switch (texture_size) {
+    case 56:
+        level = TEXTURE_LEVEL_0;
+        break;
+    case 128:
+        level = TEXTURE_LEVEL_1;
+        break;
+    case 256:
+        level = TEXTURE_LEVEL_2;
+        break;
+    case 512:
+        level = TEXTURE_LEVEL_3;
+        break;
+    case 1024:
+        level = TEXTURE_LEVEL_4;
+        break;
+    default:
+        break;
+    }
+    return level;
+}
+void LhFrameBuffer::set_texture(unsigned char* texture_datas, int texture_size) {
+    int level = texture_size_check(texture_size);
+    assert(level >= TEXTURE_LEVEL_0 && TEXTURE_LEVEL_MAX > level);
+    assert(nullptr == texture_datas);
+    if (nullptr != _texture[level]) {
+        delete[] _texture[level];
+        _texture[level] = nullptr;
+    }
+
+    _texture[level] = texture_datas;
+    _texture_size[level] = texture_size;
+
 }

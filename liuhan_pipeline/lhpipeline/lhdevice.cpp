@@ -28,9 +28,9 @@ namespace lh_pipeline {
         assert(vertex_size > 0);
         update_vertex(vertex, vertex_color, vertex_size);
 
-        _piple.set_rotate(30.0f, 30.0f, 0.0f);
+        _piple.set_rotate(0.0f, 0.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
-        _piple.set_worldpos(1, 0, 0);
+        _piple.set_worldpos(0, 0, 0);
         _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, -3.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
@@ -47,9 +47,13 @@ namespace lh_pipeline {
 
     //#include <windows.h> 
     void LhDevice::draw() {
-        //clear_buffer();
+        if (LH_OFF_DRAW == _render_state) {
+            return;
+        }
+        clear_buffer();
+        clear_deep();
         _piple.get_wvp();
-        switch (LG_TEST) {
+        switch (LH_TRIANGLES_FILL) {
         case LH_LINES:
             draw_line();
             break;
@@ -62,8 +66,8 @@ namespace lh_pipeline {
         case LH_TRIANGLES_FILL:
             draw_triangles_fill();
             break;
-        case LG_TEST:
-            static float roat_x = 0;
+        case LH_TEST:
+            static float roat_x = 40;
             static float roat_y = 0;
             static float roat_z = 0;
             static int count = 0;
@@ -72,11 +76,10 @@ namespace lh_pipeline {
                 break;
             }
             count = 0;
-            clear_buffer();
-            clear_deep();
-            roat_x += 1;
-            roat_y += 1;
-            roat_z += 1;
+            //roat_x += 1;
+            //roat_y += 1;
+            //roat_z += 1;
+
             /*_piple.set_rotate(roat_x, roat_y, roat_z);
             _piple.set_worldpos(3, 0, 0);
             _piple.get_wvp();
@@ -176,5 +179,9 @@ namespace lh_pipeline {
 
     void LhDevice::set_render_state(LHRENDER_STATE state) {
         _render_state = state;
+    }
+
+    void LhDevice::update_texture(unsigned char* texture_datas, int texture_size) {
+        set_texture(texture_datas, texture_size);
     }
 }

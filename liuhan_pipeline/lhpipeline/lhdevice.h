@@ -11,7 +11,9 @@ namespace lh_pipeline {
         LH_LINES_LOOP = 2,
         LH_TRIANGLES = 3,
         LH_TRIANGLES_FILL = 4,
-        LG_TEST = 5,
+        LH_TRIANGLES_TEXTURE_FILL = 5,
+        LH_TEST = 6,
+        LH_OFF_DRAW,
     }LHRENDER_STATE;
 
     class  LhDevice : protected LhFrameBuffer, LhDrawPrimitive
@@ -22,6 +24,7 @@ namespace lh_pipeline {
     public:
         void set_render_state(LHRENDER_STATE state);
         void update_buffer(int w, int h, void* pbits);
+        void update_texture(unsigned char* texture_datas, int texture_size);
         void bind_vertex(const float* vertex, const unsigned int* vertex_color,  const int vertex_size);
         void draw();
     private:

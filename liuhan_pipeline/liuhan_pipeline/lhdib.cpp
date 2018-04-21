@@ -13,8 +13,9 @@ namespace lh_pipeline {
     void LhDib::init(HWND hwnd, int w, int h) {
         HDC hdc = GetDC(hwnd);
         _frame_dc = CreateCompatibleDC(hdc);
-#if 0
-        load_dib_texture("D:\\liuhan.dib");
+#if 1
+        load_dib_texture("../res/512.bmp");
+        LhDevice::set_render_state(LH_OFF_DRAW);
 #else
         BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB,
             DWORD(w * h * 4), 0, 0, 0, 0 } };
@@ -24,7 +25,7 @@ namespace lh_pipeline {
         _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);
 
         LhDevice::update_buffer(w, h, ptr);
-        LhDevice::set_render_state(LG_TEST);
+        LhDevice::set_render_state(LH_TEST);
         update_vertex();
 #endif
         ReleaseDC(hwnd, hdc);
@@ -58,15 +59,75 @@ namespace lh_pipeline {
         ;
     }
 
+    void* LhDib::load_bmp(TCHAR* img, int &w, int& h, int& bitcounts) {
+        BITMAPFILEHEADER            bmfh;
+        BITMAPINFO                      *pbmi;
+        BOOL                                    bSuccess;
+        DWORD                               dwInfoSize;
+        DWORD                               dwBytesRead;
+        HANDLE                              hFile;
+        hFile = CreateFile(img, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+        if (INVALID_HANDLE_VALUE == hFile) {
+            return false;
+        }
+
+        bSuccess = ReadFile(hFile, &bmfh, sizeof(BITMAPFILEHEADER), &dwBytesRead, nullptr);
+        if (!bSuccess || (dwBytesRead != sizeof(BITMAPFILEHEADER)) || (bmfh.bfType != *(WORD *)"BM")) {
+            CloseHandle(hFile);
+            return false;
+        }
+
+        dwInfoSize = bmfh.bfOffBits - sizeof(BITMAPFILEHEADER);
+        pbmi = (BITMAPINFO*)malloc(dwInfoSize);
+        if (nullptr == pbmi) {
+            CloseHandle(hFile);
+            return false;
+        }
+
+        bSuccess = ReadFile(hFile, pbmi, dwInfoSize, &dwBytesRead, nullptr);
+        if (!bSuccess || (dwBytesRead != dwInfoSize)) {
+            free(pbmi);
+            CloseHandle(hFile);
+            return false;
+        }
+
+        void* ptr = nullptr;
+        w = pbmi->bmiHeader.biWidth;
+        h = pbmi->bmiHeader.biHeight;
+        bitcounts = pbmi->bmiHeader.biBitCount / 8;
+        ptr = new unsigned char[bmfh.bfSize - bmfh.bfOffBits];
+        bSuccess = ReadFile(hFile, ptr, bmfh.bfSize - bmfh.bfOffBits, &dwBytesRead, NULL);
+        CloseHandle(hFile);
+
+        free(pbmi);
+        return ptr;
+    }
+
+    bool LhDib::load_level_texture(TCHAR* img, int size) {
+        int texture_w = 0;
+        int texture_h = 0;
+        int texture_bit_counts = 4;
+
+        void* texture_datas =load_bmp(img, texture_w, texture_h, texture_bit_counts);
+        if (size != texture_w && size != texture_h) {
+            delete[] texture_datas;
+            texture_datas = nullptr;
+            return false;
+        }
+        update_texture(static_cast<unsigned char*>(texture_datas), size);
+
+        return true;
+    }
+
     bool LhDib::load_dib_texture(TCHAR* img) {
         /*
-            ------------------------
-            | BITMAPFILEHEADER |
-            ------------------------   <-----sizeof(BITMAPFILEHEADER)
-            | BITMAPINFO            |  <== BITMAPINFOHEADER + RGBQUAD
-            ------------------------   <-----BITMAPFILEHEADER::bfOffBits
-            | buffer_datas           |
-            ------------------------   <-----BITMAPFILEHEADER::bfSize
+        ------------------------
+        | BITMAPFILEHEADER |
+        ------------------------   <-----sizeof(BITMAPFILEHEADER)
+        | BITMAPINFO            |  <== BITMAPINFOHEADER + RGBQUAD
+        ------------------------   <-----BITMAPFILEHEADER::bfOffBits
+        | buffer_datas           |
+        ------------------------   <-----BITMAPFILEHEADER::bfSize
         */
         BITMAPFILEHEADER            bmfh;
         BITMAPINFO                      *pbmi;
@@ -108,6 +169,7 @@ namespace lh_pipeline {
         void* ptr = nullptr;
         int w = pbmi->bmiHeader.biWidth;
         int h = pbmi->bmiHeader.biHeight;
+
         BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, h, 1,
             DWORD(pbmi->bmiHeader.biBitCount),
             BI_RGB,
@@ -119,7 +181,6 @@ namespace lh_pipeline {
 
         bSuccess = ReadFile(hFile, ptr, bmfh.bfSize - bmfh.bfOffBits, &dwBytesRead, NULL);
         CloseHandle(hFile);
-
         update_buffer(w, h, ptr);
         //for (int i = 0; i < _width / 2; i++) {
         //    for (int j = 0; j < _height / 2; j++) {
@@ -128,6 +189,8 @@ namespace lh_pipeline {
         //        _frame_buffers[(i*_width + j + 1) * 3 + 2] = 0;//r
         //    }
         //}
+
+        free(pbmi);
         return true;
     }
 
@@ -206,12 +269,12 @@ namespace lh_pipeline {
             0, 255, 0,
             0, 0, 255,
 
-            0, 255, 0,
+            /*0, 255, 0,
             255, 0, 0,
+            0, 0, 255*/
+            255, 0, 0,
+            0, 255, 0,
             0, 0, 255
-            //255, 0, 0,
-            //0, 255, 0,
-            //0, 0, 255
             
         };
         LhDevice::bind_vertex(v, color, 18);

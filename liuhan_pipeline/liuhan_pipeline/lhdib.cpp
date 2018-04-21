@@ -13,7 +13,7 @@ namespace lh_pipeline {
     void LhDib::init(HWND hwnd, int w, int h) {
         HDC hdc = GetDC(hwnd);
         _frame_dc = CreateCompatibleDC(hdc);
-#if 1
+#if 0
         load_dib_texture("../res/512.bmp");
         LhDevice::set_render_state(LH_OFF_DRAW);
 #else
@@ -25,7 +25,9 @@ namespace lh_pipeline {
         _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);
 
         LhDevice::update_buffer(w, h, ptr);
-        LhDevice::set_render_state(LH_TEST);
+        //LhDevice::set_render_state(LH_TEST);
+        LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
+        load_level_texture("../res/256.bmp", 256);
         update_vertex();
 #endif
         ReleaseDC(hwnd, hdc);
@@ -95,7 +97,7 @@ namespace lh_pipeline {
         w = pbmi->bmiHeader.biWidth;
         h = pbmi->bmiHeader.biHeight;
         bitcounts = pbmi->bmiHeader.biBitCount / 8;
-        ptr = new unsigned char[bmfh.bfSize - bmfh.bfOffBits];
+        ptr = new unsigned char[bmfh.bfSize - bmfh.bfOffBits + 1];
         bSuccess = ReadFile(hFile, ptr, bmfh.bfSize - bmfh.bfOffBits, &dwBytesRead, NULL);
         CloseHandle(hFile);
 
@@ -109,7 +111,7 @@ namespace lh_pipeline {
         int texture_bit_counts = 4;
 
         void* texture_datas =load_bmp(img, texture_w, texture_h, texture_bit_counts);
-        if (size != texture_w && size != texture_h) {
+        if (size != texture_w || size != -texture_h) {
             delete[] texture_datas;
             texture_datas = nullptr;
             return false;
@@ -187,6 +189,7 @@ namespace lh_pipeline {
         //        _frame_buffers[(i*_width + j + 1) * 3] = 255;//b
         //        _frame_buffers[(i*_width + j + 1) * 3 + 1] = 0;//g
         //        _frame_buffers[(i*_width + j + 1) * 3 + 2] = 0;//r
+        //        _frame_buffers[(i*_width + j + 1) * 3] = 0;//a
         //    }
         //}
 
@@ -252,32 +255,45 @@ namespace lh_pipeline {
         insert_quadrilateral<unsigned int>(vecs_color, vertex_color[1], vertex_color[3], vertex_color[7], vertex_color[5]);
         insert_quadrilateral<unsigned int>(vecs_color, vertex_color[2], vertex_color[6], vertex_color[7], vertex_color[3]);
 
-        LhDevice::bind_vertex(vecs.data(), vecs_color.data(), vecs.size());
+        LhDevice::bind_vertex(vecs.data(), vecs_color.data(), vecs.size()/3);
 #else
+/*    a-----|------d--------->u
+        |    \  |         |
+    ---|-----0-----|--------->x
+        |        |   \    |
+       b-----|-----c
+       |v      \/ y
+ */
         float v[] = { 
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,//b
+            0.5f, -0.5f, -0.5f,//c
+            -0.5f, 0.5f, -0.5f,//a
 
-            0.5f, -0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f
+            0.5f, -0.5f, -0.5f,//c
+            0.5f, 0.5f, -0.5f,//d
+            -0.5f, 0.5f, -0.5f,//a
         };
 
         unsigned int  color[] = {
-            255, 0, 0,
             0, 255, 0,
             0, 0, 255,
+            255, 0, 0,
 
-            /*0, 255, 0,
-            255, 0, 0,
-            0, 0, 255*/
-            255, 0, 0,
+            0, 0, 255,
             0, 255, 0,
-            0, 0, 255
-            
+            255, 0, 0
         };
-        LhDevice::bind_vertex(v, color, 18);
+
+        float uv[] = {
+            0, 1,
+            1, 1,
+            0, 0,
+
+            1, 1, 
+            1, 0,
+            0, 0
+        };
+        LhDevice::bind_vertex(v, color, uv, 6);
 #endif
     }
 }

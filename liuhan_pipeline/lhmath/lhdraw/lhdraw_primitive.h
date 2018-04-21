@@ -7,6 +7,7 @@ struct lh_color {
     float green = 0;
     float blue = 0;
     float alph = 0;
+    lh_color(){}
     lh_color(float r, float g, float b, float a = 255):
     red(r), green(g), blue(b){}
 
@@ -67,21 +68,51 @@ struct lh_color {
     }
 };
 
+struct TextureUV
+{
+    TextureUV() {}
+    TextureUV(float _u, float _v):u(_u), v(_v) {}
+    float u = 0;
+    float v = 0;
+    float sampling_ratio(float des_width, float texture_width) {
+        return des_width / texture_width;
+    }
+
+    TextureUV operator+(const TextureUV &otherv) {
+        return TextureUV(u + otherv.u, v + otherv.v);
+    }   
+        /*                           1
+    0.----------------.-----> +u
+    |                         |
+    |                         |
+    |                         |
+    |                         |
+    1 |.----------------(texure_size, texure_size)
+    \/
+    +v   */
+};
+
 struct VertexColor {
     LhVertex<float, 3> postion;
     lh_color color;
+    TextureUV uv;
     VertexColor operator= (const VertexColor &v) {
         postion = v.postion;
         color = v.color;
+        uv = v.uv;
         return *this;
     }
     VertexColor():color(0){}
-    VertexColor(LhVertex<float, 3> v, lh_color c):
-        postion(v), color(c){};
+    VertexColor(LhVertex<float, 3> v, lh_color c, TextureUV texture = TextureUV()) :
+        postion(v), color(c), uv(texture){};
+    VertexColor(LhVertex<float, 3> v, TextureUV texture = TextureUV()) :
+        postion(v), uv(texture) {};
 
     VertexColor& operator+=(const VertexColor &v) {
         postion = postion + v.postion;
         color += v.color;
+        uv.u += v.uv.u;
+        uv.v += v.uv.v;
         return *this;
     }
 };
@@ -95,17 +126,18 @@ public:
     void set_buffer(int w, int h, void* pbits);
     void draw_line(int x1, int y1, int x2, int y2, lh_color c);
     void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
-    void draw_triangle(VertexColor v1, VertexColor v2, VertexColor v3);
+    void draw_triangle(VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv = false);
 protected:
     void clear_deep();
+    void set_current_uv(unsigned char* uv, int  uv_size);
+    void setpixel(int x, int y, lh_color color);
 private:
     template <typename T> 
     void swap_vaue(T& a, T& b); 
-    bool deeptest(int x, int y, float z, lh_color color);
-    void setpixel(int x, int y, float z, lh_color color);
+    bool deeptest(int x, int y, float z);
     void setpixel(float x, float y, lh_color color);
-    void setpixel(int x, int y, lh_color color);//trapezoid
     void draw_interp_scanline(VertexColor left, VertexColor right);
+    void draw_interp_texture_scanline(VertexColor left, VertexColor right);
     void set_clip_window(float x_min, float y_min, float x_max, float y_max);
 private:
     void line_dda(int x1, int y1, int x2, int y2, lh_color color);
@@ -113,12 +145,14 @@ private:
     void line(int x1, int y1, int x2, int y2, lh_color c);
     void top_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
     void bottom_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
-    void top_triangle(VertexColor v1, VertexColor v2, VertexColor v3);
-    void bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3);
+    void top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
+    void bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
 
 private:
     int _width = 0;
     int _height = 0;
+    int _current_uv_size = -1;
+    unsigned int *_current_uv_texture = nullptr;
     unsigned char *_frame_buffers = nullptr;
     float* _frame_deep_buffers = nullptr;
     float _x_min_clip = 0;

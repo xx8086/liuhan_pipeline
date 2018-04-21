@@ -25,12 +25,13 @@ namespace lh_pipeline {
         void set_render_state(LHRENDER_STATE state);
         void update_buffer(int w, int h, void* pbits);
         void update_texture(unsigned char* texture_datas, int texture_size);
-        void bind_vertex(const float* vertex, const unsigned int* vertex_color,  const int vertex_size);
+        void bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size);
         void draw();
     private:
         void draw_line(bool loop = false);
         void draw_line(int x1, int y1, int x2, int y2, int color);
         void draw_triangles_fill();
+        void draw_trangles_texture_fill();
         void draw_triangles();
         bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
     public:

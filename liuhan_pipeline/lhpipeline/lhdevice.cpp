@@ -23,11 +23,11 @@ namespace lh_pipeline {
         LhDrawPrimitive::draw_line(x1, y1, x2, y2, lh_color(color));
     }
 
-    void LhDevice::bind_vertex(const float* vertex, const unsigned int* vertex_color, const int vertex_size) {
+    void LhDevice::bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size) {
         assert(nullptr != vertex);
         assert(vertex_size > 0);
-        update_vertex(vertex, vertex_color, vertex_size);
-
+        update_vertex(vertex, vertex_color, vertex_uv, vertex_size);
+        set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
         _piple.set_rotate(0.0f, 0.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(0, 0, 0);
@@ -50,10 +50,17 @@ namespace lh_pipeline {
         if (LH_OFF_DRAW == _render_state) {
             return;
         }
+        static int count = 0;
+        if (count < 200) {
+            count++;
+            return;
+        }
+        count = 0;
+
         clear_buffer();
         clear_deep();
         _piple.get_wvp();
-        switch (LH_TRIANGLES_FILL) {
+        switch (_render_state) {
         case LH_LINES:
             draw_line();
             break;
@@ -66,19 +73,18 @@ namespace lh_pipeline {
         case LH_TRIANGLES_FILL:
             draw_triangles_fill();
             break;
+        case LH_TRIANGLES_TEXTURE_FILL:
+            draw_trangles_texture_fill();
+            break;
         case LH_TEST:
-            static float roat_x = 40;
+            static float roat_x = 0;
             static float roat_y = 0;
             static float roat_z = 0;
-            static int count = 0;
-            if (count < 200) {
-                count++;
-                break;
-            }
-            count = 0;
-            //roat_x += 1;
-            //roat_y += 1;
-            //roat_z += 1;
+            
+            
+            roat_x += 1;
+            roat_y += 1;
+            roat_z += 1;
 
             /*_piple.set_rotate(roat_x, roat_y, roat_z);
             _piple.set_worldpos(3, 0, 0);
@@ -122,10 +128,8 @@ namespace lh_pipeline {
         //triangle_fill;
         const float* v = get_vertex_buffers();
         const unsigned int* colors = get_vertex_color_buffers();
-        const int counts = get_vertex_buffers_size();
-        
-        lh_color lc(0, 0, 255);
-        int color = lc.get_t<int>();
+        const int counts = 3 * get_vertex_buffers_size();
+
         for (int i = 0; i < counts; i += 9) {
             LhVertexFloat4 p1;
             LhVertexFloat4 p2;
@@ -149,6 +153,17 @@ namespace lh_pipeline {
 #endif
             }
         }
+
+        //int texture_size = get_current_texture_uv_size();
+        //unsigned int* texture = (unsigned int*)ger_current_texutre_uv_buffers();
+        //unsigned int* des = (unsigned int*)get_frame_buffers();
+        //for (int i = 0; i < texture_size; i++) {
+        //    for (int j = 0; j < texture_size; j++) {
+        //        int pos = (j * texture_size + i) ;
+        //        //setpixel(i, j, lh_color(texture[pos]));
+        //        des[j*get_width() + i] = texture[pos];
+        //    }
+        //}
     }
     void LhDevice::draw_triangles() {
         const float* v = get_vertex_buffers();
@@ -184,4 +199,27 @@ namespace lh_pipeline {
     void LhDevice::update_texture(unsigned char* texture_datas, int texture_size) {
         set_texture(texture_datas, texture_size);
     }
+
+    void LhDevice::draw_trangles_texture_fill() {
+        const float* v = get_vertex_buffers();
+        const unsigned int* colors = get_vertex_color_buffers();
+        const int counts = 3 * get_vertex_buffers_size();
+        const float* uv = ger_current_uv();
+        int uv_count = 0;//2 * get_vertex_buffers_size();
+        for (int i = 0; i < counts; i += 9, uv_count += 6) {
+            LhVertexFloat4 p1;
+            LhVertexFloat4 p2;
+            LhVertexFloat4 p3;
+            if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
+                get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
+                get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
+
+                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(uv[uv_count], uv[uv_count + 1])),
+                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(uv[uv_count + 2], uv[uv_count + 3])),
+                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), TextureUV(uv[uv_count + 4], uv[uv_count + 5])),
+                    true);
+            }
+        }
+    }
+
 }

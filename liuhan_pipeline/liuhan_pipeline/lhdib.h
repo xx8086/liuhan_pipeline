@@ -14,8 +14,10 @@ namespace lh_pipeline {
         void destroy();
         void release();
     private:
-        void insert_point(std::vector<float>& v, float a[3]);
-        void insert_quadrilateral(std::vector<float>& v, float a[3], float b[3], float c[3], float d[3]);
+        template<typename T>
+        void insert_point(std::vector<T>& v, T a[3]);
+        template<typename T>
+        void insert_quadrilateral(std::vector<T>& v, T a[3], T b[3], T c[3], T d[3]);
         void update_vertex();
         bool load_dib_texture(TCHAR* img);
     private:

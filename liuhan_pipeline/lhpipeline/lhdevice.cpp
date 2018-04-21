@@ -23,10 +23,10 @@ namespace lh_pipeline {
         LhDrawPrimitive::draw_line(x1, y1, x2, y2, lh_color(color));
     }
 
-    void LhDevice::bind_vertex(float* vertex, int vertex_size) {
+    void LhDevice::bind_vertex(const float* vertex, const unsigned int* vertex_color, const int vertex_size) {
         assert(nullptr != vertex);
         assert(vertex_size > 0);
-        update_vertex(vertex, vertex_size);
+        update_vertex(vertex, vertex_color, vertex_size);
 
         _piple.set_rotate(30.0f, 30.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
@@ -64,8 +64,8 @@ namespace lh_pipeline {
             break;
         case LG_TEST:
             static float roat_x = 0;
-            static float roat_y = 70;
-            static float roat_z = 60;
+            static float roat_y = 0;
+            static float roat_z = 0;
             static int count = 0;
             if (count < 200) {
                 count++;
@@ -118,6 +118,7 @@ namespace lh_pipeline {
     void LhDevice::draw_triangles_fill() {
         //triangle_fill;
         const float* v = get_vertex_buffers();
+        const unsigned int* colors = get_vertex_color_buffers();
         const int counts = get_vertex_buffers_size();
         
         lh_color lc(0, 0, 255);
@@ -129,15 +130,19 @@ namespace lh_pipeline {
             if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
                 get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
                 get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
+
+                lh_color c1(colors[i], colors[i + 1], colors[i + 2]);
+                lh_color c2(colors[i + 3], colors[i + 4], colors[i +5]);
+                lh_color c3(colors[i + 6], colors[i + 7], colors[i + 8]);
 #if 0
                 draw_triangle(p1.get_x(), p1.get_y(), 
                     p2.get_x(), p2.get_y(), 
                     p3.get_x(), p3.get_y(),
                     lh_color(0.0f, 255.0f, 0.0f));
 #else
-                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), lh_color(255.0f, 0.0f, 0.0f)),
-                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), lh_color(0.0f, 255.0f, 0.0f)),
-                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), lh_color(0.0f, 0.0f, 255.0f)));
+                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), c1),
+                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), c2),
+                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), c3));
 #endif
             }
         }

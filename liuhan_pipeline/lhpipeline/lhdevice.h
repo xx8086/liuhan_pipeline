@@ -22,7 +22,7 @@ namespace lh_pipeline {
     public:
         void set_render_state(LHRENDER_STATE state);
         void update_buffer(int w, int h, void* pbits);
-        void bind_vertex(float* vertex, int vertex_size);
+        void bind_vertex(const float* vertex, const unsigned int* vertex_color,  const int vertex_size);
         void draw();
     private:
         void draw_line(bool loop = false);

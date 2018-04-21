@@ -132,13 +132,15 @@ namespace lh_pipeline {
     }
 
 
-
-    void LhDib::insert_point(std::vector<float>& v, float a[3]) {
+    template<typename T>
+    void LhDib::insert_point(std::vector<T>& v, T a[3]) {
         v.push_back(a[0]);
         v.push_back(a[1]);
         v.push_back(a[2]);
     }
-    void LhDib::insert_quadrilateral(std::vector<float>& v, float a[3], float b[3], float c[3], float d[3]) {
+
+    template<typename T>
+    void LhDib::insert_quadrilateral(std::vector<T>& v, T a[3], T b[3], T c[3], T d[3]) {
         //abc, cda
         insert_point(v, a);
         insert_point(v, b);
@@ -147,32 +149,49 @@ namespace lh_pipeline {
         insert_point(v, c);
         insert_point(v, d);
         insert_point(v, a);
-
     }
 
     void LhDib::update_vertex() {
-#if 1
+#if 0
         float vertex[8][3] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
             -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,//
             -0.5f, -0.5f, 0.5f,
             0.5f, -0.5f, 0.5f,
             -0.5f, 0.5f, 0.5f,
             0.5f, 0.5f, 0.5f,
         };
-
+        unsigned int vertex_color[8][3] = {
+            255, 0, 0,
+            0, 255, 0,
+            0, 0, 255,
+            0, 255, 0,//
+            0, 0, 255,
+            255, 0, 0,
+            0, 255, 0,
+            255, 0, 0,
+        };
         std::vector<float> vecs;
-        insert_quadrilateral(vecs, vertex[0], vertex[2], vertex[3], vertex[1]);
-        insert_quadrilateral(vecs, vertex[0], vertex[4], vertex[6], vertex[2]);
-        insert_quadrilateral(vecs, vertex[0], vertex[1], vertex[5], vertex[4]);
-        insert_quadrilateral(vecs, vertex[4], vertex[5], vertex[7], vertex[6]);
-        insert_quadrilateral(vecs, vertex[1], vertex[3], vertex[7], vertex[5]);
-        insert_quadrilateral(vecs, vertex[2], vertex[6], vertex[7], vertex[3]);
-        LhDevice::bind_vertex(vecs.data(), vecs.size());
+        std::vector<unsigned int> vecs_color;
+        
+        insert_quadrilateral<float>(vecs, vertex[0], vertex[2], vertex[3], vertex[1]);
+        insert_quadrilateral<float>(vecs, vertex[0], vertex[4], vertex[6], vertex[2]);
+        insert_quadrilateral<float>(vecs, vertex[0], vertex[1], vertex[5], vertex[4]);
+        insert_quadrilateral<float>(vecs, vertex[4], vertex[5], vertex[7], vertex[6]);
+        insert_quadrilateral<float>(vecs, vertex[1], vertex[3], vertex[7], vertex[5]);
+        insert_quadrilateral<float>(vecs, vertex[2], vertex[6], vertex[7], vertex[3]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[0], vertex_color[2], vertex_color[3], vertex_color[1]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[0], vertex_color[4], vertex_color[6], vertex_color[2]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[0], vertex_color[1], vertex_color[5], vertex_color[4]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[4], vertex_color[5], vertex_color[7], vertex_color[6]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[1], vertex_color[3], vertex_color[7], vertex_color[5]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[2], vertex_color[6], vertex_color[7], vertex_color[3]);
+
+        LhDevice::bind_vertex(vecs.data(), vecs_color.data(), vecs.size());
 #else
-        float v[] = {
+        float v[] = { 
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
             -0.5f, 0.5f, -0.5f,
@@ -181,7 +200,21 @@ namespace lh_pipeline {
             -0.5f, 0.5f, -0.5f,
             0.5f, 0.5f, -0.5f
         };
-        LhDevice::bind_vertex(v, 18);
+
+        unsigned int  color[] = {
+            255, 0, 0,
+            0, 255, 0,
+            0, 0, 255,
+
+            0, 255, 0,
+            255, 0, 0,
+            0, 0, 255
+            //255, 0, 0,
+            //0, 255, 0,
+            //0, 0, 255
+            
+        };
+        LhDevice::bind_vertex(v, color, 18);
 #endif
     }
 }

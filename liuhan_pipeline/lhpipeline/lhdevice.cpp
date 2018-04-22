@@ -23,14 +23,52 @@ namespace lh_pipeline {
         LhDrawPrimitive::draw_line(x1, y1, x2, y2, lh_color(color));
     }
 
+    void LhDevice::keyboard(char key) {
+        float add = 0.1;
+        switch (key) {
+        case 'q':
+            _front += add;
+            break;
+        case 'w':
+            _back += add;
+            break;
+        case 'a':
+            _left += add;
+            break;
+        case 's':
+            _right += add;
+            break;
+        case 'e':
+            _up += add;
+            break;
+        case 'd':
+            _down += add;
+            break;
+        case 'x':
+            _roate_x++;
+            break;
+        case 'y':
+            _roate_y++;
+            break;
+        case 'z':
+            _roate_z++;
+            break;
+        default:
+            break;
+        }
+    }
+
+    void LhDevice::resetpostion() {
+        _piple.set_rotate(_roate_x, _roate_y, _roate_z);
+        _piple.set_worldpos(_right - _left, _up - _down, _back - _front);
+    }
     void LhDevice::bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size) {
         assert(nullptr != vertex);
         assert(vertex_size > 0);
         update_vertex(vertex, vertex_color, vertex_uv, vertex_size);
         set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
-        _piple.set_rotate(0.0f, 0.0f, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
-        _piple.set_worldpos(0, 0, 0);
+        resetpostion();
         _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, -3.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
@@ -59,6 +97,7 @@ namespace lh_pipeline {
 
         clear_buffer();
         clear_deep();
+        resetpostion();
         _piple.get_wvp();
         switch (_render_state) {
         case LH_LINES:
@@ -77,21 +116,11 @@ namespace lh_pipeline {
             draw_trangles_texture_fill();
             break;
         case LH_TEST:
-            static float roat_x = 0;
-            static float roat_y = 0;
-            static float roat_z = 0;
-            roat_x += 1;
-            roat_y += 1;
-            roat_z += 1;
-
             /*_piple.set_rotate(roat_x, roat_y, roat_z);
             _piple.set_worldpos(3, 0, 0);
             _piple.get_wvp();
             draw_triangles();*/
 
-            _piple.set_rotate(roat_x, roat_y, roat_z);
-            _piple.set_worldpos(0, 0, 0);
-            _piple.get_wvp();
             draw_trangles_texture_fill();
             //draw_triangles();
             break;

@@ -27,7 +27,7 @@ namespace lh_pipeline {
         LhDevice::update_buffer(w, h, ptr);
         LhDevice::set_render_state(LH_TEST);
         //LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
-        load_level_texture("../res/256.bmp", 256);
+        load_level_texture("../res/512.bmp", 512);
         update_vertex();
 #endif
         ReleaseDC(hwnd, hdc);
@@ -40,6 +40,9 @@ namespace lh_pipeline {
         ReleaseDC(hwnd, hdc);
     }
 
+    void LhDib::specialkeyboard(unsigned int uchar, unsigned int utype){
+        keyboard(char(uchar));
+    }
     void LhDib::destroy() {
         if (nullptr != _frame_dc) {
             if (nullptr != _old_bitmap) {
@@ -111,7 +114,7 @@ namespace lh_pipeline {
         int texture_bit_counts = 4;
 
         void* texture_datas =load_bmp(img, texture_w, texture_h, texture_bit_counts);
-        if (size != texture_w || size != -texture_h) {
+        if (size != abs(texture_w) || size != abs(texture_h)) {
             delete[] texture_datas;
             texture_datas = nullptr;
             return false;

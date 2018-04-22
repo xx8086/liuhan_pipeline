@@ -74,10 +74,13 @@ struct TextureUV
     TextureUV(float _u, float _v):u(_u), v(_v) {}
     float u = 0;
     float v = 0;
-    float sampling_ratio(float des_width, float texture_width) {
-        return des_width / texture_width;
-    }
 
+    TextureUV operator*(const float& other ) {
+        return TextureUV(u * other, v * other);
+    }
+    TextureUV operator-(const TextureUV &otherv) {
+        return TextureUV(u - otherv.u, v - otherv.v);
+    }
     TextureUV operator+(const TextureUV &otherv) {
         return TextureUV(u + otherv.u, v + otherv.v);
     }   
@@ -126,6 +129,7 @@ public:
     void set_buffer(int w, int h, void* pbits);
     void draw_line(int x1, int y1, int x2, int y2, lh_color c);
     void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
+    void draw_triangle_line(int x1, int y1, int x2, int y2, int x3, int y3, lh_color color);
     void draw_triangle(VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv = false);
 protected:
     void clear_deep();

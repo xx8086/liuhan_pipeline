@@ -88,18 +88,12 @@ namespace lh_pipeline {
         if (LH_OFF_DRAW == _render_state) {
             return;
         }
-        static int count = 0;
-        if (count < 200) {
-            count++;
-            return;
-        }
-        count = 0;
 
         clear_buffer();
         clear_deep();
         resetpostion();
         _piple.get_wvp();
-        switch (_render_state) {
+        switch (LH_TRIANGLES_TEXTURE_FILL) {
         case LH_LINES:
             draw_line();
             break;

@@ -285,6 +285,12 @@ void LhDrawPrimitive::set_clip_window(float x_min, float y_min, float x_max, flo
     _y_max_clip = y_max;
 }
 
+void LhDrawPrimitive::draw_triangle_line(int x1, int y1, int x2, int y2, int x3, int y3, lh_color color) {
+    draw_line(x1, y1, x2, y2, color);
+    draw_line(x2, y2, x3, y3, color);
+    draw_line(x1, y1, x3, y3, color);
+}
+
 void LhDrawPrimitive::draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color) {
     if (y2 < y1) {
         swap_vaue(x1, x2);
@@ -548,9 +554,17 @@ void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor 
 
     if (v2.postion.get_y() == v1.postion.get_y()) {//Æ½¶¥
         top_triangle(v1, v2, v3, use_uv);
+        draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
+            (int)v2.postion.get_x(), (int)v2.postion.get_y(),
+            (int)v3.postion.get_x(), (int)v3.postion.get_y(),
+            lh_color(255, 0, 0));
     }
     else if (v3.postion.get_y() == v2.postion.get_y()) {
         bottom_triangle(v1, v2, v3, use_uv);
+        draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
+            (int)v2.postion.get_x(), (int)v2.postion.get_y(),
+            (int)v3.postion.get_x(), (int)v3.postion.get_y(),
+            lh_color(255, 0, 0));
     }
     else {
         assert(v2.postion.get_y() > v1.postion.get_y());
@@ -562,9 +576,12 @@ void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor 
         float line_z = v1.postion.get_z() + distance_y * tan_z;
         VertexColor interp_v;
         if (use_uv) {
-            float tan_u = (v3.uv.u - v1.uv.u) * dy;
+           /* float tan_u = (v3.uv.u - v1.uv.u) * dy;
+            float tan_v = (v3.uv.v - v1.uv.v) * dy;
             float line_u = v1.uv.u + distance_y * tan_u;
-            interp_v = VertexColor(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), TextureUV(line_u, v2.uv.v));
+            float line_v = v1.uv.v + distance_y * tan_v;*/
+            TextureUV uv = v1.uv + (v3.uv - v1.uv) * dy * distance_y;
+            interp_v = VertexColor(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), uv);
         }
         else {
             lh_color tan_color = (v3.color - v1.color) * dy;
@@ -574,6 +591,16 @@ void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor 
 
         bottom_triangle(v1, interp_v, v2, use_uv);
         top_triangle(interp_v, v2, v3, use_uv);
+
+        draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
+            (int)interp_v.postion.get_x(), (int)interp_v.postion.get_y(),
+            (int)v2.postion.get_x(), (int)v2.postion.get_y(),
+            lh_color(0, 255, 0));
+        draw_triangle_line(
+            (int)interp_v.postion.get_x(), (int)interp_v.postion.get_y(),
+            (int)v2.postion.get_x(), (int)v2.postion.get_y(),
+            (int)v3.postion.get_x(), (int)v3.postion.get_y(),
+            lh_color(0, 0, 255));
     }
 }
 
@@ -680,7 +707,6 @@ void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColo
             right_color = right_color + tan_right_color;
         }
     }
-
 }
 
 void LhDrawPrimitive::draw_interp_scanline(VertexColor left, VertexColor right) {

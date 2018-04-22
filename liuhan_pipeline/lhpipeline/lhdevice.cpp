@@ -80,8 +80,6 @@ namespace lh_pipeline {
             static float roat_x = 0;
             static float roat_y = 0;
             static float roat_z = 0;
-            
-            
             roat_x += 1;
             roat_y += 1;
             roat_z += 1;
@@ -94,7 +92,7 @@ namespace lh_pipeline {
             _piple.set_rotate(roat_x, roat_y, roat_z);
             _piple.set_worldpos(0, 0, 0);
             _piple.get_wvp();
-            draw_triangles_fill();
+            draw_trangles_texture_fill();
             //draw_triangles();
             break;
         }

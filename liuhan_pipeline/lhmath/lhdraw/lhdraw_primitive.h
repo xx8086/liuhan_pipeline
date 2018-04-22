@@ -136,6 +136,7 @@ private:
     void swap_vaue(T& a, T& b); 
     bool deeptest(int x, int y, float z);
     void setpixel(float x, float y, lh_color color);
+    void setpixtel(int x, int y, int u, int v);
     void draw_interp_scanline(VertexColor left, VertexColor right);
     void draw_interp_texture_scanline(VertexColor left, VertexColor right);
     void set_clip_window(float x_min, float y_min, float x_max, float y_max);
@@ -152,7 +153,7 @@ private:
     int _width = 0;
     int _height = 0;
     int _current_uv_size = -1;
-    unsigned int *_current_uv_texture = nullptr;
+    unsigned int *_current_uv_texture_datas = nullptr;
     unsigned char *_frame_buffers = nullptr;
     float* _frame_deep_buffers = nullptr;
     float _x_min_clip = 0;

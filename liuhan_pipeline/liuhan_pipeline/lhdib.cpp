@@ -25,8 +25,8 @@ namespace lh_pipeline {
         _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);
 
         LhDevice::update_buffer(w, h, ptr);
-        //LhDevice::set_render_state(LH_TEST);
-        LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
+        LhDevice::set_render_state(LH_TEST);
+        //LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
         load_level_texture("../res/256.bmp", 256);
         update_vertex();
 #endif

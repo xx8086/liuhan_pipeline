@@ -33,8 +33,8 @@ void LhDrawPrimitive::clear_deep() {
     /*if (nullptr != _frame_deep_buffers) {
         memset(_frame_deep_buffers, 0, sizeof(float) * _width * _height);
     }*/
-   
-    int size = _width * _height -1;
+
+    int size = _width * _height - 1;
     while (size-- > 0)
     {
         _frame_deep_buffers[size] = 100.0f;
@@ -78,6 +78,17 @@ void LhDrawPrimitive::setpixel(int x, int y, lh_color color) {
     _frame_buffers[pos + 3] = color.alph;//a
 }
 
+void LhDrawPrimitive::setpixtel(int x, int y, int u, int v) {
+    if (y >= _y_max_clip ||
+        y < _y_min_clip ||
+        x >= _x_max_clip ||
+        x < _x_min_clip) {
+        return;
+    }
+    unsigned int* texture = (unsigned int*)_current_uv_texture_datas;
+    unsigned int* des = (unsigned int*)_frame_buffers;
+    des[y * _width + x] = texture[v * _current_uv_size + u];
+}
 /*
 dx = (x(i+1) - x(i)) / (t(i+1) - t(i))
 dy = (y(i+1) - y(i)) / (t(i+1) - t(i))
@@ -313,7 +324,7 @@ void LhDrawPrimitive::draw_triangle(float x1, float y1, float x2, float y2, floa
 
         if (x2 > x1)
         {//right
-            
+
         }
         else {//left
             ;
@@ -543,15 +554,24 @@ void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor 
     }
     else {
         assert(v2.postion.get_y() > v1.postion.get_y());
-        //float line_x = x1 + (x3 - x1)*(y2 - y1) / (y3 - y1);
-        float tan_x = (v3.postion.get_x() - v1.postion.get_x()) / (v3.postion.get_y() - v1.postion.get_y());
-        float tan_z = (v3.postion.get_z() - v1.postion.get_z()) / (v3.postion.get_y() - v1.postion.get_y());
-        lh_color tan_color = (v3.color - v1.color) / (v3.postion.get_y() - v1.postion.get_y());
+        float dy = v3.postion.get_y() == v1.postion.get_y() ? 0.0f : 1.0f / (v3.postion.get_y() - v1.postion.get_y());
+        float distance_y = v2.postion.get_y() - v1.postion.get_y();
+        float tan_x = (v3.postion.get_x() - v1.postion.get_x()) * dy;
+        float tan_z = (v3.postion.get_z() - v1.postion.get_z()) * dy;
+        float line_x = v1.postion.get_x() + distance_y * tan_x;
+        float line_z = v1.postion.get_z() + distance_y * tan_z;
+        VertexColor interp_v;
+        if (use_uv) {
+            float tan_u = (v3.uv.u - v1.uv.u) * dy;
+            float line_u = v1.uv.u + distance_y * tan_u;
+            interp_v = VertexColor(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), TextureUV(line_u, v2.uv.v));
+        }
+        else {
+            lh_color tan_color = (v3.color - v1.color) * dy;
+            lh_color line_color = v1.color + tan_color * distance_y;
+            interp_v = VertexColor(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), line_color);
+        }
 
-        float line_x = v1.postion.get_x() + (v2.postion.get_y() - v1.postion.get_y()) * tan_x;
-        float line_z = v1.postion.get_z() + (v2.postion.get_y() - v1.postion.get_y()) * tan_z;
-        lh_color line_color = v1.color + tan_color * (v2.postion.get_y() - v1.postion.get_y());
-        VertexColor interp_v(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), line_color);
         bottom_triangle(v1, interp_v, v2, use_uv);
         top_triangle(interp_v, v2, v3, use_uv);
     }
@@ -561,7 +581,7 @@ void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v
     if (v2.postion.get_x() < v1.postion.get_x()) {
         swap_vaue(v1, v2);
     }
-    float dy = 1.0 / (v3.postion.get_y() - v1.postion.get_y());
+    float dy = v3.postion.get_y() == v1.postion.get_y() ? 0.0f : 1.0 / (v3.postion.get_y() - v1.postion.get_y());
     float tan_left = (v3.postion.get_x() - v1.postion.get_x()) * dy;
     float tan_right = (v3.postion.get_x() - v2.postion.get_x()) * dy;
     float tan_left_z = (v3.postion.get_z() - v1.postion.get_z()) * dy;
@@ -573,7 +593,7 @@ void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v
     int iy1 = ceil(v1.postion.get_y());
     int iy3 = ceil(v3.postion.get_y()) - 1;
 
-    if (use_uv){
+    if (use_uv) {
         TextureUV tan_left_uv((v3.uv.u - v1.uv.u) * dy, (v3.uv.v - v1.uv.v) * dy);
         TextureUV tan_right_uv((v3.uv.u - v2.uv.u) * dy, (v3.uv.v - v2.uv.v) * dy);
         TextureUV left_uv = v1.uv;
@@ -590,7 +610,7 @@ void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v
             right_uv = right_uv + tan_right_uv;
         }
     }
-    else{
+    else {
         lh_color tan_left_color = (v3.color - v1.color) / (v3.postion.get_y() - v1.postion.get_y());
         lh_color tan_right_color = (v3.color - v2.color) / (v3.postion.get_y() - v2.postion.get_y());
         lh_color left_color = v1.color;
@@ -613,7 +633,7 @@ void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColo
     if (v3.postion.get_x() < v2.postion.get_x()) {
         swap_vaue(v2, v3);
     }
-    float dy = 1.0 / (v2.postion.get_y() - v1.postion.get_y());
+    float dy = v2.postion.get_y() == v1.postion.get_y() ? 0.0f : 1.0 / (v2.postion.get_y() - v1.postion.get_y());
     float tan_left = (v2.postion.get_x() - v1.postion.get_x()) * dy;
     float tan_right = (v3.postion.get_x() - v1.postion.get_x()) * dy;
     float tan_left_z = (v2.postion.get_z() - v1.postion.get_z()) * dy;
@@ -638,7 +658,7 @@ void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColo
             right_x = right_x + tan_right;
             left_z = left_z + tan_left_z;
             right_z = right_z + tan_right_z;
-            left_uv = left_uv +  tan_left_uv;
+            left_uv = left_uv + tan_left_uv;
             right_uv = right_uv + tan_right_uv;
         }
 
@@ -669,7 +689,7 @@ void LhDrawPrimitive::draw_interp_scanline(VertexColor left, VertexColor right) 
     int x_end = right.postion.get_x();
     float z_begin = left.postion.get_z();
     float z_end = right.postion.get_z();
-    float dx = x_end != x_begin ? 1.0f / float(x_end - x_begin) : 0.0f;
+    float dx = x_end == x_begin ? 0.0f : 1.0f / float(x_end - x_begin);
     float fctor = (z_end - z_begin) * dx;
     lh_color dcolor = (right.color - left.color) * dx;
     lh_color color = left.color;
@@ -687,28 +707,17 @@ void LhDrawPrimitive::draw_interp_texture_scanline(VertexColor left, VertexColor
     int x_begin = left.postion.get_x();
     int x_end = right.postion.get_x();
     float z_begin = left.postion.get_z();
-    float dx = x_end != x_begin ? 1.0f / float(x_end - x_begin) : 0.0f;
+    float dx = x_end == x_begin ? 0.0f : 1.0f / float(x_end - x_begin);
     float fctor = (right.postion.get_z() - z_begin) * dx;
     float du = (right.uv.u - left.uv.u) * dx;
     float dv = (right.uv.v - left.uv.v) * dx;
-    float sample_x = ((float)_current_uv_size)/((float)_width);
-    float sample_y = ((float)_current_uv_size) / ((float)_height);
-    TextureUV left_uv(left.uv.u, left.uv.v);  
+    TextureUV left_uv(left.uv.u, left.uv.v);
     for (int i = x_begin; i <= x_end; i++) {
         float z = z_begin + (i - x_begin)*fctor;
         if (deeptest(i, y, z)) {
-            int pos_uv = ((int)left_uv.v*_current_uv_size *_current_uv_size + (int)(left_uv.u * _current_uv_size)) ;
-            lh_color color(_current_uv_texture[pos_uv]);
-            setpixel(i, y, color);
-
-/*
-            int pos = (y * _width + i + 1) * 4;
-            int pos_uv = ((int)left_uv.v*_current_uv_size *_current_uv_size + (int)(left_uv.u * _current_uv_size)) * 4;
-            _frame_buffers[pos] = _current_uv_texture[pos_uv];
-            _frame_buffers[pos + 1] = _current_uv_texture[pos_uv + 1];
-            _frame_buffers[pos + 2] = _current_uv_texture[pos_uv + 2];
-            _frame_buffers[pos + 3] = _current_uv_texture[pos_uv + 3];*/
-            
+            int iu = (int)(left_uv.u * _current_uv_size);
+            int iv = (int)(left_uv.v * _current_uv_size);
+            setpixtel(i, y, iu, iv);
         }
         left_uv.u += du;
         left_uv.v += dv;
@@ -717,5 +726,5 @@ void LhDrawPrimitive::draw_interp_texture_scanline(VertexColor left, VertexColor
 
 void LhDrawPrimitive::set_current_uv(unsigned char* uv, int  uv_size) {
     _current_uv_size = uv_size;
-    _current_uv_texture = (unsigned int*)(uv);
+    _current_uv_texture_datas = (unsigned int*)(uv);
 }

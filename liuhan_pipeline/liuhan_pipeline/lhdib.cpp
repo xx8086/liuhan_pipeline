@@ -26,7 +26,11 @@ namespace lh_pipeline {
 
         LhDevice::update_buffer(w, h, ptr);
         LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
+        
+        load_level_texture((TCHAR*)"../res/128.bmp", 128);
+        load_level_texture((TCHAR*)"../res/256.bmp", 256);
         load_level_texture((TCHAR*)"../res/512.bmp", 512);
+
         update_vertex();
 #endif
         ReleaseDC(hwnd, hdc);
@@ -119,7 +123,6 @@ namespace lh_pipeline {
             return false;
         }
         update_texture(static_cast<unsigned char*>(texture_datas), size);
-
         return true;
     }
 

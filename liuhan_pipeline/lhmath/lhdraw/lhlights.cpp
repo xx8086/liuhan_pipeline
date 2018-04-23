@@ -18,7 +18,17 @@ namespace lh_pipeline {
         _id = id;
     }
 
-    LhVertexFloat3 LhLights::reflect(LhVertexFloat3 I, LhVertexFloat3 N) {        float cos_theta = dot(I, N);        LhVertexFloat3 R = N * (cos_theta * 2) - I;        if (cos_theta > 0) {            normalize(R);        }        else {            R = LhVertexFloat3(0.0, 0.0, 0.0);        }        return R;    }
+    LhVertexFloat3 LhLights::reflect(LhVertexFloat3 I, LhVertexFloat3 N) {
+        float cos_theta = dot(I, N);
+        LhVertexFloat3 R = N * (cos_theta * 2) - I;
+        if (cos_theta > 0) {
+            normalize(R);
+        }
+        else {
+            R = LhVertexFloat3(0.0, 0.0, 0.0);
+        }
+        return R;
+    }
 
     lh_color LhLights::get_dirlight(LhVertexFloat3 normal, LhVertexFloat3 viewdir) {
         normalize(normal);
@@ -36,11 +46,19 @@ namespace lh_pipeline {
     }
 
     lh_color LhLights::get_pointlight(LhVertexFloat3 normal, LhVertexFloat3 viewdir, LhVertexFloat3 fragpos) {
-        normalize(normal);
-        normalize(viewdir);
-        LhVertexFloat3 reflecdir = reflect(_lights_dir, normal);
-        float diff = MAX(dot(normal, _lights_dir), 0.0f);
-        float spec = pow(MAX(dot(viewdir, reflecdir), 0.0), _shininess);
+        //normalize(normal);
+        //normalize(viewdir);
+        //LhVertexFloat3 reflecdir = reflect(_lights_dir, normal);
+        float diff = 1.0f;// MAX(dot(normal, _lights_dir), 0.0f);
+        float spec = 1.0f;// pow(MAX(dot(viewdir, reflecdir), 0.0), _shininess);
+
+        LhVertexFloat3 distance = _light_pos - fragpos;
+        float distance_x = distance.get_x();
+        float distance_y = distance.get_y();
+        float distance_z = distance.get_z();
+        float point_distance = sqrt(distance_x * distance_x + distance_y * distance_y + distance_z * distance_z);
+        float attenuation = 1.0f / (_kc + _kl * point_distance + _kq * point_distance * point_distance);
+
 
         float ambient_x = _lightcolor.get_x() * _ambient_strength;
         float ambient_y = _lightcolor.get_y() * _ambient_strength;
@@ -54,13 +72,10 @@ namespace lh_pipeline {
         float color_x = ambient_x + diffuse_x + specular_x;
         float color_y = ambient_y + diffuse_y + specular_y;
         float color_z = ambient_z + diffuse_z + specular_z;
+        if (color_x > 255.0f)color_x = 255.0f;
+        if (color_y > 255.0f)color_y = 255.0f;
+        if (ambient_z > 255.0f)ambient_z = 255.0f;
 
-        LhVertexFloat3 distance = _light_pos - fragpos;
-        float distance_x = distance.get_x();
-        float distance_y = distance.get_y();
-        float distance_z = distance.get_z();
-        float point_distance = sqrt(distance_x * distance_x + distance_y * distance_y + distance_z * distance_z);
-        float attenuation = 1.0f / (_kc + _kl * point_distance + _kq * point_distance * point_distance);
         return lh_color(color_x*attenuation, color_y * attenuation, color_z * attenuation);
     }
 

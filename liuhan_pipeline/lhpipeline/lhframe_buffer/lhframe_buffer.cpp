@@ -22,7 +22,7 @@ void LhFrameBuffer::release() {
         _vertex_buffers = nullptr;
     }
 
-    for (int i = TEXTURE_LEVEL_0; i < TEXTURE_LEVEL_MAX; i++) {
+    for (int i = TEXTURE_LEVEL_56; i < TEXTURE_LEVEL_MAX; i++) {
         _texture_size[i] = 0;
         if (nullptr != _texture[i]) {
             delete[] _texture[i];
@@ -81,33 +81,30 @@ void LhFrameBuffer::update_vertex(const float* vertex_buffer, const unsigned int
     memcpy(_vertex_color_buffers, vertex_buffer_color, 3 * counts * sizeof(unsigned int));
     _vertex_buffers_size = counts;
 
-    if (_current_texture_level >= TEXTURE_LEVEL_0&&
-        TEXTURE_LEVEL_MAX > _current_texture_level) {
-        if (nullptr != _uv[_current_texture_level]) {
-            delete[] _uv[_current_texture_level];
-        }
-        _uv[_current_texture_level] = new float[2 * counts];
-        memcpy(_uv[_current_texture_level], vertex_uv, 2 * counts * sizeof(float));
+    if (nullptr != _uv) {
+        delete[] _uv;
     }
+    _uv = new float[2 * counts];
+    memcpy(_uv, vertex_uv, 2 * counts * sizeof(float));
 }
 
 int LhFrameBuffer::texture_size_check(int texture_size) {
     int level = TEXTURE_LEVEL_MAX;
     switch (texture_size) {
     case 56:
-        level = TEXTURE_LEVEL_0;
+        level = TEXTURE_LEVEL_56;
         break;
     case 128:
-        level = TEXTURE_LEVEL_1;
+        level = TEXTURE_LEVEL_128;
         break;
     case 256:
-        level = TEXTURE_LEVEL_2;
+        level = TEXTURE_LEVEL_256;
         break;
     case 512:
-        level = TEXTURE_LEVEL_3;
+        level = TEXTURE_LEVEL_512;
         break;
     case 1024:
-        level = TEXTURE_LEVEL_4;
+        level = TEXTURE_LEVEL_1024;
         break;
     default:
         break;
@@ -116,7 +113,7 @@ int LhFrameBuffer::texture_size_check(int texture_size) {
 }
 void LhFrameBuffer::set_texture(unsigned char* texture_datas, int texture_size) {
     int level = texture_size_check(texture_size);
-    assert(level >= TEXTURE_LEVEL_0 && TEXTURE_LEVEL_MAX > level);
+    assert(level >= TEXTURE_LEVEL_56 && TEXTURE_LEVEL_MAX > level);
     assert(nullptr != texture_datas);
     if (nullptr != _texture[level]) {
         delete[] _texture[level];
@@ -129,7 +126,7 @@ void LhFrameBuffer::set_texture(unsigned char* texture_datas, int texture_size) 
 }
 
 const float* LhFrameBuffer::ger_current_uv() {
-    return _uv[_current_texture_level];
+    return _uv;
 }
 
 unsigned char * LhFrameBuffer::ger_current_texutre_uv_buffers() {

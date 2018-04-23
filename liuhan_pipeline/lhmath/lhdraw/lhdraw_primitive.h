@@ -74,6 +74,7 @@ namespace lh_pipeline {
         void clear_deep();
         void set_current_uv(unsigned char* uv, int  uv_size);
         void setpixel(int x, int y, lh_color color);
+        void enablelight();
     private:
         template <typename T>
         void swap_vaue(T& a, T& b);

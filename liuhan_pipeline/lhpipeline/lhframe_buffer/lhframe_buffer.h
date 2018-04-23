@@ -16,17 +16,17 @@ protected:
     unsigned char * ger_current_texutre_uv_buffers();
     int get_width() const;
     int get_height() const;
-
+    void set_current_texture_uv(int level) { _current_texture_level = level; }
     const int get_current_texture_uv() { return _current_texture_level; }
     const int get_current_texture_uv_size() { return _current_uv_size[_current_texture_level]; }
     const int get_vertex_buffers_size() { return _vertex_buffers_size; }
 protected:
     typedef enum TextureLevel {
-        TEXTURE_LEVEL_0 = 0,//56
-        TEXTURE_LEVEL_1 = 1,//128
-        TEXTURE_LEVEL_2 = 2,//256
-        TEXTURE_LEVEL_3 = 3,
-        TEXTURE_LEVEL_4 = 4,
+        TEXTURE_LEVEL_56 = 0,//56
+        TEXTURE_LEVEL_128 = 1,//128
+        TEXTURE_LEVEL_256 = 2,//512
+        TEXTURE_LEVEL_512 = 3,//
+        TEXTURE_LEVEL_1024 = 4,
         TEXTURE_LEVEL_MAX,
     }TEXTURE_LEVEL;
     void set_texture(unsigned char* texture_datas, int texture_size);
@@ -41,7 +41,7 @@ private:
     float* _vertex_buffers = nullptr;
     int _vertex_buffers_size = 0;
     unsigned char* _texture[TEXTURE_LEVEL_MAX] = { nullptr };
-    float* _uv[TEXTURE_LEVEL_MAX] = { nullptr };
+    float* _uv = nullptr;
     int _texture_size[TEXTURE_LEVEL_MAX] = { 0 };
     int _current_texture_level = TEXTURE_LEVEL_MAX;
     int _current_uv_size[TEXTURE_LEVEL_MAX] = { 56, 128, 256, 512, 1024 };

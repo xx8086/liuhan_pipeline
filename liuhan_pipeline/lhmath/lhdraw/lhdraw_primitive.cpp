@@ -15,7 +15,14 @@ namespace lh_pipeline {
             _frame_deep_buffers = nullptr;
         }
     }
-
+    void LhDrawPrimitive::enablelight() {
+        if (_light.is_visible()) {
+            _light.invisible();
+        }
+        else {
+            _light.visible();
+        }
+    }
     void LhDrawPrimitive::set_buffer(int w, int h, void* pbits) {
         if (_width*_height < w) {
             delete[] _frame_deep_buffers;
@@ -30,9 +37,8 @@ namespace lh_pipeline {
         set_clip_window(0.0f, 0.0f, (float)w, (float)h);
 
         _light.set_type(LIGHT_TYPE_POINT, 1);
-        _light.set_light_color(lh_color(255.0f, 0.0f, 0.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), 0.05f, 0.8f, 1.0f);
+        _light.set_light_color(lh_color(0.0f, 0.0f, 255.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), 0.05f, 0.3f, 0.1f);
         _light.set_point(LhVertexFloat3(1.0f, 1.0f, -3.0f), 1.0f, 0.09f, 0.032f);
-        _light.visible();
     }
 
     void LhDrawPrimitive::clear_deep() {
@@ -292,6 +298,8 @@ namespace lh_pipeline {
     }
 
     void LhDrawPrimitive::draw_triangle_line(int x1, int y1, int x2, int y2, int x3, int y3, lh_color color) {
+        return;
+
         draw_line(x1, y1, x2, y2, color);
         draw_line(x2, y2, x3, y3, color);
         draw_line(x1, y1, x3, y3, color);
@@ -773,9 +781,6 @@ namespace lh_pipeline {
                     h.check();
                     color = h.get_t<unsigned int>();
                 }
-
-
-
                 setpixtel(i, y, color);
             }
             left_uv.u += du;

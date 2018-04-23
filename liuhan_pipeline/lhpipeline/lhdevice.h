@@ -35,6 +35,7 @@ namespace lh_pipeline {
         void draw_trangles_texture_fill();
         void draw_triangles();
         void resetpostion();
+        void z_mip();
         bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
     public:
         LHRENDER_STATE _render_state = LH_LINES;

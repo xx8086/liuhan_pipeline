@@ -28,9 +28,11 @@ namespace lh_pipeline {
         switch (key) {
         case 'q':
             _front += add;
+            z_mip();
             break;
         case 'w':
             _back += add;
+            z_mip();
             break;
         case 'a':
             _left += add;
@@ -53,11 +55,28 @@ namespace lh_pipeline {
         case 'z':
             _roate_z++;
             break;
+        case 0x20:
+            enablelight();
+            break;
         default:
             break;
         }
     }
 
+    void LhDevice::z_mip() {
+        float z = _back - _front;
+        if (z >= 1.0f) {
+            set_current_texture_uv(TEXTURE_LEVEL_128);
+        }
+        else if (1.0f > z && z >= 0.0f) {
+            set_current_texture_uv(TEXTURE_LEVEL_256);
+        }
+        else if (0.0f > z) {
+            set_current_texture_uv(TEXTURE_LEVEL_512);
+        }
+
+        set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
+    }
     void LhDevice::resetpostion() {
         _piple.set_rotate(_roate_x, _roate_y, _roate_z);
         _piple.set_worldpos(_right - _left, _up - _down, _back - _front);
@@ -66,7 +85,7 @@ namespace lh_pipeline {
         assert(nullptr != vertex);
         assert(vertex_size > 0);
         update_vertex(vertex, vertex_color, vertex_uv, vertex_size);
-        set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
+        z_mip();
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         resetpostion();
         LhVertexFloat3 view(0.0f, 0.0f, -3.0f); 

@@ -31,8 +31,8 @@ namespace lh_pipeline {
 
         _width = w;
         _height = h;
-        _z_far_clip = 100.0f;
-        _z_near_clip = 1.0f;
+        _z_far_clip = 2.0f;
+        _z_near_clip = -1.0f;
         _frame_buffers = static_cast<unsigned char*>(pbits);
         set_clip_window(0.0f, 0.0f, (float)w, (float)h);
 
@@ -59,8 +59,10 @@ namespace lh_pipeline {
         }
 
         int deep_pos = y * _width + x + 1;
-        if (/*z < _z_far_clip &&
-            _z_near_clip < z &&*/
+        if (z < _z_far_clip &&
+            _z_near_clip < z &&
+            deep_pos >=0 &&
+            deep_pos < _width * _height &&
             _frame_deep_buffers[deep_pos] > z) {//z÷·≥Ø¿Ô
             _frame_deep_buffers[deep_pos] = z;
         }

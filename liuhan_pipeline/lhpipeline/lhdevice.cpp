@@ -58,6 +58,18 @@ namespace lh_pipeline {
         case 0x20:
             enablelight();
             break;
+        case 'i':
+            set_render_state(LH_TRIANGLES);
+            break;
+        case 'o':
+            set_render_state(LH_TRIANGLES_FILL);
+            break;
+        case 'p':
+            set_render_state(LH_TRIANGLES_TEXTURE_FILL);
+            break;
+        case 'u':
+            _grid = !_grid;
+            break;
         default:
             break;
         }
@@ -114,7 +126,7 @@ namespace lh_pipeline {
         clear_deep();
         resetpostion();
         _piple.get_wvp();
-        switch (LH_TRIANGLES_TEXTURE_FILL) {
+        switch (_render_state) {
         case LH_LINES:
             draw_line();
             break;
@@ -126,9 +138,11 @@ namespace lh_pipeline {
             break;
         case LH_TRIANGLES_FILL:
             draw_triangles_fill();
+            draw_grid();
             break;
         case LH_TRIANGLES_TEXTURE_FILL:
             draw_trangles_texture_fill();
+            draw_grid();
             break;
         case LH_TEST:
             /*_piple.set_rotate(roat_x, roat_y, roat_z);
@@ -206,6 +220,35 @@ namespace lh_pipeline {
         //        des[j*get_width() + i] = texture[pos];
         //    }
         //}
+    }
+
+    void LhDevice::draw_grid() {
+        if (!_grid) {
+            return;
+        }
+
+        float value = 1.0f;
+        float z = -0.5;
+        float x_begin = -value;
+        float x_end = value;
+        float y_begin = -value;
+        float y_end = value;
+        lh_color lc(255, 0, 0);
+        int color = lc.get_t<int>();
+        for (float i = x_begin; i <= x_end; i += 0.15) {
+            LhVertexFloat4 p1;
+            LhVertexFloat4 p2;
+            get_pos(p1, LhVertexFloat3(i, -value, z));
+            get_pos(p2, LhVertexFloat3(i, value, z));
+            draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+        }
+        for (float j = y_begin; j <= y_end; j += 0.15) {
+            LhVertexFloat4 p1;
+            LhVertexFloat4 p2;
+            get_pos(p1, LhVertexFloat3(-value, j, z));
+            get_pos(p2, LhVertexFloat3(value, j, z));
+            draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+        }
     }
     void LhDevice::draw_triangles() {
         const float* v = get_vertex_buffers();

@@ -12,7 +12,8 @@ namespace lh_pipeline {
         LH_TRIANGLES = 3,
         LH_TRIANGLES_FILL = 4,
         LH_TRIANGLES_TEXTURE_FILL = 5,
-        LH_TEST = 6,
+        LH_GRID = 6,
+        LH_TEST = 7,
         LH_OFF_DRAW,
     }LHRENDER_STATE;
 
@@ -37,6 +38,7 @@ namespace lh_pipeline {
         void resetpostion();
         void z_mip();
         bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
+        void draw_grid();
     public:
         LHRENDER_STATE _render_state = LH_LINES;
         lh_pipeline::LhPipeLine _piple;
@@ -50,5 +52,6 @@ namespace lh_pipeline {
         float _roate_x = 0;
         float _roate_y = 0;
         float _roate_z = 0;
+        bool _grid = false;
     };
 }

@@ -25,4 +25,12 @@ namespace lh_pipeline {
             left.get_z() * right.get_x() - left.get_x() * right.get_z(),
             left.get_x() * right.get_y() - left.get_y() * right.get_x());
     }
+
+    static float distance(LhVertexFloat3 a, LhVertexFloat3 b) {
+        LhVertexFloat3 d = a - b;
+        float x = d.get_x();
+        float y = d.get_y();
+        float z = d.get_z();
+        return sqrtf(x*x + y*y + z*z);
+    }
 }

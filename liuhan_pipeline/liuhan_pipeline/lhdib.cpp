@@ -26,7 +26,7 @@ namespace lh_pipeline {
 
         LhDevice::update_buffer(w, h, ptr);
         LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
-        load_level_texture("../res/512.bmp", 512);
+        load_level_texture((TCHAR*)"../res/512.bmp", 512);
         update_vertex();
 #endif
         ReleaseDC(hwnd, hdc);

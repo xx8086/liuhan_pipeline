@@ -24,7 +24,7 @@ namespace lh_pipeline {
     }
 
     void LhDevice::keyboard(char key) {
-        float add = 0.1;
+        float add = 0.1f;
         switch (key) {
         case 'q':
             _front += add;
@@ -159,9 +159,9 @@ namespace lh_pipeline {
                 get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
                 get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
 
-                lh_color c1(colors[i], colors[i + 1], colors[i + 2]);
-                lh_color c2(colors[i + 3], colors[i + 4], colors[i +5]);
-                lh_color c3(colors[i + 6], colors[i + 7], colors[i + 8]);
+                lh_color c1((float)colors[i], (float)colors[i + 1], (float)colors[i + 2]);
+                lh_color c2((float)colors[i + 3], (float)colors[i + 4], (float)colors[i +5]);
+                lh_color c3((float)colors[i + 6], (float)colors[i + 7], (float)colors[i + 8]);
 #if 0
                 draw_triangle(p1.get_x(), p1.get_y(), 
                     p2.get_x(), p2.get_y(), 

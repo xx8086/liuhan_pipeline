@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <memory.h>
 #include <stdlib.h >
+#include <chrono>
 
 namespace lh_pipeline {
     LhDevice::LhDevice()
@@ -22,89 +23,90 @@ namespace lh_pipeline {
     void LhDevice::draw_line(int x1, int y1, int x2, int y2, int color) {
         LhDrawPrimitive::draw_line(x1, y1, x2, y2, lh_color(color));
     }
+    void LhDevice::set_front_begin(float xpos, float ypos) {
+        _last_x = xpos;
+        _last_y = ypos;
+    }
+    void LhDevice::set_front(float xpos, float ypos) {
+        float xoffset = xpos - _last_x;
+        float yoffset = _last_y - ypos; // reversed since y-coordinates go from bottom to top
+        _last_x = xpos;
+        _last_y = ypos;
 
-    void LhDevice::keyboard(char key) {
+        _piple.set_front(-xoffset, -yoffset);
+    }
+
+    void LhDevice::keyboard(/*char vk, */char key) {
         float add = 0.1f;
+        bool change = true;
         switch (key) {
-        case 'q':
-            _front += add;
+        case 'W':
+        case 0x26://VK_UP
+            _piple.set_view_ward(VIEW_FORWARD, _draw_cost_time);
             z_mip();
             break;
-        case 'w':
-            _back += add;
+        case 'S':
+        case 0x28://VK_DOWN
+            _piple.set_view_ward(VIEW_BACKWARD, _draw_cost_time);
             z_mip();
             break;
-        case 'a':
-            _left += add;
+        case 'A':
+        case 0x25://VK_LEFT
+            _piple.set_view_ward(VIEW_LEFT, _draw_cost_time);
+            z_mip();
             break;
-        case 's':
-            _right += add;
-            break;
-        case 'e':
-            _up += add;
-            break;
-        case 'd':
-            _down += add;
-            break;
-        case 'x':
-            _roate_x++;
-            break;
-        case 'y':
-            _roate_y++;
-            break;
-        case 'z':
-            _roate_z++;
+        case 'D':
+        case 0x27://VK_RIGHT
+            _piple.set_view_ward(VIEW_RIGHT, _draw_cost_time);
+            z_mip();
             break;
         case 0x20:
             enablelight();
             break;
-        case 'i':
-            set_render_state(LH_TRIANGLES);
+        case 'I':
+            set_render_state(LH_TEST);
             break;
-        case 'o':
+        case 'O':
             set_render_state(LH_TRIANGLES_FILL);
             break;
-        case 'p':
+        case 'P':
             set_render_state(LH_TRIANGLES_TEXTURE_FILL);
             break;
-        case 'u':
-            _grid = !_grid;
-            break;
         default:
+            change = false;
             break;
         }
     }
 
     void LhDevice::z_mip() {
-        float z = _back - _front;
-        if (z >= 1.0f) {
+        LhVertexFloat3 viewpos = _piple.get_view_pos();
+        float z = (viewpos.get_x() * viewpos.get_x()  + 
+            viewpos.get_y() * viewpos.get_y() * + viewpos.get_z() * viewpos.get_z());
+        if (z >= 1.2f) {
             set_current_texture_uv(TEXTURE_LEVEL_128);
         }
-        else if (1.0f > z && z >= 0.0f) {
+        else if (1.2f > z && z >= 0.4f) {
             set_current_texture_uv(TEXTURE_LEVEL_256);
         }
-        else if (0.0f > z) {
+        else if (0.4f > z) {
             set_current_texture_uv(TEXTURE_LEVEL_512);
         }
 
         set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
     }
-    void LhDevice::resetpostion() {
-        _piple.set_rotate(_roate_x, _roate_y, _roate_z);
-        _piple.set_worldpos(_right - _left, _up - _down, _back - _front);
-    }
+
     void LhDevice::bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size) {
         assert(nullptr != vertex);
         assert(vertex_size > 0);
         update_vertex(vertex, vertex_color, vertex_uv, vertex_size);
         z_mip();
         _piple.set_sale(1.0f, 1.0f, 1.0f);
-        resetpostion();
-        LhVertexFloat3 view(0.0f, 0.0f, -3.0f); 
-        _piple.set_camera(view, LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
+        _piple.set_rotate(0.0f, 0.0f, 0.0f);
+        _piple.set_worldpos(1.0f, 0.0f, 0.0f);
+        _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -3.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
-        set_view(view);
+        set_view(&_piple.get_view_pos());
     }
 
     bool LhDevice::get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3) {
@@ -121,10 +123,11 @@ namespace lh_pipeline {
         if (LH_OFF_DRAW == _render_state) {
             return;
         }
-
+        static float srotate = 0.0;
+        srotate += 0.5f;
+        auto start = std::chrono::system_clock::now();
         clear_buffer();
         clear_deep();
-        resetpostion();
         _piple.get_wvp();
         switch (_render_state) {
         case LH_LINES:
@@ -138,22 +141,24 @@ namespace lh_pipeline {
             break;
         case LH_TRIANGLES_FILL:
             draw_triangles_fill();
-            draw_grid();
             break;
         case LH_TRIANGLES_TEXTURE_FILL:
             draw_trangles_texture_fill();
-            draw_grid();
             break;
         case LH_TEST:
-            /*_piple.set_rotate(roat_x, roat_y, roat_z);
-            _piple.set_worldpos(3, 0, 0);
+            draw_floor();
+            _piple.set_rotate(srotate, srotate, srotate); 
+            _piple.set_worldpos(0, -0.5, 0);
+            _piple.set_sale(1.0f, 1.0f, 1.0f);
             _piple.get_wvp();
-            draw_triangles();*/
-
             draw_trangles_texture_fill();
             //draw_triangles();
             break;
         }
+
+        auto end = std::chrono::system_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        _draw_cost_time = float(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den;
 
     }
 
@@ -220,6 +225,62 @@ namespace lh_pipeline {
         //        des[j*get_width() + i] = texture[pos];
         //    }
         //}
+    }
+
+    float floor_v[] = {
+        -1.5f, -1.5f, -0.5f,//b
+        1.5f, -1.5f, -0.5f,//c
+        -1.5f, 1.5f, -0.5f,//a
+
+        1.5f, -1.5f, -0.5f,//c
+        1.5f, 1.5f, -0.5f,//d
+        -1.5f, 1.5f, -0.5f,//a
+    };
+
+    unsigned int  floor_colors[] = {
+        0, 255, 0,
+        0, 0, 255,
+        255, 0, 0,
+
+        0, 0, 255,
+        0, 255, 0,
+        255, 0, 0
+    };
+
+    float floor_uv[] = {
+        0, 1,
+        1, 1,
+        0, 0,
+
+        1, 1,
+        1, 0,
+        0, 0
+    };
+    void LhDevice::draw_floor() {
+        _piple.set_rotate(-80.0f, 0, 0.0f);
+        _piple.set_sale(1.5f, 1.0f, 1.5f);
+        _piple.set_worldpos(0, 2.3f, 1.0f);
+        _piple.get_wvp();
+
+        const int counts = 18;
+        for (int i = 0; i < counts; i += 9) {
+            LhVertexFloat4 p1;
+            LhVertexFloat4 p2;
+            LhVertexFloat4 p3;
+            if (get_pos(p1, LhVertexFloat3(floor_v[i], floor_v[i + 1], floor_v[i + 2])) &&
+                get_pos(p2, LhVertexFloat3(floor_v[i + 3], floor_v[i + 4], floor_v[i + 5])) &&
+                get_pos(p3, LhVertexFloat3(floor_v[i + 6], floor_v[i + 7], floor_v[i + 8]))) {
+
+                lh_color c1((float)floor_colors[i], (float)floor_colors[i + 1], (float)floor_colors[i + 2]);
+                lh_color c2((float)floor_colors[i + 3], (float)floor_colors[i + 4], (float)floor_colors[i + 5]);
+                lh_color c3((float)floor_colors[i + 6], (float)floor_colors[i + 7], (float)floor_colors[i + 8]);
+
+                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), c1),
+                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), c2),
+                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), c3));
+
+            }
+        }
     }
 
     void LhDevice::draw_grid() {

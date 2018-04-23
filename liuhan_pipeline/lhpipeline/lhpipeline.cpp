@@ -11,7 +11,17 @@ namespace lh_pipeline {
     {
     }
 
-    void LhPipeLine::set_rotate(float x, float y, float z) {
+    void LhPipeLine::set_view_ward(VIEWWARD direction, float deltatime) {
+        _camera.set_view_ward(direction, deltatime);
+    }
+
+    void LhPipeLine::set_front_begin(float xoffset, float yoffset) {
+        
+    }
+    void LhPipeLine::set_front(float xoffset, float yoffset) {
+        _camera.set_front(xoffset, yoffset);
+    }
+    void LhPipeLine::LhPipeLine::set_rotate(float x, float y, float z) {
         _rotateinfo.set_x(x);
         _rotateinfo.set_y(y);
         _rotateinfo.set_z(z);
@@ -26,10 +36,16 @@ namespace lh_pipeline {
         _worldpos.set_y(y);
         _worldpos.set_z(z);
     }
-    void LhPipeLine::set_camera(LhVertexFloat3 pos, LhVertexFloat3 target, LhVertexFloat3 up) {
-        _camera.pos = pos;
-        _camera.target = target;
-        _camera.up = up;
+
+    LhVertexFloat3& LhPipeLine::get_view_pos() {
+        return _camera._pos;
+    }
+    LhVertexFloat3& LhPipeLine::get_view_dir() {
+        return _camera._target;
+    }
+
+    void LhPipeLine::set_camera_pos(LhVertexFloat3 pos) {
+        _camera._pos = pos;
     }
     void LhPipeLine::set_orthographic_proj(const OrthoProjInfo& o) {
         _orthoprojinfo = o;
@@ -82,10 +98,10 @@ namespace lh_pipeline {
         LhMatrixFloat4 camera_translation_trans;
         LhMatrixFloat4 camera_rotate_trans;
         camera_translation_trans.init_translation_transform(
-            -_camera.pos.get_x(),
-            -_camera.pos.get_y(),
-            -_camera.pos.get_z());//移到相机位置
-        camera_rotate_trans.coordinate_space_rotate(_camera.target, _camera.up);//旋转和相机轴重合
+            -_camera._pos.get_x(),
+            -_camera._pos.get_y(),
+            -_camera._pos.get_z());//移到相机位置
+        camera_rotate_trans.coordinate_space_rotate(_camera._target, _camera._up);//旋转和相机轴重合
         _view_transformation = camera_rotate_trans * camera_translation_trans;
     }
     void LhPipeLine::init_proj() {

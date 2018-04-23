@@ -65,7 +65,7 @@ namespace lh_pipeline {
         ~LhDrawPrimitive();
     public:
         void set_buffer(int w, int h, void* pbits);
-        void set_view(LhVertexFloat3 view);
+        void set_view(LhVertexFloat3* view);
         void draw_line(int x1, int y1, int x2, int y2, lh_color c);
         void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
         void draw_triangle_line(int x1, int y1, int x2, int y2, int x3, int y3, lh_color color);
@@ -108,6 +108,6 @@ namespace lh_pipeline {
         float _z_far_clip = -1.0;
         bool _deep_test = true;
         LhLights _light;
-        LhVertexFloat3 _view;
+        LhVertexFloat3* _view;
     };
 }

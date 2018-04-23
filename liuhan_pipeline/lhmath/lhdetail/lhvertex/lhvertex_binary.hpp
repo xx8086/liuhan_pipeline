@@ -4,7 +4,7 @@
 #define EXTENDED_IMPLEMENTATION_BINARY_LHVERTEX
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator+(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
+    LhVertex<T, N> operator+(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
         LhVertex<T, N> temp;
         for (int i = 0; i < (int)temp._counts; i++) {
             temp._datas[i] = left._datas[i] + right._datas[i];
@@ -13,7 +13,7 @@
     }
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator-(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
+    LhVertex<T, N> operator-(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
         LhVertex<T, N> temp;
         for (int i = 0; i < (int)temp._counts; i++) {
             temp._datas[i] = left._datas[i] - right._datas[i];
@@ -22,7 +22,7 @@
     }
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator*(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
+    LhVertex<T, N> operator*(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
         LhVertex<T, N> temp;
         for (int i = 0; i < temp._counts; i++) {
             temp._datas[i] = left._datas[i] * right._datas[i];
@@ -31,7 +31,7 @@
     }
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator/(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
+    LhVertex<T, N> operator/(LhVertex<T, N> const & left, LhVertex<T, N> const& right) {
         LhVertex<T, N> temp;
         for (int i = 0; i < temp._counts; i++) {
             temp._datas[i] = left._datas[i] / right._datas[i];
@@ -42,7 +42,7 @@
 
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator+ (LhVertex<T, N> const & left, const T& scalar) {
+    LhVertex<T, N> operator+ (LhVertex<T, N> const & left, const T& scalar) {
         LhVertex<T, N> temp;
         for (int i = 0; i < temp._counts; i++) {
             temp._datas[i] = left._datas[i] + scalar;
@@ -51,7 +51,7 @@
     }
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator- (LhVertex<T, N> const & left, const T& scalar) {
+    LhVertex<T, N> operator- (LhVertex<T, N> const & left, const T& scalar) {
         LhVertex<T, N> temp;
         for (int i = 0; i < temp._counts; i++) {
             temp._datas[i] = left._datas[i] - scalar;
@@ -60,7 +60,7 @@
     }
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator* (LhVertex<T, N> const & left, const T& scalar) {
+    LhVertex<T, N> operator* (LhVertex<T, N> const & left, const T& scalar) {
         LhVertex<T, N> temp;
         for (int i = 0; i < (int)temp._counts; i++) {
             temp._datas[i] = left._datas[i] * scalar;
@@ -69,7 +69,7 @@
     }
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator/ (LhVertex<T, N> const & left, const T& scalar) {
+    LhVertex<T, N> operator/ (LhVertex<T, N> const & left, const T& scalar) {
         LhVertex<T, N> temp;
         for (int i = 0; i < temp._counts; i++) {
             temp._datas[i] = left._datas[i] / scalar;

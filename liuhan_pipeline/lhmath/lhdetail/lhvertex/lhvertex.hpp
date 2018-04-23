@@ -41,22 +41,22 @@
 
 #ifndef EXTENDED_IMPLEMENTATION_BINARY_LHVERTEX//一些二元操作
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator+(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//加
+    LhVertex<T, N> operator+(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//加
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator-(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//减
+    LhVertex<T, N> operator-(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//减
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator*(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//乘
+    LhVertex<T, N> operator*(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//乘
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator/(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//除
+    LhVertex<T, N> operator/(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//除
 
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator+(LhVertex<T, N> const & left, const T& scalar);//加
+    LhVertex<T, N> operator+(LhVertex<T, N> const & left, const T& scalar);//加
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator-(LhVertex<T, N> const & left, const T& scalar);//减
+    LhVertex<T, N> operator-(LhVertex<T, N> const & left, const T& scalar);//减
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator*(LhVertex<T, N> const & left, const T& scalar);//乘
+    LhVertex<T, N> operator*(LhVertex<T, N> const & left, const T& scalar);//乘
     template <typename T, unsigned int N>
-    LhVertex<T, N>& operator/(LhVertex<T, N> const & left, const T& scalar);//除
+    LhVertex<T, N> operator/(LhVertex<T, N> const & left, const T& scalar);//除
 
     template <typename T, unsigned int N>
     bool operator==(LhVertex<T, N> const & left, LhVertex<T, N> const& right);//==

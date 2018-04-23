@@ -28,30 +28,27 @@ namespace lh_pipeline {
         void update_texture(unsigned char* texture_datas, int texture_size);
         void bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size);
         void draw();
-        void keyboard(char key);
+        void keyboard(/*char vk, */char key);
+        void set_front_begin(float, float);
+        void set_front(float, float);
     private:
         void draw_line(bool loop = false);
         void draw_line(int x1, int y1, int x2, int y2, int color);
         void draw_triangles_fill();
         void draw_trangles_texture_fill();
         void draw_triangles();
-        void resetpostion();
         void z_mip();
         bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
         void draw_grid();
+        void draw_floor();
     public:
         LHRENDER_STATE _render_state = LH_LINES;
         lh_pipeline::LhPipeLine _piple;
     private:
-        float _left = 0;
-        float _right = 0;
-        float _up = 0;
-        float _down = 0;
-        float _front = 0;
-        float _back = 0;
-        float _roate_x = 0;
-        float _roate_y = 0;
-        float _roate_z = 0;
         bool _grid = false;
+        float _draw_cost_time = 0.0f;
+        float _fps = 0.0f;
+        float _last_x = 0.0f;
+        float _last_y = 0.0f;
     };
 }

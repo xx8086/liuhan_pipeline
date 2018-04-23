@@ -20,6 +20,9 @@
     </ClCompile>
     <ClCompile Include="lhdevice.cpp" />
     <ClCompile Include="lhpipeline.cpp" />
+    <ClCompile Include="lhcamera\lhcamera.cpp">
+      <Filter>lhcamera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
@@ -27,5 +30,8 @@
     </ClInclude>
     <ClInclude Include="lhdevice.h" />
     <ClInclude Include="lhpipeline.h" />
+    <ClInclude Include="lhcamera\lhcamera.h">
+      <Filter>lhcamera</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

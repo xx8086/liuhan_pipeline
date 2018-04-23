@@ -775,7 +775,7 @@ namespace lh_pipeline {
                 unsigned int color = texture[iv * _current_uv_size + iu];
                 if (_light.is_visible()) {
                     
-                    lh_color lightcolor = _light.get_pointlight(normal, _view, 
+                    lh_color lightcolor = _light.get_pointlight(normal, *_view, 
                         LhVertexFloat3(window_to_view(float(i), float(_width)), 
                             window_to_view(float(y), float(_height)), z));
                     lh_color c(color);
@@ -795,7 +795,7 @@ namespace lh_pipeline {
         _current_uv_texture_datas = (unsigned int*)(uv);
     }
 
-    void LhDrawPrimitive::set_view(LhVertexFloat3 view){
+    void LhDrawPrimitive::set_view(LhVertexFloat3* view){
         _view = view;
     }
 

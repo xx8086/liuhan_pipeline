@@ -16,18 +16,28 @@ namespace lh_pipeline {
         lh_color() {}
         lh_color(float r, float g, float b, float a = 255) :
             red(r), green(g), blue(b) {}
+        void check() {
+            if (red > 255.0)red = 255.0;
+            if (green > 255.0)green = 255.0;
+            if (blue > 255.0)blue = 255.0;
+            if (alph > 255.0)alph = 255.0;
 
+            if (red < 0.0)red = 0.0;
+            if (green < 0.0)green = 0.0;
+            if (blue < 0.0)blue = 0.0;
+            if (alph < 0.0)alph = 0.0;
+        }
         template <typename T>
         lh_color(T rgba) {
-            alph = (float)rgba;
-            blue = (float)((int)rgba >> 8);
-            green = (float)((int)rgba >> 16);
-            red = (float)((int)rgba >> 24);
+            blue = (rgba) & 0xff;
+            green = (rgba >> 8) & 0xff;
+            red = (rgba >> 16) & 0xff;
+            alph = (rgba >> 24) & 0xff;
         }
 
         template <typename T>
         T get_t() {
-            return T((int)alph | (int)blue << 8 | (int)green << 16 | (int)red << 24);
+            return T((int)blue | (int)green << 8 | (int)red << 16 | (int)alph << 24);
         }
 
         lh_color& operator+=(const lh_color &v) {

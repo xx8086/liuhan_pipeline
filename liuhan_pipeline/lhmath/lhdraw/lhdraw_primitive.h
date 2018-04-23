@@ -2,6 +2,7 @@
 //#include <functional>
 #include "../lhdetail/lhvertex.h"
 #include "../lhmath_common.h"
+#include "lhlights.h"
 
 namespace lh_pipeline {
 
@@ -64,6 +65,7 @@ namespace lh_pipeline {
         ~LhDrawPrimitive();
     public:
         void set_buffer(int w, int h, void* pbits);
+        void set_view(LhVertexFloat3 view);
         void draw_line(int x1, int y1, int x2, int y2, lh_color c);
         void draw_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
         void draw_triangle_line(int x1, int y1, int x2, int y2, int x3, int y3, lh_color color);
@@ -77,9 +79,9 @@ namespace lh_pipeline {
         void swap_vaue(T& a, T& b);
         bool deeptest(int x, int y, float z);
         void setpixel(float x, float y, lh_color color);
-        void setpixtel(int x, int y, int u, int v);
-        void draw_interp_scanline(VertexColor left, VertexColor right);
-        void draw_interp_texture_scanline(VertexColor left, VertexColor right);
+        void setpixtel(int x, int y, unsigned int);
+        void draw_interp_scanline(VertexColor left, VertexColor right, LhVertexFloat3 normal);
+        void draw_interp_texture_scanline(VertexColor left, VertexColor right, LhVertexFloat3 normal);
         void set_clip_window(float x_min, float y_min, float x_max, float y_max);
     private:
         void line_dda(int x1, int y1, int x2, int y2, lh_color color);
@@ -87,9 +89,9 @@ namespace lh_pipeline {
         void line(int x1, int y1, int x2, int y2, lh_color c);
         void top_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
         void bottom_triangle(float x1, float y1, float x2, float y2, float x3, float y3, lh_color color);
-        void top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
-        void bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
-
+        void top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, LhVertexFloat3 normal, bool = false);
+        void bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, LhVertexFloat3 normal, bool = false);
+        float window_to_view(float pos, float length);
     private:
         int _width = 0;
         int _height = 0;
@@ -104,5 +106,7 @@ namespace lh_pipeline {
         float _z_near_clip = 100.0;
         float _z_far_clip = -1.0;
         bool _deep_test = true;
+        LhLights _light;
+        LhVertexFloat3 _view;
     };
 }

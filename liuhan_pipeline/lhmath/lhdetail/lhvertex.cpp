@@ -20,12 +20,5 @@ namespace lh_pipeline {
         }
         return true;
     }
-
-    //µã³Ë
-    inline float dot(const LhVertex<float, 3>& left, const LhVertex<float, 3>& right) {
-        return left.get_x() * right.get_x() +
-            left.get_y() * right.get_y() +
-            left.get_z() * right.get_z();
-    }
     
 }

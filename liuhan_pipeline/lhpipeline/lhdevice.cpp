@@ -69,9 +69,11 @@ namespace lh_pipeline {
         set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         resetpostion();
-        _piple.set_camera(LhVertexFloat3(0.0f, 0.0f, -3.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
+        LhVertexFloat3 view(0.0f, 0.0f, -3.0f); 
+        _piple.set_camera(view, LhVertexFloat3(0.0f, 0.0f, 1.0f), LhVertexFloat3(0.0f, 1.0f, 0.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
+        set_view(view);
     }
 
     bool LhDevice::get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3) {

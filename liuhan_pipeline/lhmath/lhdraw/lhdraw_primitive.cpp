@@ -28,6 +28,11 @@ namespace lh_pipeline {
         _z_near_clip = 1.0f;
         _frame_buffers = static_cast<unsigned char*>(pbits);
         set_clip_window(0.0f, 0.0f, (float)w, (float)h);
+
+        _light.set_type(LIGHT_TYPE_POINT, 1);
+        _light.set_light_color(lh_color(255.0f, 0.0f, 0.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), 0.05f, 0.8f, 1.0f);
+        _light.set_point(LhVertexFloat3(1.0f, 1.0f, -3.0f), 1.0f, 0.09f, 0.032f);
+        _light.visible();
     }
 
     void LhDrawPrimitive::clear_deep() {
@@ -78,17 +83,17 @@ namespace lh_pipeline {
         _frame_buffers[pos + 2] = (unsigned char)color.red;//r
         _frame_buffers[pos + 3] = (unsigned char)color.alph;//a
     }
-
-    void LhDrawPrimitive::setpixtel(int x, int y, int u, int v) {
+    //void setpixtel(int x, int y, unsigned int);
+    void LhDrawPrimitive::setpixtel(int x, int y, unsigned int color) {
         if (y >= _y_max_clip ||
             y < _y_min_clip ||
             x >= _x_max_clip ||
             x < _x_min_clip) {
             return;
         }
-        unsigned int* texture = (unsigned int*)_current_uv_texture_datas;
+        //unsigned int* texture = (unsigned int*)_current_uv_texture_datas;
         unsigned int* des = (unsigned int*)_frame_buffers;
-        des[y * _width + x] = texture[v * _current_uv_size + u];
+        des[y * _width + x] = color;// texture[v * _current_uv_size + u];
     }
     /*
     dx = (x(i+1) - x(i)) / (t(i+1) - t(i))
@@ -554,14 +559,18 @@ namespace lh_pipeline {
         }
 
         if (v2.postion.get_y() == v1.postion.get_y()) {//Æ½¶¥
-            top_triangle(v1, v2, v3, use_uv);
+            top_triangle(v1, v2, v3, 
+                _light.get_normal(v1.postion, v2.postion, v3.postion),
+                use_uv);
             draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
                 (int)v2.postion.get_x(), (int)v2.postion.get_y(),
                 (int)v3.postion.get_x(), (int)v3.postion.get_y(),
                 lh_color(255, 0, 0));
         }
         else if (v3.postion.get_y() == v2.postion.get_y()) {
-            bottom_triangle(v1, v2, v3, use_uv);
+            bottom_triangle(v1, v2, v3, 
+                _light.get_normal(v1.postion, v2.postion, v3.postion),
+                use_uv);
             draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
                 (int)v2.postion.get_x(), (int)v2.postion.get_y(),
                 (int)v3.postion.get_x(), (int)v3.postion.get_y(),
@@ -590,8 +599,12 @@ namespace lh_pipeline {
                 interp_v = VertexColor(LhVertex<float, 3>(line_x, v2.postion.get_y(), line_z), line_color);
             }
 
-            bottom_triangle(v1, interp_v, v2, use_uv);
-            top_triangle(interp_v, v2, v3, use_uv);
+            bottom_triangle(v1, interp_v, v2, 
+                _light.get_normal(v1.postion, interp_v.postion, v2.postion),
+                use_uv);
+            top_triangle(interp_v, v2, v3, 
+                _light.get_normal(interp_v.postion, v2.postion, v3.postion),
+                use_uv);
 
             draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
                 (int)interp_v.postion.get_x(), (int)interp_v.postion.get_y(),
@@ -605,7 +618,7 @@ namespace lh_pipeline {
         }
     }
 
-    void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool use_uv) {
+    void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, LhVertexFloat3 normal, bool use_uv) {
         if (v2.postion.get_x() < v1.postion.get_x()) {
             swap_vaue(v1, v2);
         }
@@ -629,7 +642,8 @@ namespace lh_pipeline {
             for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
                 draw_interp_texture_scanline(
                     VertexColor(LhVertex<float, 3>(left_x, (float)y_loop, left_z), left_uv),
-                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_uv));
+                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_uv),
+                    normal);
                 left_x = left_x + tan_left;
                 right_x = right_x + tan_right;
                 left_z = left_z + tan_left_z;
@@ -647,7 +661,8 @@ namespace lh_pipeline {
             for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
                 draw_interp_scanline(
                     VertexColor(LhVertex<float, 3>(left_x, (float)y_loop, left_z), left_color),
-                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_color));
+                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_color),
+                    normal);
                 left_x = left_x + tan_left;
                 right_x = right_x + tan_right;
                 left_z = left_z + tan_left_z;
@@ -657,7 +672,7 @@ namespace lh_pipeline {
             }
         }
     }
-    void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool use_uv) {
+    void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, LhVertexFloat3 normal, bool use_uv) {
         if (v3.postion.get_x() < v2.postion.get_x()) {
             swap_vaue(v2, v3);
         }
@@ -681,7 +696,8 @@ namespace lh_pipeline {
             for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
                 draw_interp_texture_scanline(
                     VertexColor(LhVertex<float, 3>(left_x, (float)y_loop, left_z), left_uv),
-                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_uv));
+                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_uv),
+                    normal);
                 left_x = left_x + tan_left;
                 right_x = right_x + tan_right;
                 left_z = left_z + tan_left_z;
@@ -699,7 +715,8 @@ namespace lh_pipeline {
             for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
                 draw_interp_scanline(
                     VertexColor(LhVertex<float, 3>(left_x, (float)y_loop, left_z), left_color),
-                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_color));
+                    VertexColor(LhVertex<float, 3>(right_x, (float)y_loop, right_z), right_color),
+                    normal);
                 left_x = left_x + tan_left;
                 right_x = right_x + tan_right;
                 left_z = left_z + tan_left_z;
@@ -710,7 +727,7 @@ namespace lh_pipeline {
         }
     }
 
-    void LhDrawPrimitive::draw_interp_scanline(VertexColor left, VertexColor right) {
+    void LhDrawPrimitive::draw_interp_scanline(VertexColor left, VertexColor right, LhVertexFloat3 normal) {
         int y = (int)left.postion.get_y();
         int x_begin = (int)left.postion.get_x();
         int x_end = (int)right.postion.get_x();
@@ -729,7 +746,7 @@ namespace lh_pipeline {
         }
     }
 
-    void LhDrawPrimitive::draw_interp_texture_scanline(VertexColor left, VertexColor right) {
+    void LhDrawPrimitive::draw_interp_texture_scanline(VertexColor left, VertexColor right, LhVertexFloat3 normal) {
         int y = (int)left.postion.get_y();
         int x_begin = (int)left.postion.get_x();
         int x_end = (int)right.postion.get_x();
@@ -744,7 +761,22 @@ namespace lh_pipeline {
             if (deeptest(i, y, z)) {
                 int iu = (int)(left_uv.u * _current_uv_size);
                 int iv = (int)(left_uv.v * _current_uv_size);
-                setpixtel(i, y, iu, iv);
+                unsigned int* texture = (unsigned int*)_current_uv_texture_datas;
+                unsigned int color = texture[iv * _current_uv_size + iu];
+                if (_light.is_visible()) {
+                    
+                    lh_color lightcolor = _light.get_pointlight(normal, _view, 
+                        LhVertexFloat3(window_to_view(float(i), float(_width)), 
+                            window_to_view(float(y), float(_height)), z));
+                    lh_color c(color);
+                    lh_color h = c + lightcolor;
+                    h.check();
+                    color = h.get_t<unsigned int>();
+                }
+
+
+
+                setpixtel(i, y, color);
             }
             left_uv.u += du;
             left_uv.v += dv;
@@ -754,5 +786,13 @@ namespace lh_pipeline {
     void LhDrawPrimitive::set_current_uv(unsigned char* uv, int  uv_size) {
         _current_uv_size = uv_size;
         _current_uv_texture_datas = (unsigned int*)(uv);
+    }
+
+    void LhDrawPrimitive::set_view(LhVertexFloat3 view){
+        _view = view;
+    }
+
+    float LhDrawPrimitive::window_to_view(float pos, float length) {
+        return 2 * (pos - length / 2) / length;
     }
 }

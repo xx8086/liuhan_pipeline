@@ -1,6 +1,6 @@
 #pragma once
-#include "../../lhmath/lhmath_common.h"
-#include "../../lhmath/lhdetail/lhvertex.h"
+#include "../lhmath_common.h"
+#include "../lhdetail/lhvertex.h"
 
 namespace lh_pipeline {
     typedef enum LightType {
@@ -13,23 +13,25 @@ namespace lh_pipeline {
     class LhLights
     {
     public:
-        LhLights(LIGHT_TYPE lighttype, int id);
+        LhLights(LIGHT_TYPE lighttype, unsigned int id);
+        LhLights() {}
         ~LhLights();
     public:
+        LhVertexFloat3 get_normal(LhVertexFloat3 a, LhVertexFloat3 b, LhVertexFloat3 c);
         lh_color get_dirlight(LhVertexFloat3 normal, LhVertexFloat3 view);
         lh_color get_pointlight(LhVertexFloat3 normal, LhVertexFloat3 view, LhVertexFloat3 fragpos);
         lh_color get_spotlight(LhVertexFloat3 normal, LhVertexFloat3 view, LhVertexFloat3 fragpos);
+        void set_type(LIGHT_TYPE lighttype, unsigned int id);
         void set_light_color(lh_color color, LhVertexFloat3 light_di, float ambient, float diff, float spec, float shininess = 32);
         void set_point(LhVertexFloat3 light_pos, float kc, float kl, float kq);
         void set_spot(float inner, float outter, float umbra, float penumbra, float falloff);
         void visible() { _visible = true; };
         void invisible() { _visible = false; };
+        bool is_visible() { return _visible; };
     private:
-
-        float max(float a, float b);
         LhVertexFloat3 reflect(LhVertexFloat3 I, LhVertexFloat3 N);
     private:
-        int _id;
+        unsigned int _id;
         bool _visible = false;
         float _shininess = 32;//聚光灯指数因子
         float _ambient_strength;

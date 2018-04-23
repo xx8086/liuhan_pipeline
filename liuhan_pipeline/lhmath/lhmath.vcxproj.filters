@@ -46,6 +46,9 @@
     <ClInclude Include="lhdraw\lhdraw_primitive.h">
       <Filter>lhdraw</Filter>
     </ClInclude>
+    <ClInclude Include="lhdraw\lhlights.h">
+      <Filter>lhdraw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lhdetail\lhmatrix_float4.cpp">
@@ -58,6 +61,9 @@
       <Filter>lhdetail</Filter>
     </ClCompile>
     <ClCompile Include="lhdraw\lhdraw_primitive.cpp">
+      <Filter>lhdraw</Filter>
+    </ClCompile>
+    <ClCompile Include="lhdraw\lhlights.cpp">
       <Filter>lhdraw</Filter>
     </ClCompile>
   </ItemGroup>

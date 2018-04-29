@@ -25,7 +25,7 @@ namespace lh_pipeline {
         _old_bitmap = (HBITMAP)SelectObject(_frame_dc, _dib);
 
         LhDevice::update_buffer(w, h, ptr);
-        LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
+        LhDevice::set_render_state(LH_TRIANGLES_FILL);
         
         load_level_texture((TCHAR*)"../res/128.bmp", 128);
         load_level_texture((TCHAR*)"../res/256.bmp", 256);
@@ -223,7 +223,7 @@ namespace lh_pipeline {
     }
 
     void LhDib::update_vertex() {
-#if 0
+#if 1
         float vertex[8][3] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
@@ -260,7 +260,7 @@ namespace lh_pipeline {
         insert_quadrilateral<unsigned int>(vecs_color, vertex_color[1], vertex_color[3], vertex_color[7], vertex_color[5]);
         insert_quadrilateral<unsigned int>(vecs_color, vertex_color[2], vertex_color[6], vertex_color[7], vertex_color[3]);
 
-        LhDevice::bind_vertex(vecs.data(), vecs_color.data(), vecs.size()/3);
+        LhDevice::bind_vertex(vecs.data(), vecs_color.data(), nullptr, vecs.size()/3);
 #else
 /*    a-----|------d--------->u
         |    \  |         |

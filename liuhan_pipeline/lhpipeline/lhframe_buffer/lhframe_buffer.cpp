@@ -76,16 +76,22 @@ void LhFrameBuffer::update_vertex(const float* vertex_buffer, const unsigned int
     if (nullptr == _vertex_color_buffers) {
         _vertex_color_buffers = new unsigned int[3 * counts];
     }
+	_vertex_buffers_size = counts;
 
     memcpy(_vertex_buffers, vertex_buffer, 3 * counts * sizeof(float));
-    memcpy(_vertex_color_buffers, vertex_buffer_color, 3 * counts * sizeof(unsigned int));
-    _vertex_buffers_size = counts;
+    
+	if (nullptr != vertex_buffer_color) {
+		memcpy(_vertex_color_buffers, vertex_buffer_color, 3 * counts * sizeof(unsigned int));
+	}
 
     if (nullptr != _uv) {
         delete[] _uv;
     }
-    _uv = new float[2 * counts];
-    memcpy(_uv, vertex_uv, 2 * counts * sizeof(float));
+	if (nullptr != vertex_uv) {
+		_uv = new float[2 * counts];
+		memcpy(_uv, vertex_uv, 2 * counts * sizeof(float));
+	}
+    
 }
 
 int LhFrameBuffer::texture_size_check(int texture_size) {

@@ -260,7 +260,51 @@ namespace lh_pipeline {
         insert_quadrilateral<unsigned int>(vecs_color, vertex_color[1], vertex_color[3], vertex_color[7], vertex_color[5]);
         insert_quadrilateral<unsigned int>(vecs_color, vertex_color[2], vertex_color[6], vertex_color[7], vertex_color[3]);
 
-        LhDevice::bind_vertex(vecs.data(), vecs_color.data(), nullptr, vecs.size()/3);
+
+		const float uvs[72] = {
+			0.0f,  0.0f,
+			0.0f,  1.0f,
+			1.0f,  1.0f,
+			1.0f,  1.0f,
+			1.0f,  0.0f,
+			0.0f,  0.0f,
+
+			0.0f,  0.0f,
+			1.0f,  0.0f,
+			1.0f,  1.0f,
+			1.0f,  1.0f,
+			0.0f,  1.0f,
+			0.0f,  0.0f,
+
+			1.0f,  0.0f,
+			1.0f,  1.0f,
+			0.0f,  1.0f,
+			0.0f,  1.0f,
+			0.0f,  0.0f,
+			1.0f,  0.0f,
+
+			1.0f,  0.0f,
+			0.0f,  0.0f,
+			0.0f,  1.0f,
+			0.0f,  1.0f,
+			1.0f,  1.0f,
+			1.0f,  0.0f,
+
+			0.0f,  1.0f,
+			1.0f,  1.0f,
+			1.0f,  0.0f,
+			1.0f,  0.0f,
+			0.0f,  0.0f,
+			0.0f,  1.0f,
+
+			0.0f,  1.0f,
+			0.0f,  0.0f,
+			1.0f,  0.0f,
+			1.0f,  0.0f,
+			1.0f,  1.0f,
+			0.0f,  1.0f
+	};
+        LhDevice::bind_vertex(vecs.data(), vecs_color.data(), uvs, vecs.size()/3);
 #else
 /*    a-----|------d--------->u
         |    \  |         |

@@ -50,5 +50,12 @@ namespace lh_pipeline {
         float _fps = 0.0f;
         float _last_x = 0.0f;
         float _last_y = 0.0f;
+		float _r_x = 0;
+		float _r_y = 0;
+		float _r_z = 0;
+		float _m_x = 0;
+		float _m_y = 0;
+		float _m_z = 0;
+		bool _liu = false;
     };
 }

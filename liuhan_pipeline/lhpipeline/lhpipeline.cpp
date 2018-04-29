@@ -37,6 +37,10 @@ namespace lh_pipeline {
         _worldpos.set_z(z);
     }
 
+	bool LhPipeLine::can_draw() {
+		return _camera._pos.get_z() < _worldpos.get_z();
+	}
+
     LhVertexFloat3& LhPipeLine::get_view_pos() {
         return _camera._pos;
     }

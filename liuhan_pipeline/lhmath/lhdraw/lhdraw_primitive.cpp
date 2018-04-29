@@ -550,7 +550,6 @@ namespace lh_pipeline {
         }
     }
 
-
     void LhDrawPrimitive::draw_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool use_uv) {
         if (v2.postion.get_y() < v1.postion.get_y()) {
             swap_vaue(v1, v2);
@@ -562,7 +561,7 @@ namespace lh_pipeline {
             swap_vaue(v2, v3);
         }//v3.y > v2.y > v1.y
 
-        if (v3.postion.get_y() < _y_min_clip || v1.postion.get_y() > _y_max_clip ||
+        if (v1.postion.get_z() > _y_max_clip || v3.postion.get_y() < _y_min_clip ||
             (v1.postion.get_x() < _x_min_clip && v2.postion.get_x() < _x_min_clip && v3.postion.get_x() < _x_min_clip) ||
             (v1.postion.get_x() > _x_max_clip && v2.postion.get_x() > _x_max_clip && v3.postion.get_x() > _x_max_clip)) {
             return;
@@ -632,6 +631,10 @@ namespace lh_pipeline {
         if (v2.postion.get_x() < v1.postion.get_x()) {
             swap_vaue(v1, v2);
         }
+		if (v1.postion.get_y() > _y_max_clip) {
+			return;
+		}
+
         float dy = v3.postion.get_y() == v1.postion.get_y() ? 0.0f : 1.0f / (v3.postion.get_y() - v1.postion.get_y());
         float tan_left = (v3.postion.get_x() - v1.postion.get_x()) * dy;
         float tan_right = (v3.postion.get_x() - v2.postion.get_x()) * dy;
@@ -686,6 +689,9 @@ namespace lh_pipeline {
         if (v3.postion.get_x() < v2.postion.get_x()) {
             swap_vaue(v2, v3);
         }
+		if (v1.postion.get_y() > _y_max_clip) {
+			return;
+		}
         float dy = v2.postion.get_y() == v1.postion.get_y() ? 0.0f : 1.0f / (v2.postion.get_y() - v1.postion.get_y());
         float tan_left = (v2.postion.get_x() - v1.postion.get_x()) * dy;
         float tan_right = (v3.postion.get_x() - v1.postion.get_x()) * dy;

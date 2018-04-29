@@ -9,7 +9,7 @@ namespace lh_pipeline {
     LhCamera::LhCamera() :
         _front(LhVertexFloat3(0.0f, 0.0f, -1.0f)),
         _world_up(LhVertexFloat3(0.0f, 1.0f, 0.0f)),
-        _yaw(-90.0f),
+        _yaw(90.0f),
         _pitch(0.0f),
         _sensitivity(0.1f),
         _view_speed(15.0f) {

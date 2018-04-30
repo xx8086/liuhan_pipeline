@@ -135,17 +135,14 @@ namespace lh_pipeline {
         return cut;
     }
 
-    LhVertexFloat4 LhPipeLine::transformation_normalization(const LhVertexFloat4& v4) {
-        LhVertexFloat4 r;
-        float rhw = 1.0f / v4.get_w();
-        r.set_x((1.0f + v4.get_x() * rhw) * _width * 0.5f);
-        if (r.get_x() > 800) {
-            int i =0;
-        }
-        r.set_y((1.0f - v4.get_y() * rhw) * _height * 0.5f);
-        r.set_z(v4.get_z() * rhw);
-        r.set_w(1.0f);
-        return r;
+    LhVertexFloat4 LhPipeLine::transformation_normalization(const LhVertexFloat4& x) {
+		float rhw = 1.0f / x.get_w();
+		LhVertexFloat4 r(
+			(x.get_x() * rhw + 1.0f) * _width * 0.5f,
+			(1.0f - x.get_y() * rhw) * _height * 0.5f,
+			x.get_z() * rhw,
+			1.0f);
+		return r;
     }
 
     void LhPipeLine::set_windows_size(int w, int h) {

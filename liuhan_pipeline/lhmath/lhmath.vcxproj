@@ -28,14 +28,18 @@
     <ClInclude Include="lhdetail\lhvertex\lhvertex.hpp" />
     <ClInclude Include="lhdetail\lhvertex\lhvertex_binary.hpp" />
     <ClInclude Include="lhdetail\lhvertex\lhvertex_specialization.hpp" />
+    <ClInclude Include="lhdraw\lhclip.h" />
     <ClInclude Include="lhdraw\lhdraw_primitive.h" />
     <ClInclude Include="lhdraw\lhlights.h" />
+    <ClInclude Include="lhdraw\lhtools.hpp" />
+    <ClInclude Include="lhdraw\lhtools.cpp" />
     <ClInclude Include="lhmath_common.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lhdetail\lhmatrix_float4.cpp" />
     <ClCompile Include="lhdetail\lhquaternion.cpp" />
     <ClCompile Include="lhdetail\lhvertex.cpp" />
+    <ClCompile Include="lhdraw\lhclip.cpp" />
     <ClCompile Include="lhdraw\lhdraw_primitive.cpp" />
     <ClCompile Include="lhdraw\lhlights.cpp" />
   </ItemGroup>

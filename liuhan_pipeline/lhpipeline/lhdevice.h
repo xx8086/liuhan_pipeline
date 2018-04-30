@@ -56,6 +56,6 @@ namespace lh_pipeline {
 		float _m_x = 0;
 		float _m_y = 0;
 		float _m_z = 0;
-		bool _liu = false;
+		bool _print_log = false;
     };
 }

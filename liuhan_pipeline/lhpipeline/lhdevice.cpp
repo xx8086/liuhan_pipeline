@@ -4,6 +4,7 @@
 #include <stdlib.h >
 #include <chrono>
 #include <windows.h>
+#include <vector>
 
 namespace lh_pipeline {
     LhDevice::LhDevice()
@@ -42,7 +43,10 @@ namespace lh_pipeline {
         float add = 0.1f;
         bool change = true;
 		float roateangle = 20 * _draw_cost_time;
-		float speed = 5 * _draw_cost_time;
+		float speed = 1.25 * _draw_cost_time;
+		if (speed > 1.0f) {
+			speed = 1.0f;
+		}
         switch (key) {
         case 'W':
         case 0x26://VK_UP
@@ -97,12 +101,12 @@ namespace lh_pipeline {
 		char msgbuf[512];
 		LhVertexFloat3 view = _piple.get_view_pos();
 		LhVertexFloat3 dir = _piple.get_view_dir();
-		sprintf_s(msgbuf, "z = %f, speed = %f, view(%f, %f, %f), centor(%f, %f, %f)\n", 
-			_m_z, speed, 
+		sprintf_s(msgbuf, "pos(%f, %f, %f), speed = %f, view(%f, %f, %f), centor(%f, %f, %f)\n", 
+			_m_x, _m_y, _m_z, speed,
 			view.get_x(), view.get_y(), view.get_z(),
 			dir.get_x(), dir.get_y(), dir.get_z());
-		///_liu = true;
 		OutputDebugString(msgbuf);
+		_print_log = true;
     }
 
     void LhDevice::z_mip() {
@@ -130,22 +134,19 @@ namespace lh_pipeline {
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_rotate(0.0f, 0.0f, 0.0f);
         _piple.set_worldpos(0.0f, 0.0f, 0.0f);
-        _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -2.0f));
+        _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -3.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
         set_view(&_piple.get_view_pos());
     }
 
     bool LhDevice::get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3) {
-        f4 = _piple.transformation_in_mvp(f3);
-        /*if (0 == _piple.transformation_cut(f4)) {
-            return false;
-        }*/
-        f4 = _piple.transformation_normalization(f4);
+		LhVertexFloat4 model = _piple.transformation_in_mvp(f3);
+        f4 = _piple.transformation_normalization(model);
+		f4.set_w(model.get_w());
         return true;
     }
 
-    //#include <windows.h> 
     void LhDevice::draw() {
         if (LH_OFF_DRAW == _render_state) {
             return;
@@ -155,7 +156,10 @@ namespace lh_pipeline {
         auto start = std::chrono::system_clock::now();
         clear_buffer();
         clear_deep();
-        _piple.get_wvp();
+
+		_piple.set_rotate(_r_x, _r_y, _r_z);
+		_piple.set_worldpos(_m_x, _m_y, _m_z);
+		_piple.get_wvp();
         switch (_render_state) {
         case LH_LINES:
             draw_line();
@@ -170,8 +174,6 @@ namespace lh_pipeline {
             draw_triangles_fill();
             break;
         case LH_TRIANGLES_TEXTURE_FILL:
-			_piple.set_rotate(_r_x, _r_y, _r_z);
-			_piple.set_worldpos(_m_x, _m_y, _m_z);
             draw_trangles_texture_fill();
             break;
         case LH_TEST:
@@ -208,47 +210,39 @@ namespace lh_pipeline {
             }
         }
     }
-    void LhDevice::draw_triangles_fill() {
-        //triangle_fill;
-        const float* v = get_vertex_buffers();
-        const unsigned int* colors = get_vertex_color_buffers();
-        const int counts = 3 * get_vertex_buffers_size();
 
-        for (int i = 0; i < counts; i += 9) {
-            LhVertexFloat4 p1;
-            LhVertexFloat4 p2;
-            LhVertexFloat4 p3;
-            if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
-                get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
-                get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
 
-                lh_color c1((float)colors[i], (float)colors[i + 1], (float)colors[i + 2]);
-                lh_color c2((float)colors[i + 3], (float)colors[i + 4], (float)colors[i +5]);
-                lh_color c3((float)colors[i + 6], (float)colors[i + 7], (float)colors[i + 8]);
-#if 0
-                draw_triangle(p1.get_x(), p1.get_y(), 
-                    p2.get_x(), p2.get_y(), 
-                    p3.get_x(), p3.get_y(),
-                    lh_color(0.0f, 255.0f, 0.0f));
-#else
-                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), c1),
-                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), c2),
-                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), c3));
-#endif
-            }
-        }
+	void LhDevice::draw_triangles_fill() {
+		//triangle_fill;
+		const float* v = get_vertex_buffers();
+		const unsigned int* colors = get_vertex_color_buffers();
+		const int counts = 3 * get_vertex_buffers_size();
+		std::vector<VertexColor> triangles;
+		for (int i = 0; i < counts; i += 9) {
+			LhVertexFloat4 p1;
+			LhVertexFloat4 p2;
+			LhVertexFloat4 p3;
+			if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
+				get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
+				get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
 
-        //int texture_size = get_current_texture_uv_size();
-        //unsigned int* texture = (unsigned int*)ger_current_texutre_uv_buffers();
-        //unsigned int* des = (unsigned int*)get_frame_buffers();
-        //for (int i = 0; i < texture_size; i++) {
-        //    for (int j = 0; j < texture_size; j++) {
-        //        int pos = (j * texture_size + i) ;
-        //        //setpixel(i, j, lh_color(texture[pos]));
-        //        des[j*get_width() + i] = texture[pos];
-        //    }
-        //}
-    }
+				lh_color c1((float)colors[i], (float)colors[i + 1], (float)colors[i + 2]);
+				lh_color c2((float)colors[i + 3], (float)colors[i + 4], (float)colors[i + 5]);
+				lh_color c3((float)colors[i + 6], (float)colors[i + 7], (float)colors[i + 8]);
+
+				clip_triangle(triangles,
+					&VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), c1, TextureUV(), 1.0f / p1.get_w()),
+					&VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), c2, TextureUV(), 1.0f / p2.get_w()),
+					&VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), c3, TextureUV(), 1.0f / p3.get_w()));
+			}
+		}
+		_print_log = false;
+		for (std::vector<VertexColor>::iterator iter = triangles.begin();
+			iter != triangles.end();
+			iter += 3) {
+			draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
+		}
+	}
 
     float floor_v[] = {
         -1.5f, -1.5f, -0.5f,//b
@@ -285,31 +279,42 @@ namespace lh_pipeline {
         _piple.set_worldpos(0, 2.3f, 1.0f);
         _piple.get_wvp();
 
-        const int counts = 18;
-        for (int i = 0; i < counts; i += 9) {
-            LhVertexFloat4 p1;
-            LhVertexFloat4 p2;
-            LhVertexFloat4 p3;
-            if (get_pos(p1, LhVertexFloat3(floor_v[i], floor_v[i + 1], floor_v[i + 2])) &&
-                get_pos(p2, LhVertexFloat3(floor_v[i + 3], floor_v[i + 4], floor_v[i + 5])) &&
-                get_pos(p3, LhVertexFloat3(floor_v[i + 6], floor_v[i + 7], floor_v[i + 8]))) {
+		std::vector<VertexColor> triangles;
+		int uv_count = 0;
+		for (int i = 0; i < 18; i += 9, uv_count += 6) {
+			LhVertexFloat4 p1;
+			LhVertexFloat4 p2;
+			LhVertexFloat4 p3;
+			if (get_pos(p1, LhVertexFloat3(floor_v[i], floor_v[i + 1], floor_v[i + 2])) &&
+				get_pos(p2, LhVertexFloat3(floor_v[i + 3], floor_v[i + 4], floor_v[i + 5])) &&
+				get_pos(p3, LhVertexFloat3(floor_v[i + 6], floor_v[i + 7], floor_v[i + 8]))) {
 
-                lh_color c1((float)floor_colors[i], (float)floor_colors[i + 1], (float)floor_colors[i + 2]);
-                lh_color c2((float)floor_colors[i + 3], (float)floor_colors[i + 4], (float)floor_colors[i + 5]);
-                lh_color c3((float)floor_colors[i + 6], (float)floor_colors[i + 7], (float)floor_colors[i + 8]);
+				/*VertexColor v1(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(floor_uv[uv_count], floor_uv[uv_count + 1]), 1.0f / p1.get_w());
+				VertexColor v2(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(floor_uv[uv_count + 2], floor_uv[uv_count + 3]), 1.0f / p2.get_w());
+				VertexColor v3(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), TextureUV(floor_uv[uv_count + 4], floor_uv[uv_count + 5]), 1.0f / p3.get_w());
+				draw_triangle(v1, v2, v3, true);*/
+				clip_triangle(triangles,
+					&VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(floor_uv[uv_count], floor_uv[uv_count + 1]), 1.0f / p1.get_w()),
+					&VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(floor_uv[uv_count + 2], floor_uv[uv_count + 3]), 1.0f / p2.get_w()),
+					&VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), TextureUV(floor_uv[uv_count + 4], floor_uv[uv_count + 5]), 1.0f / p3.get_w()));
+			}
+		}
 
-                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), c1),
-                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), c2),
-                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), c3));
-
-            }
-        }
+		for (std::vector<VertexColor>::iterator iter = triangles.begin();
+			iter != triangles.end();
+			iter += 3) {
+			draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
+		}
     }
 
     void LhDevice::draw_grid() {
         if (!_grid) {
             return;
         }
+
+		_piple.set_rotate(0, 0, 0);
+		_piple.set_worldpos(0, 0, 0);
+		_piple.get_wvp();
 
         float value = 1.0f;
         float z = -0.5;
@@ -324,14 +329,20 @@ namespace lh_pipeline {
             LhVertexFloat4 p2;
             get_pos(p1, LhVertexFloat3(i, -value, z));
             get_pos(p2, LhVertexFloat3(i, value, z));
-            draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+            //draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+
+			VertexColor v1(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(), 1.0f / p1.get_w());
+			VertexColor v2(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(), 1.0f / p2.get_w());
+			//draw_3dline(v1, v2);
         }
         for (float j = y_begin; j <= y_end; j += 0.15) {
             LhVertexFloat4 p1;
             LhVertexFloat4 p2;
             get_pos(p1, LhVertexFloat3(-value, j, z));
             get_pos(p2, LhVertexFloat3(value, j, z));
-            draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
+			VertexColor v1(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(), 1.0f / p1.get_w());
+			VertexColor v2(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(), 1.0f / p2.get_w());
+			//draw_3dline(v1, v2);
         }
     }
     void LhDevice::draw_triangles() {
@@ -350,13 +361,6 @@ namespace lh_pipeline {
                 draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
                 draw_line((int)p2.get_x(), (int)p2.get_y(), (int)p3.get_x(), (int)p3.get_y(), color);
                 draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p3.get_x(), (int)p3.get_y(), color);
-
-                /*snprintf(info, 1024 * sizeof(TCHAR),
-                "p1:%.3f, %.3f, %.3f, p2:%.3f, %.3f, %.3f, p3:%.3f, %.3f, %.3f\n",
-                p1.get_x(), p1.get_y(), p1.get_z(),
-                p2.get_x(), p2.get_y(), p2.get_z(),
-                p3.get_x(), p3.get_y(), p3.get_z());
-                OutputDebugString(info);*/
             }
         }
     }
@@ -369,39 +373,45 @@ namespace lh_pipeline {
         set_texture(texture_datas, texture_size);
     }
 
-    void LhDevice::draw_trangles_texture_fill() {
+
+	void LhDevice::draw_trangles_texture_fill() {
 		if (!_piple.can_draw()) {
 			return;
 		}
-        const float* v = get_vertex_buffers();
-        const unsigned int* colors = get_vertex_color_buffers();
-        const int counts = 3 * get_vertex_buffers_size();
-        const float* uv = ger_current_uv();
-        int uv_count = 0;//2 * get_vertex_buffers_size();
-        for (int i = 0; i < counts; i += 9, uv_count += 6) {
-            LhVertexFloat4 p1;
-            LhVertexFloat4 p2;
-            LhVertexFloat4 p3;
-            if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
-                get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
-                get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
+		const float* v = get_vertex_buffers();
+		const unsigned int* colors = get_vertex_color_buffers();
+		const int counts = 3 * get_vertex_buffers_size();
+		const float* uv = ger_current_uv();
+		std::vector<VertexColor> triangles;
+		int uv_count = 0;//2 * get_vertex_buffers_size();
+		for (int i = 0; i < counts; i += 9, uv_count += 6) {
+			LhVertexFloat4 p1;
+			LhVertexFloat4 p2;
+			LhVertexFloat4 p3;
+			if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
+				get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
+				get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
 
-				if (_liu) {
-					char msgbuf[1024] = { 0 };
-					sprintf_s(msgbuf, "v1(%f, %f, %f),v2(%f, %f, %f),v3(%f, %f, %f)\n", 
+				if (_print_log) {
+					char msgbuf[1024];
+					sprintf_s(msgbuf, "v1(%f, %f, %f), v2(%f, %f, %f), v3(%f, %f, %f)\n",
 						p1.get_x(), p1.get_y(), p1.get_z(),
 						p2.get_x(), p2.get_y(), p2.get_z(),
 						p3.get_x(), p3.get_y(), p3.get_z());
-					_liu = false;
 					OutputDebugString(msgbuf);
 				}
 
-                draw_triangle(VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(uv[uv_count], uv[uv_count + 1])),
-                    VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(uv[uv_count + 2], uv[uv_count + 3])),
-                    VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), TextureUV(uv[uv_count + 4], uv[uv_count + 5])),
-                    true);
-            }
-        }
-    }
-
+				VertexColor v1(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
+				VertexColor v2(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
+				VertexColor v3(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
+				clip_triangle(triangles, &v1, &v2, &v3);
+			}
+		}
+		_print_log = false;
+		for (std::vector<VertexColor>::iterator iter = triangles.begin();
+			iter != triangles.end();
+			iter += 3) {
+			draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
+		}
+	}
 }

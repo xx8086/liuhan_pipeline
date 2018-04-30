@@ -7,7 +7,7 @@ namespace lh_pipeline {
 
 #define ToRadianF(degree) (((float)degree * LH_PI) / 180.0f) 
 #define TDegreeF(radian) (((float)radian * 180.0f) / LH_PI)
-
+#define FloatToInt(f) (static_cast<int>(f + 0.5f))
 
 	struct lh_color {
 		float red = 0;

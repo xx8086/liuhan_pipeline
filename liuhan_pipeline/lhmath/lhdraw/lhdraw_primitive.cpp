@@ -313,7 +313,9 @@ namespace lh_pipeline {
 	}
 
 	void LhDrawPrimitive::draw_triangle_line(int x1, int y1, int x2, int y2, int x3, int y3, lh_color color) {
-		return;
+		if (!_draw_trangle_line) {
+			return;
+		}
 		draw_line(x1, y1, x2, y2, color);
 		draw_line(x2, y2, x3, y3, color);
 		draw_line(x1, y1, x3, y3, color);
@@ -408,15 +410,33 @@ namespace lh_pipeline {
 			swap_vaue(v1, v2);
 		}
 		float dy = /*v3.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v3.postion.get_y() - v1.postion.get_y());
-		int iy1 = int(v1.postion.get_y() + 0.5f);//ceil(v1.postion.get_y());
-		int iy3 = int(v3.postion.get_y() + 0.5f);//ceil(v3.postion.get_y());
-		if (iy1 < _y_min_clip)iy1 = _y_min_clip;
-		if (iy3 > _y_max_clip)iy3 = _y_max_clip;
+		float fy1 = v1.postion.get_y();
+		float fy3 = v3.postion.get_y();
+		int iy1 = FloatToInt(fy1);
+		int iy3 = FloatToInt(fy3);
+		VertexColor v_left_1 = v1;
+		VertexColor v_right_1 = v2;
+		VertexColor v_left = v3;
+		VertexColor v_right = v3;
+		if (iy1 < _y_min_clip) {
+			iy1 = _y_min_clip;
+			float t = (_y_min_clip - fy1) * dy;
+			v_left_1 = lerp(v1, v3, t);
+			v_right_1 = lerp(v2, v3, t);
+			dy = 1.0f / (v3.postion.get_y() - v_left_1.postion.get_y());
+		}
+		if (iy3 > _y_max_clip) {
+			iy3 = _y_max_clip;
+			float t = (_y_max_clip - fy1) * dy;
+			v_left = lerp(v1, v3, t);
+			v_right = lerp(v2, v3, t);
+			dy = 1.0f / (v_left.postion.get_y() - v1.postion.get_y());
+		}
+		
 		for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-			float t = (y_loop - iy1) * dy;
-			if (t < 0)t = 0.0f;
-			VertexColor left = lerp(v1, v3, t);
-			VertexColor right = lerp(v2, v3, t);
+			float t = ((float)y_loop - iy1) * dy;
+			VertexColor left = lerp(v_left_1, v_left, t);
+			VertexColor right = lerp(v_right_1, v_right, t);
 			draw_interp_texture_scanline(left, right, normal, use_uv);
 		}
 	}
@@ -437,17 +457,34 @@ namespace lh_pipeline {
 			swap_vaue(v2, v3);
 		}
 		float dy = /*v2.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v2.postion.get_y() - v1.postion.get_y());
-		int iy1 = int(v1.postion.get_y() + 0.5f);// ceil(v1.postion.get_y());
-		int iy3 = int(v3.postion.get_y() + 0.5f);// ceil(v3.postion.get_y()) - 1;
-		if (iy1 < _y_min_clip)iy1 = _y_min_clip;
-		if (iy3 > _y_max_clip)iy3 = _y_max_clip;
+		float fy1 = v1.postion.get_y();// ceil(v1.postion.get_y());
+		float fy3 = v3.postion.get_y();// ceil(v3.postion.get_y()) - 1;
+		int iy1 = FloatToInt(fy1);
+		int iy3 = FloatToInt(fy3);
+		VertexColor v_left_1 = v1;
+		VertexColor v_right_1 = v1;
+		VertexColor v_left = v2;
+		VertexColor v_right = v3;
+
+		if (iy1 < _y_min_clip) {
+			iy1 = _y_min_clip;
+			float t = (_y_min_clip - fy1) * dy;
+			v_left_1 = lerp(v1, v2, t);
+			v_right_1 = lerp(v1, v3, t);
+			dy = 1.0f / (v2.postion.get_y() - v_left_1.postion.get_y());
+		}
+		if (iy3 > _y_max_clip) {
+			iy3 = _y_max_clip;
+			float t = (_y_max_clip - fy1) * dy;
+			v_left = lerp(v1, v2, t);
+			v_right = lerp(v1, v3, t);
+			dy = 1.0f / (v_left.postion.get_y() - v1.postion.get_y());
+		}
 
 		for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
-			float t = ((float)y_loop + 0.5f - iy1) * dy;
-			if (t < 0)t = 0.0f;
-			VertexColor left = lerp(v1, v2, t);
-			VertexColor right = lerp(v1, v3, t);
-
+			float t = ((float)y_loop - iy1) * dy;
+			VertexColor left = lerp(v_left_1, v_left, t);
+			VertexColor right = lerp(v_right_1, v_right, t);
 			draw_interp_texture_scanline(left, right, normal, use_uv);
 		}
 	}
@@ -462,8 +499,8 @@ namespace lh_pipeline {
 
 
 	void LhDrawPrimitive::draw_interp_texture_scanline(VertexColor left, VertexColor right, LhVertexFloat3 normal, bool use_uv) {
-		int y = (int)left.postion.get_y();
-		if (y <= _y_min_clip || _x_max_clip <= y) {
+		int y = FloatToInt(left.postion.get_y());
+		if (y < _y_min_clip || _y_max_clip < y) {
 			return;
 		}
 
@@ -556,5 +593,8 @@ namespace lh_pipeline {
 
 	void LhDrawPrimitive::draw_3dline(LhVertexFloat3& left, LhVertexFloat3& right, lh_color c) {
 		;
+	}
+	void LhDrawPrimitive::set_draw_triangle_line() {
+		_draw_trangle_line = !_draw_trangle_line;
 	}
 }

@@ -19,7 +19,9 @@ namespace lh_pipeline {
 		void draw_triangle(VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv = false);
 		void draw_3dline(LhVertexFloat3& left, LhVertexFloat3& right, lh_color c);
 		void clip_triangle(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3);
+		void set_draw_triangle_line();
 		bool backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir);
+
 	protected:
 		void clear_deep();
 		void set_current_uv(unsigned char* uv, int  uv_size);
@@ -63,5 +65,6 @@ namespace lh_pipeline {
 		LhClip _clip;
 		LhLights _light;
 		LhVertexFloat3* _view;
+		bool _draw_trangle_line = false;
 	};
 }

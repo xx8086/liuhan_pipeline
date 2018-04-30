@@ -96,6 +96,9 @@ namespace lh_pipeline {
 		case 'F':
 			_front = !_front;
 			break;
+		case'L':
+			set_draw_triangle_line();
+			break;
         default:
             change = false;
             break;
@@ -125,7 +128,7 @@ namespace lh_pipeline {
         else if (0.4f > z) {
             set_current_texture_uv(TEXTURE_LEVEL_512);
         }*/
-		set_current_texture_uv(TEXTURE_LEVEL_256);
+		set_current_texture_uv(TEXTURE_LEVEL_512);
         set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
     }
 
@@ -149,6 +152,9 @@ namespace lh_pipeline {
 
         f4 = _piple.transformation_homogeneous(model);
 		f4.set_w(model.get_w());
+		if (f4.get_y() < 0) {
+			return true;
+		}
         return true;
     }
 

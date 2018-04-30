@@ -19,6 +19,7 @@ namespace lh_pipeline {
 		void draw_triangle(VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv = false);
 		void draw_3dline(LhVertexFloat3& left, LhVertexFloat3& right, lh_color c);
 		void clip_triangle(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3);
+		bool backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir);
 	protected:
 		void clear_deep();
 		void set_current_uv(unsigned char* uv, int  uv_size);
@@ -26,8 +27,6 @@ namespace lh_pipeline {
 		void enablelight();
 
 	private:
-		template <typename T>
-		void swap_vaue(T& a, T& b);
 		bool deeptest(int x, int y, float w);
 		void setpixel(float x, float y, lh_color color);
 		void setpixtel(int x, int y, unsigned int);

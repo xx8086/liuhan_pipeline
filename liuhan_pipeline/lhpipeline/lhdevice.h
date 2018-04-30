@@ -45,7 +45,6 @@ namespace lh_pipeline {
         LHRENDER_STATE _render_state = LH_LINES;
         lh_pipeline::LhPipeLine _piple;
     private:
-        bool _grid = false;
         float _draw_cost_time = 0.0f;
         float _fps = 0.0f;
         float _last_x = 0.0f;
@@ -57,5 +56,7 @@ namespace lh_pipeline {
 		float _m_y = 0;
 		float _m_z = 0;
 		bool _print_log = false;
+		bool _grid = false;
+		bool _front = true;
     };
 }

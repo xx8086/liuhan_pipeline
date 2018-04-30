@@ -135,7 +135,7 @@ namespace lh_pipeline {
         return cut;
     }
 
-    LhVertexFloat4 LhPipeLine::transformation_normalization(const LhVertexFloat4& x) {
+    LhVertexFloat4 LhPipeLine::transformation_homogeneous(const LhVertexFloat4& x) {
 		float rhw = 1.0f / x.get_w();
 		LhVertexFloat4 r(
 			(x.get_x() * rhw + 1.0f) * _width * 0.5f,

@@ -93,6 +93,9 @@ namespace lh_pipeline {
 		case 'Z':
 			_r_z += roateangle;
 			break;
+		case 'F':
+			_front = !_front;
+			break;
         default:
             change = false;
             break;
@@ -142,7 +145,9 @@ namespace lh_pipeline {
 
     bool LhDevice::get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3) {
 		LhVertexFloat4 model = _piple.transformation_in_mvp(f3);
-        f4 = _piple.transformation_normalization(model);
+		//cvv
+
+        f4 = _piple.transformation_homogeneous(model);
 		f4.set_w(model.get_w());
         return true;
     }
@@ -400,11 +405,28 @@ namespace lh_pipeline {
 						p3.get_x(), p3.get_y(), p3.get_z());
 					OutputDebugString(msgbuf);
 				}
+				LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
+				LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
+				LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
+				LhVertexFloat3 n1 = v2 - v1;
+				LhVertexFloat3 n2 = v3 - v1;
+				LhVertexFloat3 normal = cross(n1, n2);
 
-				VertexColor v1(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
-				VertexColor v2(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
-				VertexColor v3(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
-				clip_triangle(triangles, &v1, &v2, &v3);
+				if (_front) {
+					if (backface_culling(normal, _piple.get_view_dir())) {
+						continue;
+					}
+				}
+				else {
+					if (!backface_culling(normal, _piple.get_view_dir())) {
+						continue;
+					}
+				}
+
+				VertexColor vc1(v1, TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
+				VertexColor vc2(v2, TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
+				VertexColor vc3(v3, TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
+				clip_triangle(triangles, &vc1, &vc2, &vc3);
 			}
 		}
 		_print_log = false;

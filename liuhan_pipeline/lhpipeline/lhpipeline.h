@@ -13,7 +13,7 @@ namespace lh_pipeline {
         void set_windows_size(int w, int h);
         LhVertexFloat4 transformation_in_mvp(const LhVertexFloat3&);
         LhVertexFloat4 transformation_in_mvo(const LhVertexFloat3&);
-        LhVertexFloat4 transformation_normalization(const LhVertexFloat4&);
+        LhVertexFloat4 transformation_homogeneous(const LhVertexFloat4&);
         unsigned int transformation_cut(const LhVertexFloat4&);
         void set_front_begin(float xoffset, float yoffset);
         void set_front(float xoffset, float yoffset);

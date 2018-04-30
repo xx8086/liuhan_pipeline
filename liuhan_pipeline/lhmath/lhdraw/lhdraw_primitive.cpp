@@ -49,8 +49,8 @@ namespace lh_pipeline {
 
 		_width = w;
 		_height = h;
-		_z_far_clip = 100.0f;
-		_z_near_clip = 0.0f;
+		_z_far_clip = 1.0f;
+		_z_near_clip = -1.0f;
 		_frame_buffers = static_cast<unsigned char*>(pbits);
 		set_clip_window(0.0f, 0.0f, (float)w, (float)h);
 
@@ -59,6 +59,12 @@ namespace lh_pipeline {
 		_light.set_point(LhVertexFloat3(1.0f, 1.0f, -3.0f), 1.0f, 0.09f, 0.032f);
 		_clip.set_clip_region(CLIP_ALL_FACE, 0, 0, w, h, _z_near_clip, _z_far_clip);
 	}
+
+	void LhDrawPrimitive::set_view(LhVertexFloat3* view) {
+		_view = view;
+		_clip.set_z_view(view->get_z());
+	}
+
 
 	void LhDrawPrimitive::clear_deep() {
 		if (nullptr != _frame_deep_buffers) {
@@ -168,13 +174,6 @@ namespace lh_pipeline {
 			x += dx;
 			y += dy;
 		}
-	}
-
-	template <typename T>
-	void LhDrawPrimitive::swap_vaue(T& a, T& b) {
-		T temp = a;
-		a = b;
-		b = temp;
 	}
 
 	/*
@@ -342,6 +341,10 @@ namespace lh_pipeline {
 
 	void LhDrawPrimitive::clip_triangle(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
 		_clip.triangle_clip(triangles, v1, v2, v3);
+	}
+
+	bool LhDrawPrimitive::backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir) {
+		return _clip.backface_culling(normal, dir);
 	}
 
 	void LhDrawPrimitive::draw_triangle(VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv) {
@@ -535,10 +538,6 @@ namespace lh_pipeline {
 		_current_uv_size = uv_size;
 		_max_uv_size = uv_size - 1;
 		_current_uv_texture_datas = (unsigned int*)(uv);
-	}
-
-	void LhDrawPrimitive::set_view(LhVertexFloat3* view) {
-		_view = view;
 	}
 
 	float LhDrawPrimitive::window_to_view(float pos, float length) {

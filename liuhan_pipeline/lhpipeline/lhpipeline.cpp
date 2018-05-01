@@ -92,16 +92,16 @@ namespace lh_pipeline {
         LhMatrixFloat4 rotate_trans;
         LhMatrixFloat4 translation_trans;
 
-        scale_trans.init_scale_transform(_scale.get_x(), _scale.get_y(), _scale.get_z());
-        rotate_trans.init_rotate_transform(_rotateinfo.get_x(), _rotateinfo.get_y(), _rotateinfo.get_z());
-        translation_trans.init_translation_transform(_worldpos.get_x(), _worldpos.get_y(), _worldpos.get_z());
+        scale_trans.scale_transform(_scale.get_x(), _scale.get_y(), _scale.get_z());
+        rotate_trans.rotate_transform(_rotateinfo.get_x(), _rotateinfo.get_y(), _rotateinfo.get_z());
+        translation_trans.translation_transform(_worldpos.get_x(), _worldpos.get_y(), _worldpos.get_z());
 
         _world_transformation = translation_trans * rotate_trans * scale_trans;
     }
     void LhPipeLine::init_view() {
         LhMatrixFloat4 camera_translation_trans;
         LhMatrixFloat4 camera_rotate_trans;
-        camera_translation_trans.init_translation_transform(
+        camera_translation_trans.translation_transform(
             -_camera._pos.get_x(),
             -_camera._pos.get_y(),
             -_camera._pos.get_z());//移到相机位置
@@ -109,10 +109,10 @@ namespace lh_pipeline {
         _view_transformation = camera_rotate_trans * camera_translation_trans;
     }
     void LhPipeLine::init_proj() {
-        _proj_transformation.init_persproj_transform(_pers_projinfo);
+        _proj_transformation.persproj_transform(_pers_projinfo);
     }
     void LhPipeLine::init_ortho() {
-        _ortho_transformation.init_orthoproj_transform(_orthoprojinfo);
+        _ortho_transformation.orthoproj_transform(_orthoprojinfo);
     }
 
     LhVertexFloat4 LhPipeLine::transformation_in_mvp(const LhVertexFloat3& v) {

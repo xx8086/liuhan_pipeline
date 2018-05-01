@@ -46,11 +46,11 @@ namespace lh_pipeline {
         LhVertexFloat4 operator*(const LhVertexFloat4& right);
         LhVertexFloat4 operator*(const LhVertexFloat3& right);//w = 1
     public:
-        void init_scale_transform(float, float, float);
-        void init_rotate_transform(float, float, float);
-        void init_translation_transform(float, float, float);
-        void init_persproj_transform(const PersProjInfo& p);
-        void init_orthoproj_transform(const OrthoProjInfo& p);
+        void scale_transform(float, float, float);
+        void rotate_transform(float, float, float);
+        void translation_transform(float, float, float);
+        void persproj_transform(const PersProjInfo& p);
+        void orthoproj_transform(const OrthoProjInfo& p);
         void coordinate_space_rotate(const LhVertexFloat3& target, const LhVertexFloat3& up);
     protected:
         float _m[4][4];

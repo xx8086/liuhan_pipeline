@@ -47,9 +47,6 @@
     <ClCompile Include="lhmath\lhdetail\lhmatrix_float4.cpp">
       <Filter>lhmath\lhdetail</Filter>
     </ClCompile>
-    <ClCompile Include="lhmath\lhdetail\lhquaternion.cpp">
-      <Filter>lhmath\lhdetail</Filter>
-    </ClCompile>
     <ClCompile Include="lhmath\lhdetail\lhvertex.cpp">
       <Filter>lhmath\lhdetail</Filter>
     </ClCompile>
@@ -85,9 +82,6 @@
       <Filter>lhmath\lhdetail</Filter>
     </ClInclude>
     <ClInclude Include="lhmath\lhdetail\lhmatrix_float4.h">
-      <Filter>lhmath\lhdetail</Filter>
-    </ClInclude>
-    <ClInclude Include="lhmath\lhdetail\lhquaternion.h">
       <Filter>lhmath\lhdetail</Filter>
     </ClInclude>
     <ClInclude Include="lhmath\lhdetail\lhvertex.h">

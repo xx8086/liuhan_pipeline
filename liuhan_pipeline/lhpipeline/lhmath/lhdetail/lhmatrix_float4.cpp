@@ -119,14 +119,14 @@ namespace lh_pipeline {
         return *this;
     }
 
-    void LhMatrixFloat4::init_scale_transform(float x, float y, float z) {
+    void LhMatrixFloat4::scale_transform(float x, float y, float z) {
         _m[0][0] = x;       _m[0][1] = 0.0f;    _m[0][2] = 0.0f;    _m[0][3] = 0.0f;
         _m[1][0] = 0.0f;    _m[1][1] = y;       _m[1][2] = 0.0f;    _m[1][3] = 0.0f;
         _m[2][0] = 0.0f;    _m[2][1] = 0.0f;    _m[2][2] = z;       _m[2][3] = 0.0f;
         _m[3][0] = 0.0f;    _m[3][1] = 0.0f;    _m[3][2] = 0.0f;    _m[3][3] = 1.0f;
     }
 
-    void LhMatrixFloat4::init_rotate_transform(float rotate_x, float rotate_y, float rotate_z) {
+    void LhMatrixFloat4::rotate_transform(float rotate_x, float rotate_y, float rotate_z) {
         LhMatrixFloat4 rx;
         LhMatrixFloat4 ry;
         LhMatrixFloat4 rz;
@@ -155,7 +155,7 @@ namespace lh_pipeline {
         *this = rz * ry * rx;
     }
 
-    void LhMatrixFloat4::init_translation_transform(float x, float y, float z) {
+    void LhMatrixFloat4::translation_transform(float x, float y, float z) {
         _m[0][0] = 1.0f; _m[0][1] = 0.0f; _m[0][2] = 0.0f; _m[0][3] = x;
         _m[1][0] = 0.0f; _m[1][1] = 1.0f; _m[1][2] = 0.0f; _m[1][3] = y;
         _m[2][0] = 0.0f; _m[2][1] = 0.0f; _m[2][2] = 1.0f; _m[2][3] = z;
@@ -178,7 +178,7 @@ namespace lh_pipeline {
         _m[3][0] = 0.0f;        _m[3][1] = 0.0f;        _m[3][2] = 0.0f;        _m[3][3] = 1.0f;
     }
 
-    void LhMatrixFloat4::init_persproj_transform(const PersProjInfo& p) {
+    void LhMatrixFloat4::persproj_transform(const PersProjInfo& p) {
         const float ar = p.width / p.height;
         const float zrange = p.z_near - p.z_far;
         const float tan_half_fov = tanf(ToRadianF(p.fov / 2.0f));
@@ -189,7 +189,7 @@ namespace lh_pipeline {
         _m[3][0] = 0.0f;                   _m[3][1] = 0.0f;            _m[3][2] = 1.0f;            _m[3][3] = 0.0;
     }
 
-    void LhMatrixFloat4::init_orthoproj_transform(const OrthoProjInfo& p) {
+    void LhMatrixFloat4::orthoproj_transform(const OrthoProjInfo& p) {
         const float l = p.l;
         const float r = p.r;
         const float b = p.b;

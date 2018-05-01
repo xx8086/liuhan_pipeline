@@ -140,7 +140,7 @@ namespace lh_pipeline {
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_rotate(0.0f, 0.0f, 0.0f);
         _piple.set_worldpos(0.0f, 0.0f, 0.0f);
-        _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -3.0f));
+        _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -4.0f));
         PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
         set_view(&_piple.get_view_pos());

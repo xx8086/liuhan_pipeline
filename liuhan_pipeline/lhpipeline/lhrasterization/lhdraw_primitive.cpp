@@ -317,6 +317,7 @@ namespace lh_pipeline {
 			return;
 		}
 		draw_line(x1, y1, x2, y2, color);
+		draw_line(x1, y1, x2, y2, color);
 		draw_line(x2, y2, x3, y3, color);
 		draw_line(x1, y1, x3, y3, color);
 	}
@@ -353,9 +354,6 @@ namespace lh_pipeline {
 		if (!clip(v1, v2, v3)) {
 			return;
 		}
-		v1.rhw();
-		v2.rhw();
-		v3.rhw();
 
 		LhVertexFloat3 normal = get_normal(v1.postion - v2.postion, v1.postion - v3.postion);
 		normalize(normal);
@@ -467,18 +465,18 @@ namespace lh_pipeline {
 		VertexColor v_right = v3;
 
 		if (iy1 < _y_min_clip) {
-			iy1 = _y_min_clip;
-			float t = (_y_min_clip - fy1) * dy;
+			float t = (_y_min_clip - iy1) * dy;
 			v_left_1 = lerp(v1, v2, t);
 			v_right_1 = lerp(v1, v3, t);
 			dy = 1.0f / (v2.postion.get_y() - v_left_1.postion.get_y());
+			iy1 = _y_min_clip;
 		}
 		if (iy3 > _y_max_clip) {
-			iy3 = _y_max_clip;
-			float t = (_y_max_clip - fy1) * dy;
+			float t = (_y_max_clip - iy3) * dy;
 			v_left = lerp(v1, v2, t);
 			v_right = lerp(v1, v3, t);
 			dy = 1.0f / (v_left.postion.get_y() - v1.postion.get_y());
+			iy3 = _y_max_clip;
 		}
 
 		for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
@@ -494,7 +492,7 @@ namespace lh_pipeline {
 			return VertexColor();
 		}
 		float inv =  1.0f / (right.postion.get_x() - left.postion.get_x());
-		return  (right - left) * inv;
+		return   (right - left) * inv;
 	}
 
 
@@ -504,12 +502,11 @@ namespace lh_pipeline {
 			return;
 		}
 
-		VertexColor step = interp_step(left, right);
 		float x_begin = left.postion.get_x();
 		float x_end = right.postion.get_x();
 		float z_begin = left.postion.get_z();
 		float z_end = right.postion.get_z();
-		float dx =/* x_end == x_begin ? 0.0f :*/ 1.0f / float(x_end - x_begin);
+		float dx = x_end == x_begin ? 0.0f : 1.0f / float(x_end - x_begin);
 		if (z_begin <= z_end) {
 			z_begin = z_begin < _z_near_clip ? _z_near_clip : z_begin;
 			z_end = z_end > _z_far_clip ? _z_far_clip : z_end;
@@ -519,8 +516,8 @@ namespace lh_pipeline {
 			z_end = z_end < _z_near_clip ? _z_near_clip : z_end;
 		}
 
-		int x_clip_begin = x_begin;// x_begin > _x_min_clip ? x_begin : _x_min_clip;
-		int x_clip_end = x_end;// x_end < _x_max_clip ? x_end : _x_max_clip;//裁剪
+		int x_clip_begin = FloatToInt(x_begin);// x_begin > _x_min_clip ? x_begin : _x_min_clip;
+		int x_clip_end = FloatToInt(x_end);// x_end < _x_max_clip ? x_end : _x_max_clip;//裁剪
 		VertexColor clip_left = left;
 		if (x_begin < _x_min_clip) {
 			x_clip_begin = _x_min_clip;
@@ -531,13 +528,12 @@ namespace lh_pipeline {
 			//clip_right = lerp(left, right, (_x_max_clip - x_begin) / (x_end - x_begin));
 		}
 
+		//VertexColor step = interp_step(left, right);//用step均值插值，每个单位步长uv会错位！！！！！！
 		for (int i = x_clip_begin; i <= x_clip_end; i++) {
-			float t = (i - x_clip_begin) * dx;
+			float t = (i - x_begin) * dx;
+			clip_left = lerp(left, right, t);
 			float z = clip_left._rhw;
 			float w = 1.0f / z;
-			/*if (!use_uv) {
-			z = left.postion.get_z();
-			}*/
 			if (deeptest(i, y, z)) {
 				unsigned int color = 0.0f;
 				if (use_uv) {
@@ -549,14 +545,14 @@ namespace lh_pipeline {
 					iv = lh_min(iv, 0, _max_uv_size);
 					unsigned int* texture = (unsigned int*)_current_uv_texture_datas;
 					color = texture[iv * _current_uv_size + iu];
-					clip_left.uv = clip_left.uv + step.uv;
+					//clip_left.uv = clip_left.uv + step.uv;
 				}
 				else {
 					color = (clip_left.color * w).get_t<unsigned int>();
-					clip_left.color = clip_left.color + step.color;
+					//clip_left.color = clip_left.color + step.color;
 					//left.postion.set_z(left.postion.get_z() + step.postion.get_z());
 				}
-				clip_left._rhw = clip_left._rhw + step._rhw;
+				//clip_left._rhw = clip_left._rhw + step._rhw;
 				if (_light.is_visible()) {
 					lh_color lightcolor = _light.get_pointlight(normal, *_view,
 						LhVertexFloat3(window_to_view(float(i), float(_width)),

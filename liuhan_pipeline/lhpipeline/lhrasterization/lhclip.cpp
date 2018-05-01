@@ -47,6 +47,10 @@ namespace lh_pipeline {
 	}
 
 	void LhClip::triangle_clip(std::vector<VertexColor>&triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		v1->rhw();
+		v2->rhw();
+		v3->rhw();
+
 		LhVertexInt3 sign;
 		int points = outside(sign, v1->postion, v2->postion, v3->postion);
 		if (0 == points) {//在视锥体内点的数量

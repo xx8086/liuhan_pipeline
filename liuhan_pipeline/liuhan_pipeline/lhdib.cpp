@@ -3,6 +3,28 @@
 
 namespace lh_pipeline {
     LhDib::LhDib() {
+		_rc.left = 10;
+		_rc.top = 10;
+		_rc.right = 350;
+		_rc.bottom = 400;
+
+		_font =
+			CreateFont(
+				20, // nHeight
+				0, // nWidth
+				0, // nEscapement
+				0, // nOrientation
+				FW_NORMAL, // nWeight
+				FALSE, // bItalic
+				FALSE, // bUnderline
+				0, // cStrikeOut
+				ANSI_CHARSET, // nCharSet
+				OUT_DEFAULT_PRECIS, // nOutPrecision
+				CLIP_DEFAULT_PRECIS, // nClipPrecision
+				DEFAULT_QUALITY, // nQuality
+				DEFAULT_PITCH | FF_SWISS,
+				_T("Arial") // nPitchAndFamily Arial
+			);
     }
 
 
@@ -39,28 +61,13 @@ namespace lh_pipeline {
     void LhDib::bitblt(HWND hwnd) {
         draw();
         HDC hdc = GetDC(hwnd);
+		profile(_frame_dc);
         ::BitBlt(hdc, 0, 0, get_width(), get_height(), _frame_dc, 0, 0, SRCCOPY);
         ReleaseDC(hwnd, hdc);
     }
 
     void LhDib::specialkeyboard(unsigned int uchar, unsigned int utype){
         keyboard(char(uchar));
-    }
-    void LhDib::destroy() {
-        if (nullptr != _frame_dc) {
-            if (nullptr != _old_bitmap) {
-                SelectObject(_frame_dc, _old_bitmap);
-                _old_bitmap = nullptr;
-            }
-
-            DeleteDC(_frame_dc);
-            _frame_dc = nullptr;
-        }
-
-        if (nullptr != _dib) {
-            DeleteObject(_dib);
-            _dib = nullptr;
-        }
     }
 
     void LhDib::release() {
@@ -345,4 +352,48 @@ namespace lh_pipeline {
         LhDevice::bind_vertex(v, color, uv, 6);
 #endif
     }
+
+	void LhDib::profile(HDC& hdc) {
+		char str_fps[2048] = { 0 };
+		sprintf_s(str_fps,
+			"方向键和asdw控制方向移动；\n"
+			"(移动和旋转操作距离eyes越远幅度越小)"
+			"空格键: 开关灯光；\n"
+			"R: 开关自动旋转\n"
+			"L: 开关画片元三角形\n"
+			"F: 切换正反面消除;\n"
+			"I: 线框； O: Gouraud； P: uv贴图\n"
+			"XYZ: 绕xyz轴旋转\n"
+			"每一帧耗时：%.3fms;  fps: %.3f",
+			1000 * get_draw_cost(), get_fps());
+		_old_font = SelectObject(hdc, _font);
+		SetBkColor(hdc, RGB(0, 0, 0));
+		SetTextColor(hdc, RGB(255, 0, 0));
+
+		DrawText(hdc, str_fps, strlen(str_fps) * sizeof(char), &_rc, DT_LEFT);
+		SelectObject(hdc, _old_font);
+	}
+
+	void LhDib::destroy(HWND hwd) {
+		if (nullptr != _frame_dc) {
+			if (nullptr != _old_bitmap) {
+				SelectObject(_frame_dc, _old_bitmap);
+				_old_bitmap = nullptr;
+			}
+
+			DeleteDC(_frame_dc);
+			_frame_dc = nullptr;
+		}
+
+		if (nullptr != _dib) {
+			DeleteObject(_dib);
+			_dib = nullptr;
+		}
+
+		if (nullptr != _font) {
+			HDC hdc = GetDC(hwd);
+			DeleteObject(_font);
+			ReleaseDC(hwd, hdc);
+		}
+	}
 }

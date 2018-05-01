@@ -42,10 +42,13 @@ namespace lh_pipeline {
     void LhDevice::keyboard(/*char vk, */char key) {
         float add = 0.1f;
         bool change = true;
-		float roateangle = 20 * _draw_cost_time;
+		float roateangle = 90.0f * _draw_cost_time;
 		float speed = 1.25 * _draw_cost_time;
-		if (speed > 1.0f) {
-			speed = 1.0f;
+		if (speed > 0.5f) {
+			speed = 0.5f;
+		}
+		else if (speed < 0.01f) {
+			speed = 0.01f;
 		}
         switch (key) {
         case 'W':
@@ -162,10 +165,13 @@ namespace lh_pipeline {
 	void LhDevice::draw_croe() {
 		clear_buffer();
 		clear_deep();
-		if (_rotate)_rotate_degree += 0.5f;
+		if (_rotate) {
+			_r_x += 0.5f;
+			_r_y += 0.5f;
+			_r_z += 0.5f;
+		}
 		_piple.set_rotate(_r_x, _r_y, _r_z);
 		_piple.set_worldpos(_m_x, _m_y, _m_z);
-		_piple.set_rotate(_rotate_degree, _rotate_degree, _rotate_degree);
 		_piple.get_wvp();
 		switch (_render_state) {
 		case LH_LINES:
@@ -197,10 +203,10 @@ namespace lh_pipeline {
         auto start = std::chrono::system_clock::now();
 		draw_croe();
 
-        auto end = std::chrono::system_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        _draw_cost_time = float(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den;
-
+		auto end = std::chrono::system_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+		_draw_cost_time = float(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den;
+		_fps = _draw_cost_time == 0.0f ? -0.0f : 1.0f / _draw_cost_time;
     }
 
     void LhDevice::draw_line(bool loop) {

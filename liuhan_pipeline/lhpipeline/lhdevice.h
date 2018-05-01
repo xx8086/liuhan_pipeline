@@ -31,6 +31,9 @@ namespace lh_pipeline {
         void keyboard(/*char vk, */char key);
         void set_front_begin(float, float);
         void set_front(float, float);
+	protected:
+		float get_fps() { return _fps; };
+		float get_draw_cost() { return _draw_cost_time; }
     private:
 		void draw_croe();
         void draw_line(bool loop = false);

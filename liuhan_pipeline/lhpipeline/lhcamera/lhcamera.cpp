@@ -1,5 +1,5 @@
 #include "lhcamera.h"
-#include "../../lhmath/lhmath_common.h"
+#include "../lhmath/lhmath_common.h"
 
 namespace lh_pipeline {
     LhCamera::~LhCamera()

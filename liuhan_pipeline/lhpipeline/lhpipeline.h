@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../lhmath/lhdetail/lhmatrix_float4.h"
+#include "lhmath\lhdetail\lhmatrix_float4.h"
 #include "lhcamera\lhcamera.h"
 
 namespace lh_pipeline {
@@ -14,7 +14,7 @@ namespace lh_pipeline {
         LhVertexFloat4 transformation_in_mvp(const LhVertexFloat3&);
         LhVertexFloat4 transformation_in_mvo(const LhVertexFloat3&);
         LhVertexFloat4 transformation_homogeneous(const LhVertexFloat4&);
-        unsigned int transformation_cut(const LhVertexFloat4&);
+        bool transformation_cvv(const LhVertexFloat4&);
         void set_front_begin(float xoffset, float yoffset);
         void set_front(float xoffset, float yoffset);
     public:

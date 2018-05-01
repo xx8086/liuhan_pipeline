@@ -13,6 +13,18 @@
     <Filter Include="lhrasterization">
       <UniqueIdentifier>{3e1e83db-0b0e-4a64-8a68-a29a24d56259}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lhmath">
+      <UniqueIdentifier>{ea4d6f8d-bdd7-41e3-93d7-64b5ea710924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lhmath\lhdetail">
+      <UniqueIdentifier>{1ddf74dc-ef55-408a-9a39-f47915d07203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lhmath\lhdetail\lhvertex">
+      <UniqueIdentifier>{5fbbcf92-4440-4c04-bebc-ba88789b7f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lhmath\lhdetail\lhmatrix">
+      <UniqueIdentifier>{f7fdbeb9-e916-4a67-b076-1f015cb14375}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp">
@@ -22,6 +34,24 @@
     <ClCompile Include="lhpipeline.cpp" />
     <ClCompile Include="lhcamera\lhcamera.cpp">
       <Filter>lhcamera</Filter>
+    </ClCompile>
+    <ClCompile Include="lights\lhlights.cpp">
+      <Filter>lhlights</Filter>
+    </ClCompile>
+    <ClCompile Include="lhrasterization\lhclip.cpp">
+      <Filter>lhrasterization</Filter>
+    </ClCompile>
+    <ClCompile Include="lhrasterization\lhdraw_primitive.cpp">
+      <Filter>lhrasterization</Filter>
+    </ClCompile>
+    <ClCompile Include="lhmath\lhdetail\lhmatrix_float4.cpp">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClCompile>
+    <ClCompile Include="lhmath\lhdetail\lhquaternion.cpp">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClCompile>
+    <ClCompile Include="lhmath\lhdetail\lhvertex.cpp">
+      <Filter>lhmath\lhdetail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -33,5 +63,58 @@
     <ClInclude Include="lhcamera\lhcamera.h">
       <Filter>lhcamera</Filter>
     </ClInclude>
+    <ClInclude Include="lights\lhlights.h">
+      <Filter>lhlights</Filter>
+    </ClInclude>
+    <ClInclude Include="lhrasterization\lhclip.h">
+      <Filter>lhrasterization</Filter>
+    </ClInclude>
+    <ClInclude Include="lhrasterization\lhdraw_primitive.h">
+      <Filter>lhrasterization</Filter>
+    </ClInclude>
+    <ClInclude Include="lhrasterization\lhtools.hpp">
+      <Filter>lhrasterization</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhmath_common.h">
+      <Filter>lhmath</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhmatrix.h">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhmatrix_float4.h">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhquaternion.h">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhvertex.h">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex.hpp">
+      <Filter>lhmath\lhdetail\lhvertex</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex_binary.hpp">
+      <Filter>lhmath\lhdetail\lhvertex</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex_specialization.hpp">
+      <Filter>lhmath\lhdetail\lhvertex</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhmatrix\lhmatrix.hpp">
+      <Filter>lhmath\lhdetail\lhmatrix</Filter>
+    </ClInclude>
+    <ClInclude Include="lhmath\lhdetail\lhmatrix\lhmatrix_operator.hpp">
+      <Filter>lhmath\lhdetail\lhmatrix</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lhrasterization\lhtools.inl">
+      <Filter>lhrasterization</Filter>
+    </None>
+    <None Include="lhmath\lhdetail\lhvertex\lhvertex.inl">
+      <Filter>lhmath\lhdetail\lhvertex</Filter>
+    </None>
+    <None Include="lhmath\lhdetail\lhmatrix\lhmatrix.inl">
+      <Filter>lhmath\lhdetail\lhmatrix</Filter>
+    </None>
   </ItemGroup>
 </Project>

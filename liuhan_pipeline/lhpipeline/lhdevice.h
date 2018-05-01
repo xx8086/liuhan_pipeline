@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "..\lhmath\lhdraw\lhdraw_primitive.h"
+#include "lhrasterization\lhdraw_primitive.h"
 #include "lhframe_buffer\lhframe_buffer.h"
-#include "..\lhmath\lhdetail\lhmatrix_float4.h"
+#include "lhmath\lhdetail\lhmatrix_float4.h"
 #include "lhpipeline.h"
 
 namespace lh_pipeline {

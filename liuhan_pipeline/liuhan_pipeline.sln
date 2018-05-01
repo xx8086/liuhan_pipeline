@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liuhan_pipeline", "liuhan_pipeline\liuhan_pipeline.vcxproj", "{B7225DA0-8F59-43E6-8AC6-1DA12627B17F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lhmath", "lhmath\lhmath.vcxproj", "{0499E697-667C-441E-B96F-AB63835E69ED}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lhpipeline", "lhpipeline\lhpipeline.vcxproj", "{28AD1884-04DD-48D3-85B9-44561D7E983B}"
 EndProject
 Global
@@ -25,14 +23,6 @@ Global
 		{B7225DA0-8F59-43E6-8AC6-1DA12627B17F}.Release|x64.Build.0 = Release|x64
 		{B7225DA0-8F59-43E6-8AC6-1DA12627B17F}.Release|x86.ActiveCfg = Release|Win32
 		{B7225DA0-8F59-43E6-8AC6-1DA12627B17F}.Release|x86.Build.0 = Release|Win32
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Debug|x64.ActiveCfg = Debug|x64
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Debug|x64.Build.0 = Debug|x64
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Debug|x86.ActiveCfg = Debug|Win32
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Debug|x86.Build.0 = Debug|Win32
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Release|x64.ActiveCfg = Release|x64
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Release|x64.Build.0 = Release|x64
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Release|x86.ActiveCfg = Release|Win32
-		{0499E697-667C-441E-B96F-AB63835E69ED}.Release|x86.Build.0 = Release|Win32
 		{28AD1884-04DD-48D3-85B9-44561D7E983B}.Debug|x64.ActiveCfg = Debug|x64
 		{28AD1884-04DD-48D3-85B9-44561D7E983B}.Debug|x64.Build.0 = Debug|x64
 		{28AD1884-04DD-48D3-85B9-44561D7E983B}.Debug|x86.ActiveCfg = Debug|Win32

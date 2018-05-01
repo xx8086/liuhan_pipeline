@@ -1,7 +1,6 @@
 #pragma once
-#include "../lhmath_common.h"
-#include "../lhdetail/lhvertex.h"
-
+#include "..\lhmath\lhmath_common.h"
+#include "..\lhmath\lhdetail\lhvertex.h"
 namespace lh_pipeline {
     typedef enum LightType {
         LIGHT_TYPE_AMBIENT = 0,

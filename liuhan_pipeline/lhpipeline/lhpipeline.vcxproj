@@ -22,13 +22,38 @@
     <ClCompile Include="lhcamera\lhcamera.cpp" />
     <ClCompile Include="lhdevice.cpp" />
     <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp" />
+    <ClCompile Include="lhmath\lhdetail\lhmatrix_float4.cpp" />
+    <ClCompile Include="lhmath\lhdetail\lhquaternion.cpp" />
+    <ClCompile Include="lhmath\lhdetail\lhvertex.cpp" />
     <ClCompile Include="lhpipeline.cpp" />
+    <ClCompile Include="lhrasterization\lhclip.cpp" />
+    <ClCompile Include="lhrasterization\lhdraw_primitive.cpp" />
+    <ClCompile Include="lights\lhlights.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhcamera\lhcamera.h" />
     <ClInclude Include="lhdevice.h" />
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h" />
+    <ClInclude Include="lhmath\lhdetail\lhmatrix.h" />
+    <ClInclude Include="lhmath\lhdetail\lhmatrix\lhmatrix.hpp" />
+    <ClInclude Include="lhmath\lhdetail\lhmatrix\lhmatrix_operator.hpp" />
+    <ClInclude Include="lhmath\lhdetail\lhmatrix_float4.h" />
+    <ClInclude Include="lhmath\lhdetail\lhquaternion.h" />
+    <ClInclude Include="lhmath\lhdetail\lhvertex.h" />
+    <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex.hpp" />
+    <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex_binary.hpp" />
+    <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex_specialization.hpp" />
+    <ClInclude Include="lhmath\lhmath_common.h" />
     <ClInclude Include="lhpipeline.h" />
+    <ClInclude Include="lhrasterization\lhclip.h" />
+    <ClInclude Include="lhrasterization\lhdraw_primitive.h" />
+    <ClInclude Include="lhrasterization\lhtools.hpp" />
+    <ClInclude Include="lights\lhlights.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lhmath\lhdetail\lhmatrix\lhmatrix.inl" />
+    <None Include="lhmath\lhdetail\lhvertex\lhvertex.inl" />
+    <None Include="lhrasterization\lhtools.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

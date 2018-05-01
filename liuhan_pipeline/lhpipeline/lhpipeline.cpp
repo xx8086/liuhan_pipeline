@@ -123,16 +123,14 @@ namespace lh_pipeline {
         return _wvo_transformation * v;
     }
 
-    unsigned int LhPipeLine::transformation_cut(const LhVertexFloat4& v4) {
-        unsigned int cut = 0;
+	bool LhPipeLine::transformation_cvv(const LhVertexFloat4& v4) {
         float w = v4.get_w();
-        if (v4.get_z() < 0.0f)  cut |= 0x01;
-        if (v4.get_z() > w)     cut |= 0x02;
-        if (v4.get_x() < -w)    cut |= 0x04;
-        if (v4.get_x() > w)     cut |= 0x08;
-        if (v4.get_y() < -w)    cut |= 0x10;
-        if (v4.get_y() > w)     cut |= 0x20;//0x40 0x80 0x100 0x200 0x400 0x800...
-        return cut;
+		if (v4.get_z()  < -w || w < v4.get_z() ||
+			v4.get_x() < -w  || w < v4.get_x()||
+			v4.get_y() < -w || w < v4.get_y() ) {
+			return false;
+		}
+        return true;
     }
 
     LhVertexFloat4 LhPipeLine::transformation_homogeneous(const LhVertexFloat4& x) {

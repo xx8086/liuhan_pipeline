@@ -1,6 +1,7 @@
 #pragma once
 #include "lhtools.hpp"
 
+namespace lh_pipeline {
     template<>
     LhVertex<float, 3> lerp<LhVertex<float, 3> >(LhVertex<float, 3> x1, LhVertex<float, 3> x2, float t) {
         return LhVertex<float, 3>(lerp(x1.get_x(), x2.get_x(), t),

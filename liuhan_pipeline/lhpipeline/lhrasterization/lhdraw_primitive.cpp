@@ -1,5 +1,5 @@
 #include "lhdraw_primitive.h"
-#include "lhtools.hpp"
+#include "lhtools.inl"
 #include <cmath>
 #include <memory.h>
 
@@ -353,10 +353,10 @@ namespace lh_pipeline {
 		if (!clip(v1, v2, v3)) {
 			return;
 		}
-
 		v1.rhw();
 		v2.rhw();
 		v3.rhw();
+
 		LhVertexFloat3 normal = get_normal(v1.postion - v2.postion, v1.postion - v3.postion);
 		normalize(normal);
 		if (v2.postion.get_y() == v1.postion.get_y()) {//Æ½¶¥

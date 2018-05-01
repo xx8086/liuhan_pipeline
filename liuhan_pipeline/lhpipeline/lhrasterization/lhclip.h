@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "../lhmath_common.h"
+#include "..\lhmath\lhmath_common.h"
 
 typedef enum ClipOpticVertebraFace {
 	CLIP_NEAR_FAR_FACE = 1,

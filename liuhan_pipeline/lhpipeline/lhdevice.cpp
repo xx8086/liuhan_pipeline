@@ -152,9 +152,6 @@ namespace lh_pipeline {
 
         f4 = _piple.transformation_homogeneous(model);
 		f4.set_w(model.get_w());
-		if (f4.get_y() < 0) {
-			return true;
-		}
         return true;
     }
 

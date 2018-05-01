@@ -1,5 +1,5 @@
 #pragma once
-#include "..\..\lhmath\lhdetail\lhvertex.h"
+#include "..\lhmath\lhdetail\lhvertex.h"
 
 namespace lh_pipeline {
     typedef enum ViewWard {

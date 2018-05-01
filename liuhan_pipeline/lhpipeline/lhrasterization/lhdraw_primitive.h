@@ -1,7 +1,7 @@
 #pragma once
 //#include <functional>
-#include "../lhmath_common.h"
-#include "lhlights.h"
+#include "..\lhmath\lhmath_common.h"
+#include "..\lights\lhlights.h"
 #include "lhclip.h"
 
 namespace lh_pipeline {
@@ -61,10 +61,9 @@ namespace lh_pipeline {
 		float _z_near_clip = 1.0;
 		float _z_far_clip = 100.0;
 		bool _deep_test = true;
-
+		bool _draw_trangle_line = false;
 		LhClip _clip;
 		LhLights _light;
 		LhVertexFloat3* _view;
-		bool _draw_trangle_line = false;
 	};
 }

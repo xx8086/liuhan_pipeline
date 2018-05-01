@@ -55,8 +55,18 @@ namespace lh_pipeline {
 		set_clip_window(0.0f, 0.0f, (float)w, (float)h);
 
 		_light.set_type(LIGHT_TYPE_POINT, 1);
-		_light.set_light_color(lh_color(0.0f, 0.0f, 255.0f), LhVertexFloat3(0.0f, 0.0f, 1.0f), 0.05f, 0.3f, 0.1f);
-		_light.set_point(LhVertexFloat3(1.0f, 1.0f, -3.0f), 1.0f, 0.09f, 0.032f);
+		_light.set_light_color(LhVertexFloat3(1.0f, 1.0f, 1.0f),//color
+			LhVertexFloat3(0.0f, 0.0f, 1.0f), //light_dir
+			LhVertexFloat3(0.0f, 0.0f, -4.0f),//viewps
+			0.7f, 0.7f, 0.8f);//float ambient, float diff, float spec) 
+		_light.set_point(LhVertexFloat3(2.0f, 2.0f, -2.0f), //light_pos
+			1.0f, 0.1f, 0.05f);
+		LhMaterial material(LhVertexFloat3(0.6f, 0.6f, 0.6f),
+			LhVertexFloat3(0.7f, 0.7f, 0.7f), 
+			LhVertexFloat3(0.8f, 0.8f, 0.8f), 
+			32);
+		_light.set_spot(12.0f, 15.0f, 0.0f, 0.0f, 0.0f);
+		_light.set_material(material);
 		_clip.set_clip_region(CLIP_ALL_FACE, 0, 0, w, h, _z_near_clip, _z_far_clip);
 	}
 
@@ -355,11 +365,8 @@ namespace lh_pipeline {
 			return;
 		}
 
-		LhVertexFloat3 normal = get_normal(v1.postion - v2.postion, v1.postion - v3.postion);
-		normalize(normal);
 		if (v2.postion.get_y() == v1.postion.get_y()) {//平顶
 			top_triangle(v1, v2, v3,
-				normal,
 				use_uv);
 			draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
 				(int)v2.postion.get_x(), (int)v2.postion.get_y(),
@@ -368,7 +375,6 @@ namespace lh_pipeline {
 		}
 		else if (v3.postion.get_y() == v2.postion.get_y()) {
 			bottom_triangle(v1, v2, v3,
-				normal,
 				use_uv);
 			draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
 				(int)v2.postion.get_x(), (int)v2.postion.get_y(),
@@ -381,10 +387,8 @@ namespace lh_pipeline {
 			float t = (v2.postion.get_y() - v1.postion.get_y()) / (v3.postion.get_y() - v1.postion.get_y());
 			VertexColor interp_v = lerp(v1, v3, t);
 			bottom_triangle(v1, interp_v, v2,
-				normal,
 				use_uv);
 			top_triangle(interp_v, v2, v3,
-				normal,
 				use_uv);
 
 			draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
@@ -399,7 +403,7 @@ namespace lh_pipeline {
 		}
 	}
 
-	void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, LhVertexFloat3 normal, bool use_uv) {
+	void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv) {
 		if ((int)v1.postion.get_y() == (int)v3.postion.get_y()) {
 			return;
 		}
@@ -407,6 +411,8 @@ namespace lh_pipeline {
 		if (v2.postion.get_x() < v1.postion.get_x()) {
 			swap_vaue(v1, v2);
 		}
+
+		LhVertexFloat3 normal = -get_normal(v1.postion, v2.postion, v3.postion);
 		float dy = /*v3.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v3.postion.get_y() - v1.postion.get_y());
 		float fy1 = v1.postion.get_y();
 		float fy3 = v3.postion.get_y();
@@ -433,12 +439,12 @@ namespace lh_pipeline {
 		
 		for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
 			float t = ((float)y_loop - iy1) * dy;
+			if (t > 1.0f)t = 1.0f;
 			VertexColor left = lerp(v_left_1, v_left, t);
 			VertexColor right = lerp(v_right_1, v_right, t);
 			draw_interp_texture_scanline(left, right, normal, use_uv);
 		}
 	}
-
 
 	VertexColor LhDrawPrimitive::insert_lerp(VertexColor& v1, VertexColor& v2, float t) {
 		if (v1.postion.get_x() > v2.postion.get_x()) {
@@ -446,7 +452,7 @@ namespace lh_pipeline {
 		}
 		return lerp(v1, v2, t);
 	}
-	void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, LhVertexFloat3 normal, bool use_uv) {
+	void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv) {
 		if ((int)v1.postion.get_y() == (int)v2.postion.get_y()) {
 			return;
 		}
@@ -454,6 +460,7 @@ namespace lh_pipeline {
 		if (v3.postion.get_x() < v2.postion.get_x()) {
 			swap_vaue(v2, v3);
 		}
+		LhVertexFloat3 normal = get_normal(v1.postion, v2.postion, v3.postion);
 		float dy = /*v2.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v2.postion.get_y() - v1.postion.get_y());
 		float fy1 = v1.postion.get_y();// ceil(v1.postion.get_y());
 		float fy3 = v3.postion.get_y();// ceil(v3.postion.get_y()) - 1;
@@ -481,6 +488,7 @@ namespace lh_pipeline {
 
 		for (int y_loop = iy1; y_loop <= iy3; y_loop++) {
 			float t = ((float)y_loop - iy1) * dy;
+			if (t > 1.0f)t = 1.0f;
 			VertexColor left = lerp(v_left_1, v_left, t);
 			VertexColor right = lerp(v_right_1, v_right, t);
 			draw_interp_texture_scanline(left, right, normal, use_uv);
@@ -506,7 +514,7 @@ namespace lh_pipeline {
 		float x_end = right.postion.get_x();
 		float z_begin = left.postion.get_z();
 		float z_end = right.postion.get_z();
-		float dx = x_end == x_begin ? 0.0f : 1.0f / float(x_end - x_begin);
+		float dx = x_end == x_begin ? 0.0f : 1.0f / (x_end - x_begin);
 		if (z_begin <= z_end) {
 			z_begin = z_begin < _z_near_clip ? _z_near_clip : z_begin;
 			z_end = z_end > _z_far_clip ? _z_far_clip : z_end;
@@ -516,12 +524,11 @@ namespace lh_pipeline {
 			z_end = z_end < _z_near_clip ? _z_near_clip : z_end;
 		}
 
-		int x_clip_begin = FloatToInt(x_begin);// x_begin > _x_min_clip ? x_begin : _x_min_clip;
-		int x_clip_end = FloatToInt(x_end);// x_end < _x_max_clip ? x_end : _x_max_clip;//裁剪
-		VertexColor clip_left = left;
+		int x_clip_begin = FloatToInt(x_begin);
+		int x_clip_end = FloatToInt(x_end);
 		if (x_begin < _x_min_clip) {
 			x_clip_begin = _x_min_clip;
-			clip_left = lerp(left, right, (_x_min_clip - x_begin) / (x_end - x_begin));
+			//clip_left = lerp(left, right, (_x_min_clip - x_begin) / (x_end - x_begin));
 		}
 		if (x_end > _x_max_clip) {
 			x_clip_end = _x_max_clip;
@@ -529,9 +536,10 @@ namespace lh_pipeline {
 		}
 
 		//VertexColor step = interp_step(left, right);//用step均值插值，每个单位步长uv会错位！！！！！！
+		VertexColor clip_left;
 		for (int i = x_clip_begin; i <= x_clip_end; i++) {
 			float t = (i - x_begin) * dx;
-			clip_left = lerp(left, right, t);
+			clip_left = lerp(left, right, t);//不能用上面step,每次重新算。
 			float z = clip_left._rhw;
 			float w = 1.0f / z;
 			if (deeptest(i, y, z)) {
@@ -554,13 +562,13 @@ namespace lh_pipeline {
 				}
 				//clip_left._rhw = clip_left._rhw + step._rhw;
 				if (_light.is_visible()) {
-					lh_color lightcolor = _light.get_pointlight(normal, *_view,
-						LhVertexFloat3(window_to_view(float(i), float(_width)),
-							window_to_view(float(y), float(_height)), z));
-					lh_color c(color);
-					lh_color h = c + lightcolor;
-					h.check();
-					color = h.get_t<unsigned int>();
+					lh_color txcolor(color);
+					LhVertexFloat3 mxcolor = _light.dirlight(LhVertexFloat3(txcolor.red, txcolor.green, txcolor.blue),
+						normal, 
+						screen_to_view(i, y, z));
+					txcolor = mxcolor;
+					txcolor.check();
+					color = txcolor.get_t<unsigned int>();
 				}
 				setpixtel(i, y, color);
 			}
@@ -581,16 +589,14 @@ namespace lh_pipeline {
 		return (x < min) ? min : ((x > max) ? max : x);
 	}
 
-	LhVertexFloat3 LhDrawPrimitive::get_normal(LhVertexFloat3 a, LhVertexFloat3 b) {
-		LhVertexFloat3 n(0.0f, 0.0f, 0.0f);
-		n = cross(a, b);
-		return n;
-	}
-
 	void LhDrawPrimitive::draw_3dline(LhVertexFloat3& left, LhVertexFloat3& right, lh_color c) {
 		;
 	}
 	void LhDrawPrimitive::set_draw_triangle_line() {
 		_draw_trangle_line = !_draw_trangle_line;
+	}
+
+	LhVertexFloat3 LhDrawPrimitive::screen_to_view(float x, float y, float z) {
+		return LhVertexFloat3(x/float(_width) -1.0f, y/float(_height), z);
 	}
 }

@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <stdlib.h >
 #include <chrono>
-#include <windows.h>
+//#include <windows.h>
 #include <vector>
 
 namespace lh_pipeline {
@@ -51,19 +51,21 @@ namespace lh_pipeline {
         case 'W':
         case 0x26://VK_UP
             //_piple.set_view_ward(VIEW_FORWARD, _draw_cost_time);
-            //z_mip();
-			_m_z += speed;
+            //
+			_m_z -= speed;
+			z_mip();
             break;
         case 'S':
         case 0x28://VK_DOWN
             //_piple.set_view_ward(VIEW_BACKWARD, _draw_cost_time);
-            //z_mip();
-			_m_z -= speed;
+			_m_z += speed;
+            z_mip();
+			
 			break;
         case 'A':
         case 0x25://VK_LEFT
             //_piple.set_view_ward(VIEW_LEFT, _draw_cost_time);
-            //z_mip();
+            //
 			_m_x -= speed;
 			break;
         case 'D':
@@ -93,6 +95,9 @@ namespace lh_pipeline {
 		case 'Z':
 			_r_z += roateangle;
 			break;
+		case 'R':
+			_rotate = !_rotate;
+			break;
 		case 'F':
 			_front = !_front;
 			break;
@@ -104,7 +109,7 @@ namespace lh_pipeline {
             break;
         }
 
-		char msgbuf[512];
+		/*char msgbuf[512];
 		LhVertexFloat3 view = _piple.get_view_pos();
 		LhVertexFloat3 dir = _piple.get_view_dir();
 		sprintf_s(msgbuf, "pos(%f, %f, %f), speed = %f, view(%f, %f, %f), centor(%f, %f, %f)\n", 
@@ -112,38 +117,37 @@ namespace lh_pipeline {
 			view.get_x(), view.get_y(), view.get_z(),
 			dir.get_x(), dir.get_y(), dir.get_z());
 		OutputDebugString(msgbuf);
-		_print_log = true;
+		_print_log = true;*/
     }
 
     void LhDevice::z_mip() {
-        LhVertexFloat3 viewpos = _piple.get_view_pos();
-        /*float z = (viewpos.get_x() * viewpos.get_x()  + 
-            viewpos.get_y() * viewpos.get_y() * + viewpos.get_z() * viewpos.get_z());
-        if (z >= 1.2f) {
+        if (_m_z >= 1.2f) {
             set_current_texture_uv(TEXTURE_LEVEL_128);
         }
-        else if (1.2f > z && z >= 0.4f) {
+        else if (1.2f > _m_z && _m_z >= 0.0f) {
             set_current_texture_uv(TEXTURE_LEVEL_256);
         }
-        else if (0.4f > z) {
+        else if (0.0f > _m_z) {
             set_current_texture_uv(TEXTURE_LEVEL_512);
-        }*/
-		set_current_texture_uv(TEXTURE_LEVEL_512);
+        }
+		//set_current_texture_uv(TEXTURE_LEVEL_512);
         set_current_uv(ger_current_texutre_uv_buffers(), get_current_texture_uv_size());
     }
 
     void LhDevice::bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size) {
         assert(nullptr != vertex);
         assert(vertex_size > 0);
-        update_vertex(vertex, vertex_color, vertex_uv, vertex_size);
-        z_mip();
+        
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_rotate(0.0f, 0.0f, 0.0f);
         _piple.set_worldpos(0.0f, 0.0f, 0.0f);
         _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -4.0f));
-        PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
+        PersProjInfo per(90.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
         set_view(&_piple.get_view_pos());
+
+		update_vertex(vertex, vertex_color, vertex_uv, vertex_size);
+		z_mip();
     }
 
     bool LhDevice::get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3) {
@@ -155,39 +159,43 @@ namespace lh_pipeline {
         return true;
     }
 
+	void LhDevice::draw_croe() {
+		clear_buffer();
+		clear_deep();
+		if (_rotate)_rotate_degree += 0.5f;
+		_piple.set_rotate(_r_x, _r_y, _r_z);
+		_piple.set_worldpos(_m_x, _m_y, _m_z);
+		_piple.set_rotate(_rotate_degree, _rotate_degree, _rotate_degree);
+		_piple.get_wvp();
+		switch (_render_state) {
+		case LH_LINES:
+			draw_line();
+			break;
+		case LH_LINES_LOOP:
+			draw_line(true);
+			break;
+		case LH_TRIANGLES:
+			draw_triangles();
+			break;
+		case LH_TRIANGLES_FILL:
+			draw_triangles_fill();
+			break;
+		case LH_TRIANGLES_TEXTURE_FILL:
+			draw_trangles_texture_fill();
+			break;
+		case LH_TEST:
+			draw_floor();
+			break;
+		}
+	}
+
     void LhDevice::draw() {
         if (LH_OFF_DRAW == _render_state) {
             return;
         }
-        static float srotate = 0.0;
-        srotate += 0.5f;
-        auto start = std::chrono::system_clock::now();
-        clear_buffer();
-        clear_deep();
 
-		_piple.set_rotate(_r_x, _r_y, _r_z);
-		_piple.set_worldpos(_m_x, _m_y, _m_z);
-		_piple.get_wvp();
-        switch (_render_state) {
-        case LH_LINES:
-            draw_line();
-            break;
-        case LH_LINES_LOOP:
-            draw_line(true);
-            break;
-        case LH_TRIANGLES:
-            draw_triangles();
-            break;
-        case LH_TRIANGLES_FILL:
-            draw_triangles_fill();
-            break;
-        case LH_TRIANGLES_TEXTURE_FILL:
-            draw_trangles_texture_fill();
-            break;
-        case LH_TEST:
-            draw_floor();
-            break;
-        }
+        auto start = std::chrono::system_clock::now();
+		draw_croe();
 
         auto end = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
@@ -221,7 +229,6 @@ namespace lh_pipeline {
 
 
 	void LhDevice::draw_triangles_fill() {
-		//triangle_fill;
 		const float* v = get_vertex_buffers();
 		const unsigned int* colors = get_vertex_color_buffers();
 		const int counts = 3 * get_vertex_buffers_size();
@@ -390,8 +397,8 @@ namespace lh_pipeline {
 		const unsigned int* colors = get_vertex_color_buffers();
 		const int counts = 3 * get_vertex_buffers_size();
 		const float* uv = ger_current_uv();
+		int uv_count = 0;
 		std::vector<VertexColor> triangles;
-		int uv_count = 0;//2 * get_vertex_buffers_size();
 		for (int i = 0; i < counts; i += 9, uv_count += 6) {
 			LhVertexFloat4 p1;
 			LhVertexFloat4 p2;
@@ -400,14 +407,14 @@ namespace lh_pipeline {
 				get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
 				get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
 
-				if (_print_log) {
+				/*if (_print_log) {
 					char msgbuf[1024];
 					sprintf_s(msgbuf, "v1(%f, %f, %f), v2(%f, %f, %f), v3(%f, %f, %f)\n",
 						p1.get_x(), p1.get_y(), p1.get_z(),
 						p2.get_x(), p2.get_y(), p2.get_z(),
 						p3.get_x(), p3.get_y(), p3.get_z());
 					OutputDebugString(msgbuf);
-				}
+				}*/
 				LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
 				LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
 				LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());

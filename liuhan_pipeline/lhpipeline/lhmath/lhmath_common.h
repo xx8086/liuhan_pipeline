@@ -41,6 +41,27 @@ namespace lh_pipeline {
 			return T((int)blue | (int)green << 8 | (int)red << 16 | (int)alph << 24);
 		}
 
+		lh_color operator=(const LhVertexFloat3& v) {
+			red = v.get_x();
+			green = v.get_y();
+			blue = v.get_z();
+			return *this;
+		}
+
+		lh_color operator*(const LhVertexFloat3& v) const {
+			return lh_color(red * v.get_x(),
+				green * v.get_y(),
+				blue * v.get_z(),
+				alph);
+		}
+
+		lh_color operator*(const lh_color& v) const{
+			return lh_color(red * v.red,
+				green * v.green,
+				blue * v.blue,
+				alph * v.alph);
+		}
+
 		lh_color& operator+=(const lh_color &v) {
 			alph += v.alph;
 			red += v.red;

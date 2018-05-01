@@ -8,6 +8,7 @@
         LhVertex();
         LhVertex(LhVertex<T, N> const & other);
         LhVertex<T, N>& operator=(LhVertex<T, N> const & other);
+		LhVertex<T, N> operator-();
 /*
 //不同类型或不同实数对象间的拷贝与赋值
         template<unsigned int M>

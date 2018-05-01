@@ -29,6 +29,7 @@
     <ClCompile Include="lhrasterization\lhclip.cpp" />
     <ClCompile Include="lhrasterization\lhdraw_primitive.cpp" />
     <ClCompile Include="lights\lhlights.cpp" />
+    <ClCompile Include="lights\lhmaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhcamera\lhcamera.h" />
@@ -49,6 +50,7 @@
     <ClInclude Include="lhrasterization\lhdraw_primitive.h" />
     <ClInclude Include="lhrasterization\lhtools.hpp" />
     <ClInclude Include="lights\lhlights.h" />
+    <ClInclude Include="lights\lhmaterial.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lhmath\lhdetail\lhmatrix\lhmatrix.inl" />

@@ -24,6 +24,15 @@
             _datas[i] = other._datas[i];
         }
     }
+
+	template <typename T, unsigned int N>
+	LhVertex<T, N> LhVertex<T, N>::operator-() {
+		LhVertex<T, N> v;
+		for (int i = 0; i < _counts; i++) {
+			v._datas[i] = -_datas[i];
+		}
+		return v;
+	}
 /*
     template <typename T, unsigned int N>
     template<unsigned int M>//同类型不同实数构造

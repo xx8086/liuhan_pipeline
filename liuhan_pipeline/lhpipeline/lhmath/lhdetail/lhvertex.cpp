@@ -2,7 +2,7 @@
 
 namespace lh_pipeline {
     //µ¥Î»»¯
-    bool normalize(LhVertex<float, 3>& vf3) {
+    bool normalize(LhVertexFloat3& vf3) {
         float z = vf3.get_z();
         if (z > 0.99999f &&
             1.00001f > z) {

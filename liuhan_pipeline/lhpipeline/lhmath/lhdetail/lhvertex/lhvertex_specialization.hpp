@@ -37,6 +37,9 @@ _datas[0] = x;\
 _datas[1] = y;\
 _datas[2] = z;\
 }\
+LhVertex<float, 3> operator-(){\
+return LhVertex<float, 3>(-_datas[0], -_datas[1], -_datas[2]);\
+}\
 };
 
 #define EndSpecializationF4 \

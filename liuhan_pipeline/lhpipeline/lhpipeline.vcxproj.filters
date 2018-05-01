@@ -53,6 +53,9 @@
     <ClCompile Include="lhmath\lhdetail\lhvertex.cpp">
       <Filter>lhmath\lhdetail</Filter>
     </ClCompile>
+    <ClCompile Include="lights\lhmaterial.cpp">
+      <Filter>lhlights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
@@ -104,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="lhmath\lhdetail\lhmatrix\lhmatrix_operator.hpp">
       <Filter>lhmath\lhdetail\lhmatrix</Filter>
+    </ClInclude>
+    <ClInclude Include="lights\lhmaterial.h">
+      <Filter>lhlights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

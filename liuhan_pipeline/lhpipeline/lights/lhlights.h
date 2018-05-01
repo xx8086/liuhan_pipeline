@@ -1,6 +1,8 @@
 #pragma once
 #include "..\lhmath\lhmath_common.h"
 #include "..\lhmath\lhdetail\lhvertex.h"
+#include "lhmaterial.h"
+
 namespace lh_pipeline {
     typedef enum LightType {
         LIGHT_TYPE_AMBIENT = 0,
@@ -16,23 +18,21 @@ namespace lh_pipeline {
         LhLights() {}
         ~LhLights();
     public:
-        LhVertexFloat3 get_normal(LhVertexFloat3 a, LhVertexFloat3 b, LhVertexFloat3 c);
-        lh_color get_dirlight(LhVertexFloat3 normal, LhVertexFloat3 view);
-        lh_color get_pointlight(LhVertexFloat3 normal, LhVertexFloat3 view, LhVertexFloat3 fragpos);
-        lh_color get_spotlight(LhVertexFloat3 normal, LhVertexFloat3 view, LhVertexFloat3 fragpos);
-        void set_type(LIGHT_TYPE lighttype, unsigned int id);
-        void set_light_color(lh_color color, LhVertexFloat3 light_di, float ambient, float diff, float spec, float shininess = 32);
+		LhVertexFloat3 dirlight(LhVertexFloat3 tex_color, LhVertexFloat3 normal, LhVertexFloat3 fragpos);
+		LhVertexFloat3 pointlight(LhVertexFloat3 tex_color, LhVertexFloat3 normal,  LhVertexFloat3 fragpos);
+		LhVertexFloat3 spotlight(LhVertexFloat3 tex_color, LhVertexFloat3 normal,  LhVertexFloat3 fragpos);
+		void set_material(LhMaterial&);
+		void set_type(LIGHT_TYPE lighttype, unsigned int id);
+        void set_light_color(LhVertexFloat3 color, LhVertexFloat3 light_di, LhVertexFloat3 viewpos, float ambient, float diff, float spec);
         void set_point(LhVertexFloat3 light_pos, float kc, float kl, float kq);
         void set_spot(float inner, float outter, float umbra, float penumbra, float falloff);
         void visible() { _visible = true; };
         void invisible() { _visible = false; };
         bool is_visible() { return _visible; };
-    private:
-        LhVertexFloat3 reflect(LhVertexFloat3 I, LhVertexFloat3 N);
+
     private:
         unsigned int _id;
         bool _visible = false;
-        float _shininess = 32;//聚光灯指数因子
         float _ambient_strength;
         float _diffuse_strength;
         float _specular_strength;
@@ -50,7 +50,8 @@ namespace lh_pipeline {
         LhVertexFloat3 _lightcolor;
         LhVertexFloat3 _light_pos;
         LhVertexFloat3 _lights_dir;
-        //LhVertexFloat3 _view_pos;
+		LhVertexFloat3 _viewpos;
+		LhMaterial _material;
     };
 
 }

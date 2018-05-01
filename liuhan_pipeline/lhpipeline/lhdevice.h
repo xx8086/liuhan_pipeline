@@ -32,6 +32,7 @@ namespace lh_pipeline {
         void set_front_begin(float, float);
         void set_front(float, float);
     private:
+		void draw_croe();
         void draw_line(bool loop = false);
         void draw_line(int x1, int y1, int x2, int y2, int color);
         void draw_triangles_fill();
@@ -55,8 +56,10 @@ namespace lh_pipeline {
 		float _m_x = 0;
 		float _m_y = 0;
 		float _m_z = 0;
+		float _rotate_degree = 0.0f;
 		bool _print_log = false;
 		bool _grid = false;
 		bool _front = true;
+		bool _rotate = true;
     };
 }

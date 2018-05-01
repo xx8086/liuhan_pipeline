@@ -22,6 +22,7 @@ namespace lh_pipeline {
         void update_vertex();
         bool load_dib_texture(TCHAR* img);
         bool load_level_texture(TCHAR* img, int size);
+		bool load_floor_texture(TCHAR* img, int size);
         void* load_bmp(TCHAR* img, int &w, int& h, int& bitcounts);
 		void profile(HDC& hdc);
     private:

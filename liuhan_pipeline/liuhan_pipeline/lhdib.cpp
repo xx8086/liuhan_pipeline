@@ -52,7 +52,7 @@ namespace lh_pipeline {
         load_level_texture((TCHAR*)"../res/128.bmp", 128);
         load_level_texture((TCHAR*)"../res/256.bmp", 256);
         load_level_texture((TCHAR*)"../res/512.bmp", 512);
-
+		load_floor_texture((TCHAR*)"../res/512_f.bmp", 512);
         update_vertex();
 #endif
         ReleaseDC(hwnd, hdc);
@@ -117,6 +117,21 @@ namespace lh_pipeline {
         free(pbmi);
         return ptr;
     }
+	bool LhDib::load_floor_texture(TCHAR* img, int size) {
+		int texture_w = 0;
+		int texture_h = 0;
+		int texture_bit_counts = 4;
+
+		void* texture_datas = load_bmp(img, texture_w, texture_h, texture_bit_counts);
+		if (size != abs(texture_w) || size != abs(texture_h)) {
+			delete[] texture_datas;
+			texture_datas = nullptr;
+			return false;
+		}
+
+		set_floor(static_cast<unsigned char*>(texture_datas), size);
+		return true;
+	}
 
     bool LhDib::load_level_texture(TCHAR* img, int size) {
         int texture_w = 0;
@@ -130,6 +145,7 @@ namespace lh_pipeline {
             return false;
         }
         update_texture(static_cast<unsigned char*>(texture_datas), size);
+		//texture_datas把指针地址赋值给framebuffer管理，最后结束的时候由framebuffer管理delete.
         return true;
     }
 
@@ -354,22 +370,24 @@ namespace lh_pipeline {
     }
 
 	void LhDib::profile(HDC& hdc) {
+		LhVertexFloat3 pos = get_world_pos();
 		char str_fps[2048] = { 0 };
 		sprintf_s(str_fps,
 			"方向键和asdw控制方向移动；\n"
-			"(移动和旋转操作距离eyes越远幅度越小)"
 			"空格键: 开关灯光；\n"
+			"V: 开关地板\n"
 			"R: 开关自动旋转\n"
 			"L: 开关画片元三角形\n"
 			"F: 切换正反面消除;\n"
 			"I: 线框； O: Gouraud； P: uv贴图\n"
 			"XYZ: 绕xyz轴旋转\n"
+			"world_pos: (%.3f, %.3f, %.3f)\n"
 			"每一帧耗时：%.3fms;  fps: %.3f",
+			pos.get_x(), pos.get_y(), pos.get_z(),
 			1000 * get_draw_cost(), get_fps());
 		_old_font = SelectObject(hdc, _font);
 		SetBkColor(hdc, RGB(0, 0, 0));
 		SetTextColor(hdc, RGB(255, 0, 0));
-
 		DrawText(hdc, str_fps, strlen(str_fps) * sizeof(char), &_rc, DT_LEFT);
 		SelectObject(hdc, _old_font);
 	}

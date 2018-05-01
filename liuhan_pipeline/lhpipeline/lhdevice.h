@@ -34,6 +34,7 @@ namespace lh_pipeline {
 	protected:
 		float get_fps() { return _fps; };
 		float get_draw_cost() { return _draw_cost_time; }
+		LhVertexFloat3 get_world_pos() { return LhVertexFloat3(_m_x, _m_y, _m_z); };
     private:
 		void draw_croe();
         void draw_line(bool loop = false);
@@ -63,6 +64,7 @@ namespace lh_pipeline {
 		bool _print_log = false;
 		bool _grid = false;
 		bool _front = true;
+		bool _floor = true;
 		bool _rotate = true;
     };
 }

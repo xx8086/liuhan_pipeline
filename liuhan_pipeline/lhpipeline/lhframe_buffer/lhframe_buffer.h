@@ -9,11 +9,13 @@ protected:
 	void set_buffer(int w, int h, void* pbits);
 	void update_vertex(const float* vertex_buffer, const unsigned int* vertex_buffer_color, const float* vertex_uv, const int counts);
 	void clear_buffer();
+	void set_floor(unsigned char* vertex_buffer, int size);
 	const float* ger_current_uv();
 	const float* get_vertex_buffers() { return _vertex_buffers; }
 	const unsigned int*  get_vertex_color_buffers() { return _vertex_color_buffers; }
 	unsigned char * get_frame_buffers();
-	unsigned char * ger_current_texutre_uv_buffers();
+	unsigned char * get_current_texutre_uv_buffers();
+	unsigned char * get_floor() { return _texture_floor; }
 	int get_width() const;
 	int get_height() const;
 	void set_current_texture_uv(int level) { _current_texture_level = level; }
@@ -46,5 +48,6 @@ private:
 	unsigned int* _vertex_color_buffers = nullptr;
 	unsigned char* _frame_buffers = nullptr;
 	unsigned char* _texture[TEXTURE_LEVEL_MAX] = { nullptr };
+	unsigned char* _texture_floor = nullptr;
 };
 

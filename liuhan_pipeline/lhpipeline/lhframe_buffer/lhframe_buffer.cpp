@@ -22,6 +22,11 @@ void LhFrameBuffer::release() {
         _vertex_buffers = nullptr;
     }
 
+	if (nullptr != _texture_floor) {
+		delete[] _texture_floor;
+		_texture_floor = nullptr;
+	}
+
     for (int i = TEXTURE_LEVEL_56; i < TEXTURE_LEVEL_MAX; i++) {
         _texture_size[i] = 0;
         if (nullptr != _texture[i]) {
@@ -52,6 +57,14 @@ void LhFrameBuffer::clear_buffer() {
     if (nullptr != _frame_buffers) {
         memset(_frame_buffers, 0, _width * _height * sizeof(float));
     }
+}
+void LhFrameBuffer::set_floor(unsigned char* vertex_buffer, int size) {
+	assert(nullptr != vertex_buffer);
+	if (nullptr != _texture_floor) {
+		delete[] _texture_floor;
+		_texture_floor = nullptr;
+	}
+	_texture_floor = vertex_buffer;
 }
 
 void LhFrameBuffer::update_vertex(const float* vertex_buffer, const unsigned int* vertex_buffer_color, const float* vertex_uv, const int counts) {
@@ -135,6 +148,6 @@ const float* LhFrameBuffer::ger_current_uv() {
     return _uv;
 }
 
-unsigned char * LhFrameBuffer::ger_current_texutre_uv_buffers() {
+unsigned char * LhFrameBuffer::get_current_texutre_uv_buffers() {
     return _texture[_current_texture_level];
 }

@@ -129,7 +129,6 @@ namespace lh_pipeline {
 			x < _x_min_clip) {
 			return;
 		}
-		//unsigned int* texture = (unsigned int*)_current_uv_texture_datas;
 		unsigned int* des = (unsigned int*)_frame_buffers;
 		des[y * _width + x] = color;// texture[v * _current_uv_size + u];
 	}
@@ -577,7 +576,7 @@ namespace lh_pipeline {
 
 	void LhDrawPrimitive::set_current_uv(unsigned char* uv, int  uv_size) {
 		_current_uv_size = uv_size;
-		_max_uv_size = uv_size - 1;
+		_max_uv_size = uv_size;
 		_current_uv_texture_datas = (unsigned int*)(uv);
 	}
 

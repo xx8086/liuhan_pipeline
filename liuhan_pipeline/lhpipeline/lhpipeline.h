@@ -30,6 +30,7 @@ namespace lh_pipeline {
         void set_perspective_proj(const PersProjInfo& p);
 		bool can_draw();
     public:
+        const LhMatrixFloat4& get_wv();
         const LhMatrixFloat4& get_wvp();
         const LhMatrixFloat4& get_wvo();
         const LhMatrixFloat4& get_world();
@@ -52,6 +53,7 @@ namespace lh_pipeline {
         PersProjInfo _persProjinfo;
         OrthoProjInfo _orthoprojinfo;
 
+        LhMatrixFloat4 _wv_transformation;
         LhMatrixFloat4 _wvp_transformation;
         LhMatrixFloat4 _wvo_transformation;
         LhMatrixFloat4 _world_transformation;

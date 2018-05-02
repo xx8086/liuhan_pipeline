@@ -43,7 +43,7 @@ namespace lh_pipeline {
         void draw_line(int x1, int y1, int x2, int y2, int color);
         void draw_triangles_fill();
         void draw_trangles_texture_fill();
-        void draw_triangles();
+        void draw_triangles(lh_color =(255, 0, 0));
         void z_mip();
         bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
         void draw_grid();

@@ -87,7 +87,7 @@ namespace lh_pipeline {
         _front = LhVertexFloat3 (
             cos(ToRadianF(_yaw)) * cos(ToRadianF(_pitch)),
             sin(ToRadianF(_pitch)),
-            -sin(ToRadianF(_yaw)) * cos(ToRadianF(_pitch))
+            sin(ToRadianF(_yaw)) * cos(ToRadianF(_pitch))
         );
         normalize(_front);
         _right = cross(_front, _world_up);
@@ -95,6 +95,6 @@ namespace lh_pipeline {
         _up = cross(_right, _front);
         normalize(_up);
         _target = _pos + _front;
-        _target.set_z(1.0f);
+        //_target.set_z(1.0f);
     }
 }

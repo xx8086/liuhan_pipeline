@@ -171,7 +171,11 @@ namespace lh_pipeline {
 
     bool LhDevice::get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3) {
 		LhVertexFloat4 model = _piple.transformation_in_mvp(f3);
-		//cvv
+        /*if (!_piple.transformation_cvv(model)) {
+            f4 = model;
+            return false;
+        }*/
+        
 
         f4 = _piple.transformation_homogeneous(model);
 		f4.set_w(model.get_w());
@@ -405,10 +409,9 @@ namespace lh_pipeline {
 			//draw_3dline(v1, v2);
         }
     }
-    void LhDevice::draw_triangles() {
+    void LhDevice::draw_triangles(lh_color lc) {
         const float* v = get_vertex_buffers();
         const int counts = 3 * get_vertex_buffers_size();
-        lh_color lc(255, 0, 0);
         int color = lc.get_t<int>();
         for (int i = 0; i < counts; i += 9) {
             LhVertexFloat4 p1;

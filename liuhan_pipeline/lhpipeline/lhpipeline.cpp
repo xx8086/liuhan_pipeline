@@ -70,11 +70,16 @@ namespace lh_pipeline {
     const LhMatrixFloat4& LhPipeLine::get_proj() {
         return _proj_transformation;
     }
-    const LhMatrixFloat4& LhPipeLine::get_wvp() {
+    const LhMatrixFloat4& LhPipeLine::get_wv() {
         init_world();
         init_view();
+        _wv_transformation = _view_transformation * _world_transformation;
+        return _wv_transformation;
+    }
+    const LhMatrixFloat4& LhPipeLine::get_wvp() {
+        get_wv();
         init_proj();
-        _wvp_transformation = _proj_transformation * _view_transformation * _world_transformation;
+        _wvp_transformation = _proj_transformation * _wv_transformation;
         return _wvp_transformation;
     }
 
@@ -145,6 +150,11 @@ namespace lh_pipeline {
 			(1.0f - x.get_y() * rhw) * _height * 0.5f,
 			x.get_z() * rhw,
 			1.0f);
+        /*LhVertexFloat4 r(
+            x.get_x() * rhw,
+            x.get_z() * rhw,
+            x.get_z() * rhw,
+            1.0f);*/
 		return r;
     }
 

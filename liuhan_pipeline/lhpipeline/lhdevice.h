@@ -3,6 +3,7 @@
 #include "lhframe_buffer\lhframe_buffer.h"
 #include "lhmath\lhdetail\lhmatrix_float4.h"
 #include "lhpipeline.h"
+#include "lhtimer.h"
 
 namespace lh_pipeline {
     typedef enum  lh_render_state {
@@ -50,6 +51,7 @@ namespace lh_pipeline {
         LHRENDER_STATE _render_state = LH_LINES;
         lh_pipeline::LhPipeLine _piple;
     private:
+        LhTimer _timer;
         float _draw_cost_time = 0.0f;
         float _fps = 0.0f;
         float _last_x = 0.0f;
@@ -66,5 +68,6 @@ namespace lh_pipeline {
 		bool _front = true;
 		bool _floor = true;
 		bool _rotate = true;
+        float _draw_counts = 0.0f;
     };
 }

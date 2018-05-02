@@ -53,6 +53,7 @@
     <ClCompile Include="lights\lhmaterial.cpp">
       <Filter>lhlights</Filter>
     </ClCompile>
+    <ClCompile Include="lhtimer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
@@ -105,6 +106,7 @@
     <ClInclude Include="lights\lhmaterial.h">
       <Filter>lhlights</Filter>
     </ClInclude>
+    <ClInclude Include="lhtimer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lhrasterization\lhtools.inl">

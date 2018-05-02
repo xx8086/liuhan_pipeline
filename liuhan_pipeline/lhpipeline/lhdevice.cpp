@@ -8,6 +8,7 @@
 namespace lh_pipeline {
     LhDevice::LhDevice()
     {
+        _timer.set_count_time(1000);
     }
 
     LhDevice::~LhDevice()
@@ -194,20 +195,26 @@ namespace lh_pipeline {
             return;
         }
 
-        auto start = std::chrono::system_clock::now();
-		
+        //auto start = std::chrono::system_clock::now();
+
 		clear_buffer();
 		clear_deep();
 
 		draw_floor();
 		draw_croe();
 
-		auto end = std::chrono::system_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+		/*auto end = std::chrono::system_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 		_draw_cost_time = float(duration.count()) * 
-			std::chrono::microseconds::period::num / 
-			std::chrono::microseconds::period::den;
-		_fps = _draw_cost_time == 0.0f ? -0.0f : 1.0f / _draw_cost_time;
+			std::chrono::milliseconds::period::num / 
+			std::chrono::milliseconds::period::den;*/
+        if (_timer.count_time()) {
+            _fps = _draw_counts;
+            _draw_cost_time = 1.0f / _fps;
+            _draw_counts = 0.0f;
+        }
+        
+        _draw_counts++;
     }
 
     void LhDevice::draw_line(bool loop) {

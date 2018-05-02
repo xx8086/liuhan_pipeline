@@ -27,6 +27,7 @@
     <ClCompile Include="lhpipeline.cpp" />
     <ClCompile Include="lhrasterization\lhclip.cpp" />
     <ClCompile Include="lhrasterization\lhdraw_primitive.cpp" />
+    <ClCompile Include="lhtimer.cpp" />
     <ClCompile Include="lights\lhlights.cpp" />
     <ClCompile Include="lights\lhmaterial.cpp" />
   </ItemGroup>
@@ -47,6 +48,7 @@
     <ClInclude Include="lhrasterization\lhclip.h" />
     <ClInclude Include="lhrasterization\lhdraw_primitive.h" />
     <ClInclude Include="lhrasterization\lhtools.hpp" />
+    <ClInclude Include="lhtimer.h" />
     <ClInclude Include="lights\lhlights.h" />
     <ClInclude Include="lights\lhmaterial.h" />
   </ItemGroup>

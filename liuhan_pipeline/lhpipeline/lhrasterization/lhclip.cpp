@@ -206,7 +206,8 @@ namespace lh_pipeline {
 			return CLIP_CODE_L;
 		}
 		int sign = 0;
-		float half_x = (z - _z_view) * _z_tan_x;
+        /*
+        float half_x = 0.5f * (_max_x - _min_x);// (z - _z_view) * _z_tan_x;
 		float x = (v - half_x * 0.5) * 2;
 		if (x > half_x) {
 			sign = CLIP_CODE_G;
@@ -217,7 +218,17 @@ namespace lh_pipeline {
 		else
 		{
 			sign = CLIP_CODE_I;
-		}
+		}*/
+        if (v < _min_x) {
+            sign = CLIP_CODE_G;
+        }
+        else if (v > _max_x) {
+            sign = CLIP_CODE_L;
+        }
+        else {
+            sign = CLIP_CODE_I;
+        }
+
 		return sign;
 	}
 
@@ -225,8 +236,9 @@ namespace lh_pipeline {
 		if (z < _near_z) {
 			return CLIP_CODE_L;
 		}
-		int sign = 0;
-		float half_y = (z - _z_view) * _z_tan_y;
+        int sign = 0;
+		/*
+        float half_y = 0.5f * (z - _z_view) * _z_tan_y;
 		float x = (v - half_y * 0.5) * 2;
 		if (x > half_y) {
 			sign = CLIP_CODE_G;
@@ -237,7 +249,16 @@ namespace lh_pipeline {
 		else
 		{
 			sign = CLIP_CODE_I;
-		}
+		}*/
+        if (v < _min_y) {
+            sign = CLIP_CODE_G;
+        }
+        else if (v > _max_y) {
+            sign = CLIP_CODE_L;
+        }
+        else {
+            sign = CLIP_CODE_I;
+        }
 		return sign;
 	}
 }

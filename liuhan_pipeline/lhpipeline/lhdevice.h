@@ -36,6 +36,7 @@ namespace lh_pipeline {
 		float get_fps() { return _fps; };
 		float get_draw_cost() { return _draw_cost_time; }
 		LhVertexFloat3 get_world_pos() { return LhVertexFloat3(_m_x, _m_y, _m_z); };
+        LhVertexFloat3 get_eyes_pos() { return _piple.get_view_pos(); }
     private:
 		void draw_croe();
         void draw_line(bool loop = false);

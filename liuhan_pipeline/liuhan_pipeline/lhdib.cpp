@@ -371,19 +371,23 @@ namespace lh_pipeline {
 
 	void LhDib::profile(HDC& hdc) {
 		LhVertexFloat3 pos = get_world_pos();
+        LhVertexFloat3 eyes = get_eyes_pos();
 		char str_fps[2048] = { 0 };
 		sprintf_s(str_fps,
-			"方向键和asdw控制方向移动；\n"
+			"asdw控制世界坐标的移动；\n"
+            "方向键控制摄像机的移动；\n"
 			"空格键: 开关灯光；\n"
-			"V: 开关地板\n"
-			"R: 开关自动旋转\n"
-			"L: 开关画片元三角形\n"
-			"F: 切换正反面消除;\n"
-			"I: 线框； O: Gouraud； P: uv贴图\n"
-			"XYZ: 绕xyz轴旋转\n"
-			"world_pos: (%.3f, %.3f, %.3f)\n"
-			"每一帧耗时：%.3fms;  fps: %.3f",
+			"V: 开关地板；\n"
+			"R: 开关自动旋转；\n"
+			"L: 开关画片元三角形；\n"
+			"F: 切换正反面消除；\n"
+			"I: 线框； O: Gouraud； P: uv贴图；\n"
+			"XYZ: 绕xyz轴旋转；\n"
+			"world_pos: (%.3f, %.3f, %.3f)；\n"
+            "eyes_pos: (%.3f, %.3f, %.3f)；\n"
+			"每一帧耗时：%.3fms;  fps: %.3f；\n",
 			pos.get_x(), pos.get_y(), pos.get_z(),
+            eyes.get_x(), eyes.get_y(), eyes.get_z(),
 			1000 * get_draw_cost(), get_fps());
 		_old_font = SelectObject(hdc, _font);
 		SetBkColor(hdc, RGB(0, 0, 0));

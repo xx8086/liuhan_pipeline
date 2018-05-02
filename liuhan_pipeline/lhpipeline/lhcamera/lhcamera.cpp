@@ -11,8 +11,8 @@ namespace lh_pipeline {
         _world_up(LhVertexFloat3(0.0f, 1.0f, 0.0f)),
         _yaw(90.0f),
         _pitch(0.0f),
-        _sensitivity(0.1f),
-        _view_speed(15.0f) {
+        _sensitivity(1.0f),
+        _view_speed(0.25f) {
         update_camera_vectors();
     }
 
@@ -30,8 +30,42 @@ namespace lh_pipeline {
         update_camera_vectors();
     }
 
+    void LhCamera::set_view_orientation(VIEWWARD direction, float deltatime) {
+        float degrees = _sensitivity * deltatime;
+        /*if (degrees > 0.5f) {
+            degrees = 0.5f;
+        }
+        else if (degrees < 0.05f) {
+            degrees = 0.05f;
+        }*/
+        switch (direction) {
+        case VIEW_FORWARD:
+            _pitch += degrees;
+            if (_pitch > 89.0f)_pitch = 89.0f;
+            break;
+        case VIEW_BACKWARD:
+            _pitch -= degrees;
+            if (_pitch < -89.0f)_pitch = -89.0f;
+            break;
+        case VIEW_LEFT:
+            _yaw -= degrees;
+            break;
+        case VIEW_RIGHT:
+            _yaw += degrees;
+            break;
+        default:break;
+        }
+        update_camera_vectors();
+    }
+
     void LhCamera::set_view_ward(VIEWWARD direction, float deltatime) {
         float velocity = _view_speed * deltatime;
+        if (velocity > 0.5f) {
+            velocity = 0.5f;
+        }
+        else if (velocity < 0.05f) {
+            velocity = 0.05f;
+        }
         switch (direction) {
         case VIEW_FORWARD:
             _pos = (_pos - (_front * velocity));
@@ -53,14 +87,14 @@ namespace lh_pipeline {
         _front = LhVertexFloat3 (
             cos(ToRadianF(_yaw)) * cos(ToRadianF(_pitch)),
             sin(ToRadianF(_pitch)),
-            sin(ToRadianF(_yaw)) * cos(ToRadianF(_pitch))
+            -sin(ToRadianF(_yaw)) * cos(ToRadianF(_pitch))
         );
         normalize(_front);
-        // Also re-calculate the Right and Up vector
         _right = cross(_front, _world_up);
         normalize(_right);
         _up = cross(_right, _front);
         normalize(_up);
-        _target = _front + _pos;
+        _target = _pos + _front;
+        _target.set_z(1.0f);
     }
 }

@@ -14,6 +14,9 @@ namespace lh_pipeline {
     void LhPipeLine::set_view_ward(VIEWWARD direction, float deltatime) {
         _camera.set_view_ward(direction, deltatime);
     }
+    void LhPipeLine::set_view_orientation(VIEWWARD direction, float deltatime) {
+        _camera.set_view_orientation(direction, deltatime);
+    }
 
     void LhPipeLine::set_front_begin(float xoffset, float yoffset) {
         
@@ -107,6 +110,8 @@ namespace lh_pipeline {
             -_camera._pos.get_z());//移到相机位置
         camera_rotate_trans.coordinate_space_rotate(_camera._target, _camera._up);//旋转和相机轴重合
         _view_transformation = camera_rotate_trans * camera_translation_trans;
+
+        //_view_transformation.lookat_left(_camera._pos, _camera._target, _camera._up);
     }
     void LhPipeLine::init_proj() {
         _proj_transformation.persproj_transform(_pers_projinfo);

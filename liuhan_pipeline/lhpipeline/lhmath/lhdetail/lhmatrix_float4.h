@@ -38,13 +38,14 @@ namespace lh_pipeline {
             float a30, float a31, float a32, float a33);
     public:
         void set_zero();
-        void init_identity();
+        void identity();
         float determinant() const;
         LhMatrixFloat4& inverse();
         LhMatrixFloat4 transpose() ;
         LhMatrixFloat4 operator*(const LhMatrixFloat4& right);
         LhVertexFloat4 operator*(const LhVertexFloat4& right);
         LhVertexFloat4 operator*(const LhVertexFloat3& right);//w = 1
+        
     public:
         void scale_transform(float, float, float);
         void rotate_transform(float, float, float);
@@ -52,6 +53,7 @@ namespace lh_pipeline {
         void persproj_transform(const PersProjInfo& p);
         void orthoproj_transform(const OrthoProjInfo& p);
         void coordinate_space_rotate(const LhVertexFloat3& target, const LhVertexFloat3& up);
+        void lookat_left(LhVertexFloat3& eys, LhVertexFloat3& center, LhVertexFloat3& up);
     protected:
         float _m[4][4];
     };

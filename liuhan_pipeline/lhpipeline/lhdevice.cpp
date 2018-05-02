@@ -29,12 +29,11 @@ namespace lh_pipeline {
         _last_y = ypos;
     }
     void LhDevice::set_front(float xpos, float ypos) {
-		return;
         float xoffset = xpos - _last_x;
         float yoffset = _last_y - ypos; // reversed since y-coordinates go from bottom to top
         _last_x = xpos;
         _last_y = ypos;
-        _piple.set_front(-xoffset, -yoffset);
+        _piple.set_front(xoffset, yoffset);
     }
 
     void LhDevice::keyboard(/*char vk, */char key) {
@@ -45,33 +44,38 @@ namespace lh_pipeline {
 		if (speed > 0.5f) {
 			speed = 0.5f;
 		}
-		else if (speed < 0.01f) {
-			speed = 0.01f;
+		else if (speed < 0.05f) {
+			speed = 0.05f;
 		}
         switch (key) {
         case 'W':
+            _m_z += speed;
+            //_piple.set_view_orientation(VIEW_BACKWARD, _draw_cost_time);
+            break;
         case 0x26://VK_UP
-            //_piple.set_view_ward(VIEW_FORWARD, _draw_cost_time);
-			_m_z += speed;
-			z_mip();
+            _piple.set_view_ward(VIEW_BACKWARD, _draw_cost_time);
             break;
         case 'S':
+            _m_z -= speed;
+            //_piple.set_view_orientation(VIEW_FORWARD, _draw_cost_time);
+            break;
         case 0x28://VK_DOWN
-            //_piple.set_view_ward(VIEW_BACKWARD, _draw_cost_time);
-			_m_z -= speed;
-            z_mip();
+            _piple.set_view_ward(VIEW_FORWARD, _draw_cost_time);
 			break;
         case 'A':
+            _m_x -= speed;
+            //_piple.set_view_orientation(VIEW_RIGHT, _draw_cost_time);
+            break;
         case 0x25://VK_LEFT
-            //_piple.set_view_ward(VIEW_LEFT, _draw_cost_time);
-            //
-			_m_x -= speed;
+            _piple.set_view_ward(VIEW_RIGHT, _draw_cost_time);
+
 			break;
         case 'D':
+            _m_x += speed;
+            //_piple.set_view_orientation(VIEW_LEFT, _draw_cost_time);
+            break;
         case 0x27://VK_RIGHT
-            //_piple.set_view_ward(VIEW_RIGHT, _draw_cost_time);
-            //z_mip();
-			_m_x += speed;
+            _piple.set_view_ward(VIEW_LEFT, _draw_cost_time);
 			break;
         case 0x20:
             enablelight();
@@ -111,6 +115,17 @@ namespace lh_pipeline {
             break;
         }
 
+        if ('W' == key ||
+            'S' == key || 
+            'A' == key || 
+            'D' == key || 
+            0x25 == key || 
+            0x26 == key ||
+            0x27 == key ||
+            0x28 == key
+            ) {
+            z_mip();
+        }
 		/*char msgbuf[512];
 		LhVertexFloat3 view = _piple.get_view_pos();
 		LhVertexFloat3 dir = _piple.get_view_dir();
@@ -123,16 +138,19 @@ namespace lh_pipeline {
     }
 
     void LhDevice::z_mip() {
-        if (_m_z >= 1.2f) {
+        float z = _piple.get_view_pos().get_z();
+        z = _m_z - z;
+        if (z >= 5.0f) {
             set_current_texture_uv(TEXTURE_LEVEL_128);
         }
-        else if (1.2f > _m_z && _m_z >= 0.0f) {
+        else if (5.0f > z && z >= 3.0f) {
             set_current_texture_uv(TEXTURE_LEVEL_256);
         }
-        else if (0.0f > _m_z) {
+        else if (2.0f > z) {
             set_current_texture_uv(TEXTURE_LEVEL_512);
         }
         set_current_uv(get_current_texutre_uv_buffers(), get_current_texture_uv_size());
+        set_view(&_piple.get_view_pos());
     }
 
     void LhDevice::bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size) {

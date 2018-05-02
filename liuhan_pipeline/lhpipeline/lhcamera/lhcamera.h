@@ -17,6 +17,7 @@ namespace lh_pipeline {
         void update_camera_vectors();
         void set_front(float xoffset, float yoffset, bool constrainpitch = true);
         void set_view_ward(VIEWWARD direction, float deltatime);
+        void set_view_orientation(VIEWWARD direction, float deltatime);
     public:
         LhVertexFloat3 _pos;
         LhVertexFloat3 _target;

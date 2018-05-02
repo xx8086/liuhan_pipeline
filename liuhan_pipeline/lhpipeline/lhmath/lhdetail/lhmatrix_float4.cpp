@@ -39,7 +39,7 @@ namespace lh_pipeline {
         return n;
     }
 
-    void LhMatrixFloat4::init_identity() {
+    void LhMatrixFloat4::identity() {
         _m[0][0] = 1.0f; _m[0][1] = 0.0f; _m[0][2] = 0.0f; _m[0][3] = 0.0f;
         _m[1][0] = 0.0f; _m[1][1] = 1.0f; _m[1][2] = 0.0f; _m[1][3] = 0.0f;
         _m[2][0] = 0.0f; _m[2][1] = 0.0f; _m[2][2] = 1.0f; _m[2][3] = 0.0f;
@@ -160,6 +160,27 @@ namespace lh_pipeline {
         _m[1][0] = 0.0f; _m[1][1] = 1.0f; _m[1][2] = 0.0f; _m[1][3] = y;
         _m[2][0] = 0.0f; _m[2][1] = 0.0f; _m[2][2] = 1.0f; _m[2][3] = z;
         _m[3][0] = 0.0f; _m[3][1] = 0.0f; _m[3][2] = 0.0f; _m[3][3] = 1.0f;
+    }
+
+    void LhMatrixFloat4::lookat_left(LhVertexFloat3& eye, LhVertexFloat3& center, LhVertexFloat3& up) {
+        LhVertexFloat3 f(center - eye);
+        normalize(f);
+        LhVertexFloat3 s(cross(up, f));
+        normalize(s);
+        LhVertexFloat3 u(cross(f, s));
+        identity();
+        _m[0][0] = s.get_x();
+        _m[1][0] = s.get_y();
+        _m[2][0] = s.get_z();
+        _m[0][1] = u.get_x();
+        _m[1][1] = u.get_y();
+        _m[2][1] = u.get_z();
+        _m[0][2] = f.get_x();
+        _m[1][2] = f.get_y();
+        _m[2][2] = f.get_z();
+        _m[3][0] = -dot(s, eye);
+        _m[3][1] = -dot(u, eye);
+        _m[3][2] = -dot(f, eye);
     }
 
     void LhMatrixFloat4::coordinate_space_rotate(const LhVertexFloat3& target,

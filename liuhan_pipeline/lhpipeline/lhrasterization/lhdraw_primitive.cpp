@@ -4,9 +4,6 @@
 #include <memory.h>
 
 namespace lh_pipeline {
-#define fixp16_shift 16
-#define fixp28_shift 28
-#define use_1_z 1
 
 	//static unsigned int texture[512][512] = {0};
 	//void init_texture() {
@@ -67,12 +64,10 @@ namespace lh_pipeline {
 			32);
 		_light.set_spot(12.0f, 15.0f, 0.0f, 0.0f, 0.0f);
 		_light.set_material(material);
-		_clip.set_clip_region(CLIP_ALL_FACE, 0, 0, w, h, _z_near_clip, _z_far_clip);
 	}
 
 	void LhDrawPrimitive::set_view(LhVertexFloat3* view) {
 		_view = view;
-		_clip.set_z_view(view->get_z());
 	}
 
 
@@ -331,7 +326,16 @@ namespace lh_pipeline {
 		draw_line(x1, y1, x3, y3, color);
 	}
 
-	bool LhDrawPrimitive::clip(VertexColor& v1, VertexColor& v2, VertexColor& v3) {
+	void LhDrawPrimitive::toscreen(LhVertexFloat3& v) {
+		v.set_x((v.get_x() + 1.0f) * _width * 0.5);
+		v.set_y((1.0f - v.get_y()) * _height * 0.5);
+	}
+
+	bool LhDrawPrimitive::toscreen(VertexColor& v1, VertexColor& v2, VertexColor& v3) {
+		toscreen(v1.postion);
+		toscreen(v2.postion);
+		toscreen(v3.postion);
+
 		if (v2.postion.get_y() < v1.postion.get_y()) {
 			swap_vaue(v1, v2);
 		}
@@ -360,7 +364,7 @@ namespace lh_pipeline {
 	}
 
 	void LhDrawPrimitive::draw_triangle(VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv) {
-		if (!clip(v1, v2, v3)) {
+		if (!toscreen(v1, v2, v3)) {
 			return;
 		}
 
@@ -578,10 +582,6 @@ namespace lh_pipeline {
 		_current_uv_size = uv_size;
 		_max_uv_size = uv_size;
 		_current_uv_texture_datas = (unsigned int*)(uv);
-	}
-
-	float LhDrawPrimitive::window_to_view(float pos, float length) {
-		return 2 * (pos - length / 2) / length;
 	}
 
 	int LhDrawPrimitive::lh_min(int x, int min, int max) {

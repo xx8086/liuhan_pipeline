@@ -39,8 +39,8 @@ namespace lh_pipeline {
 		void line(int x1, int y1, int x2, int y2, lh_color c);
 		void top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
 		void bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
-		bool clip(VertexColor& v1, VertexColor& v2, VertexColor& v3);
-		float window_to_view(float pos, float length);
+		void toscreen(LhVertexFloat3& v);
+		bool toscreen(VertexColor& v1, VertexColor& v2, VertexColor& v3);
 		int lh_min(int x, int min, int max);
 		VertexColor insert_lerp(VertexColor& v1, VertexColor& v2, float t);
 		VertexColor interp_step(const VertexColor& left, const VertexColor& right);

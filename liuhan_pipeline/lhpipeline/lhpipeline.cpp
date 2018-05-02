@@ -53,6 +53,7 @@ namespace lh_pipeline {
 
     void LhPipeLine::set_camera_pos(LhVertexFloat3 pos) {
         _camera._pos = pos;
+		//_camera.update_camera_vectors();
     }
     void LhPipeLine::set_orthographic_proj(const OrthoProjInfo& o) {
         _orthoprojinfo = o;
@@ -126,7 +127,7 @@ namespace lh_pipeline {
     }
 
     LhVertexFloat4 LhPipeLine::transformation_in_mvp(const LhVertexFloat3& v) {
-        return _wvp_transformation *v;
+        return _wvp_transformation * v;
     }
 
     LhVertexFloat4 LhPipeLine::transformation_in_mvo(const LhVertexFloat3& v) {
@@ -145,16 +146,16 @@ namespace lh_pipeline {
 
     LhVertexFloat4 LhPipeLine::transformation_homogeneous(const LhVertexFloat4& x) {
 		float rhw = 1.0f / x.get_w();
-		LhVertexFloat4 r(
+		/*LhVertexFloat4 r(
 			(x.get_x() * rhw + 1.0f) * _width * 0.5f,
 			(1.0f - x.get_y() * rhw) * _height * 0.5f,
 			x.get_z() * rhw,
-			1.0f);
-        /*LhVertexFloat4 r(
+			1.0f);*/
+        LhVertexFloat4 r(
             x.get_x() * rhw,
             x.get_z() * rhw,
             x.get_z() * rhw,
-            1.0f);*/
+            1.0f);
 		return r;
     }
 

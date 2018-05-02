@@ -168,7 +168,7 @@ namespace lh_pipeline {
 		LhVertexFloat3 postion;
 		lh_color color;
 		TextureUV uv;
-		float _rhw = 1.0f;
+		float _rhw = 1.0f;//1.0f / w
 		VertexColor operator= (const VertexColor &v) {
 			postion = v.postion;
 			color = v.color;
@@ -183,6 +183,10 @@ namespace lh_pipeline {
 			postion(v), uv(texture), _rhw(rhw) {};
 
 		void rhw() {
+			postion.set_x(postion.get_x() * _rhw);
+			postion.set_y(postion.get_y() * _rhw);
+			postion.set_z(postion.get_z() * _rhw);//w  = 1.0
+
 			uv.u *= _rhw;
 			uv.v *= _rhw;
 			color.red *= _rhw;

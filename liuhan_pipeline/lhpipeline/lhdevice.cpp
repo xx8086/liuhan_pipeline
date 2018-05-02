@@ -126,20 +126,10 @@ namespace lh_pipeline {
             ) {
             z_mip();
         }
-		/*char msgbuf[512];
-		LhVertexFloat3 view = _piple.get_view_pos();
-		LhVertexFloat3 dir = _piple.get_view_dir();
-		sprintf_s(msgbuf, "pos(%f, %f, %f), speed = %f, view(%f, %f, %f), centor(%f, %f, %f)\n", 
-			_m_x, _m_y, _m_z, speed,
-			view.get_x(), view.get_y(), view.get_z(),
-			dir.get_x(), dir.get_y(), dir.get_z());
-		OutputDebugString(msgbuf);
-		_print_log = true;*/
     }
 
     void LhDevice::z_mip() {
-        float z = _piple.get_view_pos().get_z();
-        z = _m_z - z;
+        float z = _m_z - _piple.get_view_pos().get_z();
         if (z >= 5.0f) {
             set_current_texture_uv(TEXTURE_LEVEL_128);
         }
@@ -149,6 +139,7 @@ namespace lh_pipeline {
         else if (2.0f > z) {
             set_current_texture_uv(TEXTURE_LEVEL_512);
         }
+
         set_current_uv(get_current_texutre_uv_buffers(), get_current_texture_uv_size());
         set_view(&_piple.get_view_pos());
     }
@@ -217,25 +208,17 @@ namespace lh_pipeline {
             return;
         }
 
-        //auto start = std::chrono::system_clock::now();
-
 		clear_buffer();
 		clear_deep();
 
-		draw_floor();
+		//draw_floor();
 		draw_croe();
 
-		/*auto end = std::chrono::system_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		_draw_cost_time = float(duration.count()) * 
-			std::chrono::milliseconds::period::num / 
-			std::chrono::milliseconds::period::den;*/
         if (_timer.count_time()) {
             _fps = _draw_counts;
             _draw_cost_time = 1.0f / _fps;
             _draw_counts = 0.0f;
         }
-        
         _draw_counts++;
     }
 
@@ -435,6 +418,23 @@ namespace lh_pipeline {
         set_texture(texture_datas, texture_size);
     }
 
+	bool LhDevice::front(LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3) {
+		LhVertexFloat3 n1 = v2 - v1;
+		LhVertexFloat3 n2 = v3 - v1;
+		LhVertexFloat3 normal = cross(n1, n2);
+		normalize(normal);
+		if (_front) {
+			if (backface_culling(normal, _piple.get_view_dir())) {
+				return false;
+			}
+		}
+		else {
+			if (!backface_culling(normal, _piple.get_view_dir())) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	void LhDevice::draw_trangles_texture_fill() {
 		if (!_piple.can_draw()) {
@@ -447,34 +447,20 @@ namespace lh_pipeline {
 		int uv_count = 0;
 		std::vector<VertexColor> triangles;
 		for (int i = 0; i < counts; i += 9, uv_count += 6) {
-			LhVertexFloat4 p1;
-			LhVertexFloat4 p2;
-			LhVertexFloat4 p3;
-			if (get_pos(p1, LhVertexFloat3(v[i], v[i + 1], v[i + 2])) &&
-				get_pos(p2, LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5])) &&
-				get_pos(p3, LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]))) {
-				LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
-				LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
-				LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
-				LhVertexFloat3 n1 = v2 - v1;
-				LhVertexFloat3 n2 = v3 - v1;
-				LhVertexFloat3 normal = cross(n1, n2);
-				if (_front) {
-					if (backface_culling(normal, _piple.get_view_dir())) {
-						continue;
-					}
-				}
-				else {
-					if (!backface_culling(normal, _piple.get_view_dir())) {
-						continue;
-					}
-				}
+			LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
+			LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
+			LhVertexFloat4 p3 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]));
 
+			LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
+			LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
+			LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
+			if (front(v1, v2, v3)) {
 				VertexColor vc1(v1, TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
 				VertexColor vc2(v2, TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
 				VertexColor vc3(v3, TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
 				clip_triangle(triangles, &vc1, &vc2, &vc3);
 			}
+
 		}
 		_print_log = false;
 		for (std::vector<VertexColor>::iterator iter = triangles.begin();

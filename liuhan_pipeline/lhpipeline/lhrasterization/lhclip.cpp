@@ -16,6 +16,31 @@ namespace lh_pipeline {
          b == CLIP_CODE_L && \
          c == CLIP_CODE_L)) return 0; 
 
+#define TRIANGLE_OUTER_PROJECT(point_nums) \
+if (0 == point_nums || 3 == point_nums) {\
+	return point_nums;\
+}
+
+
+#define ORGANIZATION_POINTS\
+    VertexColor* p0;\
+	VertexColor* p1;\
+	VertexColor* p2;\
+	if (CLIP_CODE_I == sign.get_x()) {\
+		p0 = v1;\
+		p1 = v2;\
+		p2 = v3;\
+	}\
+	else if (CLIP_CODE_I == sign.get_y()) {\
+		p0 = v2;\
+		p1 = v3;\
+		p2 = v1;\
+	}\
+	else {\
+		p0 = v3;\
+		p1 = v1;\
+		p2 = v2;\
+	}
 
 	LhClip::LhClip()
 	{
@@ -26,24 +51,52 @@ namespace lh_pipeline {
 	{
 	}
 
-	void LhClip::set_z_view(float z_view) {
-		_z_view = z_view;
-		_z_tan_x = 0.5f * (_max_x - _min_x) / (_near_z - z_view);
-		_z_tan_y = 0.5f * (_max_y - _min_y) / (_near_z - z_view);
-	}
-
-	void LhClip::set_clip_region(CLIPOPTICVERTEBRAFACE clipface, float min_x, float min_y, float max_x, float max_y, float near_z, float far_z) {
-		_clip_face = clipface;
-		_min_x = min_x;
-		_max_x = max_x;
-		_min_y = min_y;
-		_max_y = max_y;
-		_near_z = near_z;
-		_far_z = far_z;
-	}
-
 	bool LhClip::backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir) {
 		return dot(normal, dir) > 0 ? false : true;//左手,大于零同向,不消除
+	}
+
+	int LhClip::split_triangle_x(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		LhVertexInt3 sign;
+		int point_nums = outside(sign, v1->postion.get_x(), v2->postion.get_x(), v3->postion.get_x());
+		TRIANGLE_OUTER_PROJECT(point_nums)
+		ORGANIZATION_POINTS
+		if (1 == point_nums) {
+			one_triangle_x(triangles, p0, p1, p2);
+		}
+		else if (2 == point_nums) {
+			two_triangle_x(triangles, p0, p1, p2);
+		}
+		return point_nums;
+	}
+
+	int LhClip::split_triangle_y(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		LhVertexInt3 sign;
+		int point_nums = outside(sign, v1->postion.get_y(), v2->postion.get_y(), v3->postion.get_y());
+		TRIANGLE_OUTER_PROJECT(point_nums)
+			ORGANIZATION_POINTS
+
+			if (1 == point_nums) {
+				one_triangle_y(triangles, p0, p1, p2);
+			}
+			else if (2 == point_nums) {
+				two_triangle_y(triangles, p0, p1, p2);
+			}
+			return point_nums;
+	}
+
+	int LhClip::split_triangle_z(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		LhVertexInt3 sign;
+		int point_nums = outside(sign, v1->postion.get_z(), v2->postion.get_z(), v3->postion.get_z());
+		TRIANGLE_OUTER_PROJECT(point_nums)
+		ORGANIZATION_POINTS
+
+		if (1 == point_nums) {
+			one_triangle_z(triangles, p0, p1, p2);
+		}
+		else if (2 == point_nums) {
+			two_triangle_z(triangles, p0, p1, p2);
+		}
+		return point_nums;
 	}
 
 	void LhClip::triangle_clip(std::vector<VertexColor>&triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
@@ -51,64 +104,24 @@ namespace lh_pipeline {
 		v2->rhw();
 		v3->rhw();
 
-		LhVertexInt3 sign;
-		int points = outside(sign, v1->postion, v2->postion, v3->postion);
-		if (0 == points) {//在视锥体内点的数量
-			return;
-		}
-
-		if (3 == points) {
-			triangles.push_back(*v1);
-			triangles.push_back(*v2);
-			triangles.push_back(*v3);
-			return;
-		}
-
-		//检查是否有顶点在近截面之外
-		if ((sign.get_x() | sign.get_y() | sign.get_z()) & CLIP_CODE_L) {
-			VertexColor* p0;
-			VertexColor* p1;
-			VertexColor* p2;
-
-			//1.找出位于内侧的顶点
-			if (CLIP_CODE_I == sign.get_x()) {
-				p0 = v1;//1,2,3
-				p1 = v2;
-				p2 = v3;
-			}
-			else if (CLIP_CODE_I == sign.get_y()) {
-				p0 = v2;//2,3,1
-				p1 = v3;
-				p2 = v1;
-			}
-			else {
-				p0 = v3;//3,1,2
-				p1 = v1;
-				p2 = v2;
-			}
-
-			if (1 == points) {
-				one_triangle_z(triangles, sign, p0, p1, p2);
-			}
-			else if (2 == points) {
-				two_triangle_z(triangles, sign, p0, p1, p2);
-			}
+		if (3 == split_triangle_x(triangles, v1, v2, v3) &&//三个点在左右截面内
+			3 == split_triangle_y(triangles, v1, v2, v3) &&//三个点在上下截面内
+			3 == split_triangle_z(triangles, v1, v2, v3)) {//三个点在前后截面内
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v2);
+			triangles.emplace_back(*v3);
 		}
 	}
-	/*
-	p0					p1
---------------------------
-		p2	
-	*/
-	int LhClip::two_triangle_z(std::vector<VertexColor>& triangles, LhVertexInt3& sign, VertexColor* p0, VertexColor* p1, VertexColor* p2) {
+
+	int LhClip::two_triangle_z(std::vector<VertexColor>& triangles, VertexColor* p0, VertexColor* p1, VertexColor* p2) {
 		if (p1->postion.get_z() < p2->postion.get_z()) {
 			swap_vaue<VertexColor* >(p1, p2);
 		}
 		float t;
-		t = (_near_z - p2->postion.get_z()) / (p0->postion.get_z() - p2->postion.get_z());
+		t = (-1.0f - p2->postion.get_z()) / (p0->postion.get_z() - p2->postion.get_z());
 		VertexColor near_p0 = lerp(*p2, *p0, t);
 
-		t = (_near_z - p2->postion.get_z()) / (p1->postion.get_z() - p2->postion.get_z());
+		t = (-1.0f - p2->postion.get_z()) / (p1->postion.get_z() - p2->postion.get_z());
 		VertexColor near_p1 = lerp(*p2, *p1, t);
 
 		triangles.emplace_back(*p0);
@@ -120,22 +133,18 @@ namespace lh_pipeline {
 		triangles.emplace_back(*p1);
 		return 2;
 	}
-	/*
-		p0			
-	--------------------------
-	p1			P2
-	*/
-	int LhClip::one_triangle_z(std::vector<VertexColor>& triangles, LhVertexInt3& sign, VertexColor* p0, VertexColor* p1, VertexColor* p2) {
+
+	int LhClip::one_triangle_z(std::vector<VertexColor>& triangles, VertexColor* p0, VertexColor* p1, VertexColor* p2) {
 		//对每条边裁剪
 		float t;
 		VertexColor v;
 		//对p0->p1边裁剪
-		t = (_near_z - p1->postion.get_z()) / (p0->postion.get_z()  - p1->postion.get_z());
+		t = (-1.0f - p1->postion.get_z()) / (p0->postion.get_z()  - p1->postion.get_z());
 		*p1 = lerp(*p1 , *p0, t);
 		//p1->postion.set_z(_near_z);
 
 		//对p0->p2边裁剪
-		t = (_near_z - p2->postion.get_z()) / (p0->postion.get_z() - p2->postion.get_z());
+		t = (-1.0f - p2->postion.get_z()) / (p0->postion.get_z() - p2->postion.get_z());
 		*p2 = lerp(*p2, *p0, t);
 
 		triangles.emplace_back(*p0);
@@ -144,121 +153,186 @@ namespace lh_pipeline {
 		return 1;
 	}
 
-	int LhClip::outside(LhVertexInt3& sign, LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3) {
-		if (CLIP_LEFT_RIGHT_FACE & _clip_face) {
-			int s1 = signcheck_x(v1.get_x(), v1.get_z());
-			int s2 = signcheck_x(v2.get_x(), v2.get_z());
-			int s3 = signcheck_x(v3.get_x(), v3.get_z());
-			OUT_SIDE_SIGNED(s1, s2, s3)
-		}
-		if (CLIP_TOP_BOTTOM_FACE & _clip_face) {
-			int s1 = signcheck_y(v1.get_y(), v1.get_z());
-			int s2 = signcheck_y(v2.get_y(), v2.get_z());
-			int s3 = signcheck_y(v3.get_y(), v3.get_z());
-			OUT_SIDE_SIGNED(s1, s2, s3)
-		}
+	int LhClip::outside(LhVertexInt3& sign, float a, float b, float c) {
+		int s1 = signcheck(a);
+		int s2 = signcheck(b);
+		int s3 = signcheck(c);
+		OUT_SIDE_SIGNED(s1, s2, s3);
 
-		int triangle_nums = 0;
-		if (CLIP_NEAR_FAR_FACE & _clip_face) {
-			int s1 = signcheck_z(v1.get_z());
-			int s2 = signcheck_z(v2.get_z());
-			int s3 = signcheck_z(v3.get_z());
-			OUT_SIDE_SIGNED(s1, s2, s3);
-
-			if (CLIP_CODE_I == s1)triangle_nums++;
-			if (CLIP_CODE_I == s2)triangle_nums++;
-			if (CLIP_CODE_I == s3)triangle_nums++;
-			sign.set_x(s1);
-			sign.set_y(s2);
-			sign.set_z(s3);
-		}
-
-		return triangle_nums;
+		int point_on_view_nums = 0;
+		if (CLIP_CODE_I == s1)point_on_view_nums++;
+		if (CLIP_CODE_I == s2)point_on_view_nums++;
+		if (CLIP_CODE_I == s3)point_on_view_nums++;
+		sign.set_x(s1);
+		sign.set_y(s2);
+		sign.set_z(s3);
+		return point_on_view_nums;
 	}
 
-	int LhClip::signcheck_z(float z) {
-		int sign = 0;
-		if (z > _far_z) {
-			sign = CLIP_CODE_G;
+	int LhClip::one_triangle_x(std::vector<VertexColor>& triangles,  VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		if (v2->postion.get_x() < v3->postion.get_x()) {
+			swap_vaue<VertexColor* >(v2, v3);
 		}
-		else if (z < _near_z) {
-			sign = CLIP_CODE_L;
+		if (v2->postion.get_x() < -1.0f &&
+			v3->postion.get_x() <  -1.0f) {//left
+			float t;
+			VertexColor v;
+			t = (-1 - v2->postion.get_x()) / (v1->postion.get_x() - v2->postion.get_x());
+			*v2 = lerp(*v2, *v1, t);
+			t = (-1 - v3->postion.get_x()) / (v1->postion.get_x() - v3->postion.get_x());
+			*v3 = lerp(*v3, *v1, t);
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v2);
+			triangles.emplace_back(*v3);
+		}
+		else if (1.0f < v2->postion.get_x() &&
+			1.0f < v3->postion.get_x()) {//right
+			float t;
+			VertexColor v;
+			t = (1 - v1->postion.get_x()) / (v2->postion.get_x() - v1->postion.get_x());
+			*v2 = lerp(*v1, *v2, t);
+			t = (1 - v1->postion.get_x()) / (v3->postion.get_x() - v1->postion.get_x());
+			*v3 = lerp(*v1, *v3, t);
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v3);
+			triangles.emplace_back(*v2);
+		}
+		/*else if (v3->postion.get_x() < -1.0f &&
+			1.0f < v2->postion.get_x()) {}*/
+		else {
+			assert(false);
+		}
+		return 1;
+	}
+	int LhClip::two_triangle_x(std::vector<VertexColor>& triangles,  VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		if (v2->postion.get_x() < v3->postion.get_x()) {
+			swap_vaue<VertexColor* >(v2, v3);
+		}
+		if (v3->postion.get_x() < -1.0f) {//left
+			float t = (-1.0f - v3->postion.get_x()) / (v1->postion.get_x() - v3->postion.get_x());
+			VertexColor left_p1 = lerp(*v3, *v1, t);
+
+			t = (-1.0f - v3->postion.get_x()) / (v2->postion.get_x() - v3->postion.get_x());
+			VertexColor left_p2 = lerp(*v3, *v2, t);
+
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(left_p1);
+			triangles.emplace_back(*v2);
+
+			triangles.emplace_back(left_p1);
+			triangles.emplace_back(left_p2);
+			triangles.emplace_back(*v2);
+		}
+		else if (v2->postion.get_x() > 1.0f) {//right
+			float t = (1.0f - v1->postion.get_x()) / (v2->postion.get_x() - v1->postion.get_x());
+			VertexColor rigfht_p1 = lerp(*v1, *v2, t);
+
+			t = (1.0f - v3->postion.get_x()) / (v2->postion.get_x() - v3->postion.get_x());
+			VertexColor rigfht_p2 = lerp(*v3, *v2, t);
+
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v3);
+			triangles.emplace_back(rigfht_p1);
+
+			triangles.emplace_back(rigfht_p1);
+			triangles.emplace_back(*v3);
+			triangles.emplace_back(rigfht_p2);
 		}
 		else {
-			sign = CLIP_CODE_I;
+			assert(false);
 		}
-		return sign;
+
+		return 2;
 	}
 
-	/*
-	--------------z--------------(max_x)
-	\					 |				     /
-	   \                 |                /
-	      \---------|---------/ (_max_x - _min_x)/2
-             \	         |           /
-	            \        |        /
-				  \      |     /
-					 \   |  /tan
-					   view
-	*/
-	int LhClip::signcheck_x(float v, float z) {
-		if (z < _near_z) {
-			return CLIP_CODE_L;
+	int LhClip::one_triangle_y(std::vector<VertexColor>& triangles,  VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		if (v2->postion.get_y() < v3->postion.get_y()) {
+			swap_vaue<VertexColor* >(v2, v3);
 		}
+		if (v2->postion.get_y() < -1.0f &&
+			v3->postion.get_y() < -1.0f) {//bottom
+			float t;
+			VertexColor v;
+			t = (-1 - v2->postion.get_y()) / (v1->postion.get_y() - v2->postion.get_y());
+			*v2 = lerp(*v2, *v1, t);
+			t = (-1 - v3->postion.get_y()) / (v1->postion.get_y() - v3->postion.get_y());
+			*v3 = lerp(*v3, *v1, t);
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v2);
+			triangles.emplace_back(*v3);
+		}
+		else if (v1->postion.get_y() < v2->postion.get_y() &&
+			v1->postion.get_y() < v3->postion.get_y()) {//right
+			float t;
+			VertexColor v;
+			t = (1 - v1->postion.get_y()) / (v2->postion.get_y() - v1->postion.get_y());
+			*v2 = lerp(*v1, *v2, t);
+			t = (1 - v1->postion.get_y()) / (v3->postion.get_y() - v1->postion.get_y());
+			*v3 = lerp(*v1, *v3, t);
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v3);
+			triangles.emplace_back(*v2);
+		}
+		/*else if(v2->postion.get_y() > 1.0f &&
+			v2->postion.get_y() < -1.0f){ }*/
+		else {
+			assert(false);
+		}
+		return 1;
+	}
+	int LhClip::two_triangle_y(std::vector<VertexColor>& triangles,  VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		if (v2->postion.get_y() < v3->postion.get_y()) {
+			swap_vaue<VertexColor* >(v2, v3);
+		}
+		if (v3->postion.get_y() < -1.0f) {//bottom
+			float t = (-1 - v3->postion.get_y()) / (v1->postion.get_y() - v3->postion.get_y());
+			VertexColor p1 = lerp(*v3, *v1, t);
+
+			t = (-1 - v3->postion.get_y()) / (v2->postion.get_y() - v3->postion.get_y());
+			VertexColor p2 = lerp(*v3, *v2, t);
+
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(p1);
+			triangles.emplace_back(p2);
+
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(p2);
+			triangles.emplace_back(*v2);
+		}
+		else if (v2->postion.get_y() > 1.0f) {//top
+			float t = (1 - v1->postion.get_y()) / (v2->postion.get_y() - v1->postion.get_y());
+			VertexColor p1 = lerp(*v1, *v2, t);
+
+			t = (1 - v3->postion.get_y()) / (v2->postion.get_y() - v3->postion.get_y());
+			VertexColor p2 = lerp(*v3, *v2, t);
+
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v3);
+			triangles.emplace_back(p2);
+
+			triangles.emplace_back(p1);
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(p2);
+		}
+		else {
+			assert(false);
+		}
+
+		return 2;
+	}
+
+	int LhClip::signcheck(float v) {
 		int sign = 0;
-        /*
-        float half_x = 0.5f * (_max_x - _min_x);// (z - _z_view) * _z_tan_x;
-		float x = (v - half_x * 0.5) * 2;
-		if (x > half_x) {
-			sign = CLIP_CODE_G;
-		}
-		else if (x < -half_x) {
-			sign = CLIP_CODE_L;
-		}
-		else
-		{
-			sign = CLIP_CODE_I;
-		}*/
-        if (v < _min_x) {
+        if (v < -1.0f) {//cvv
             sign = CLIP_CODE_G;
         }
-        else if (v > _max_x) {
+        else if (v > 1.0f) {
             sign = CLIP_CODE_L;
         }
         else {
             sign = CLIP_CODE_I;
         }
 
-		return sign;
-	}
-
-	int LhClip::signcheck_y(float v, float z) {
-		if (z < _near_z) {
-			return CLIP_CODE_L;
-		}
-        int sign = 0;
-		/*
-        float half_y = 0.5f * (z - _z_view) * _z_tan_y;
-		float x = (v - half_y * 0.5) * 2;
-		if (x > half_y) {
-			sign = CLIP_CODE_G;
-		}
-		else if (x < -half_y) {
-			sign = CLIP_CODE_L;
-		}
-		else
-		{
-			sign = CLIP_CODE_I;
-		}*/
-        if (v < _min_y) {
-            sign = CLIP_CODE_G;
-        }
-        else if (v > _max_y) {
-            sign = CLIP_CODE_L;
-        }
-        else {
-            sign = CLIP_CODE_I;
-        }
 		return sign;
 	}
 }

@@ -23,7 +23,6 @@ namespace lh_pipeline {
 
         template<typename callable, class... arguments>
         void sync_wait(int after, callable&& f, arguments&&... args) {
-
             std::function<typename std::result_of<callable(arguments...)>::type()> task
             (std::bind(std::forward<callable>(f), std::forward<arguments>(args)...));
             std::this_thread::sleep_for(std::chrono::milliseconds(after));

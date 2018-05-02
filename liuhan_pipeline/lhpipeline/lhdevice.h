@@ -45,9 +45,10 @@ namespace lh_pipeline {
         void draw_trangles_texture_fill();
         void draw_triangles(lh_color =(255, 0, 0));
         void z_mip();
-        bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
         void draw_grid();
         void draw_floor();
+		bool front(LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&);
+		bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
     public:
         LHRENDER_STATE _render_state = LH_LINES;
         lh_pipeline::LhPipeLine _piple;

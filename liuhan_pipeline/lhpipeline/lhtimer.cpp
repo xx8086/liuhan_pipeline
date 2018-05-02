@@ -1,6 +1,5 @@
 #include "lhtimer.h"
 
-
 namespace lh_pipeline {
     LhTimer::LhTimer() :_expired(true), _try_to_expire(false) {
     }
@@ -52,16 +51,14 @@ namespace lh_pipeline {
             return;
         }
 
-        if (_try_to_expire) {
-            //          std::cout << "timer is trying to expire, please wait..." << std::endl;
+        if (_try_to_expire) {//trying to expire
             return;
         }
         _try_to_expire = true;
         {
             std::unique_lock<std::mutex> locker(_mutex);
             _expired_cond.wait(locker, [this] {return _expired == true; });
-            if (_expired == true) {
-                //std::cout << "timer expired!" << std::endl;
+            if (_expired == true) {//expired
                 _try_to_expire = false;
             }
         }

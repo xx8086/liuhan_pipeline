@@ -306,7 +306,7 @@ namespace lh_pipeline {
 
 
 	void LhDrawPrimitive::draw_line(int x1, int y1, int x2, int y2, lh_color c) {
-		line(x1, y1, x2, y2, c);
+        line(x1, y1, x2, y2, c);
 	}
 
 	void LhDrawPrimitive::set_clip_window(float x_min, float y_min, float x_max, float y_max) {
@@ -356,6 +356,9 @@ namespace lh_pipeline {
 	}
 
 	void LhDrawPrimitive::clip_triangle(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+        v1->rhw();
+        v2->rhw();
+        v3->rhw();
 		_clip.triangle_clip(triangles, v1, v2, v3);
 	}
 
@@ -385,9 +388,12 @@ namespace lh_pipeline {
 				lh_color(255, 0, 0));
 		}
 		else {
-			assert(v2.postion.get_y() > v1.postion.get_y());
-			float dy = /*v3.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v3.postion.get_y() - v1.postion.get_y());
-			float t = (v2.postion.get_y() - v1.postion.get_y()) / (v3.postion.get_y() - v1.postion.get_y());
+            if (v2.postion.get_y() < v1.postion.get_y()) {
+                assert(false);
+            }
+			
+			float dy = v3.postion.get_y() == v1.postion.get_y() ? 0.0f : 1.0f / (v3.postion.get_y() - v1.postion.get_y());
+            float t = (v2.postion.get_y() - v1.postion.get_y())* dy;
 			VertexColor interp_v = lerp(v1, v3, t);
 			bottom_triangle(v1, interp_v, v2,
 				use_uv);
@@ -415,16 +421,33 @@ namespace lh_pipeline {
 			swap_vaue(v1, v2);
 		}
 
+        /*if (v1.postion.get_x() < _x_min_clip) {
+            float t1 = (_x_min_clip - v1.postion.get_x()) / ((v3.postion.get_x() - v1.postion.get_x()));
+            v1 = lerp(v1, v3, t1);
+        }
+        if (_x_max_clip < v2.postion.get_x()) {
+            float t2 = (_x_max_clip - v3.postion.get_x()) / ((v2.postion.get_x() - v3.postion.get_x()));
+            v2 = lerp(v3, v2, t2);
+        }*/
+
+
 		LhVertexFloat3 normal = -get_normal(v1.postion, v2.postion, v3.postion);
 		float dy = /*v3.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v3.postion.get_y() - v1.postion.get_y());
 		float fy1 = v1.postion.get_y();
 		float fy3 = v3.postion.get_y();
 		int iy1 = FloatToInt(fy1);
-		int iy3 = FloatToInt(fy3);
+        int iy3 = FloatToInt(fy3);
+
+        if (iy1 > _y_max_clip || _y_min_clip > iy3) {
+            return;
+        }
+
+		
 		VertexColor v_left_1 = v1;
 		VertexColor v_right_1 = v2;
 		VertexColor v_left = v3;
 		VertexColor v_right = v3;
+        
 		if (iy1 < _y_min_clip) {
 			iy1 = _y_min_clip;
 			float t = (_y_min_clip - fy1) * dy;
@@ -463,12 +486,28 @@ namespace lh_pipeline {
 		if (v3.postion.get_x() < v2.postion.get_x()) {
 			swap_vaue(v2, v3);
 		}
-		LhVertexFloat3 normal = get_normal(v1.postion, v2.postion, v3.postion);
+
+        //if (v2.postion.get_x() < _x_min_clip) {
+        //    float t2 = (_x_min_clip - v2.postion.get_x()) / (v1.postion.get_x() - v2.postion.get_x());
+        //    v2 = lerp(v2, v1, t2);
+        //}
+        //if (v3.postion.get_x() > _x_max_clip) {
+        //    float t3 = (_x_max_clip - v1.postion.get_x()) / (v3.postion.get_x() - v1.postion.get_x());
+        //    v3 = lerp(v1, v3, t3);
+        //}
+
+
+		
 		float dy = /*v2.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v2.postion.get_y() - v1.postion.get_y());
 		float fy1 = v1.postion.get_y();// ceil(v1.postion.get_y());
 		float fy3 = v3.postion.get_y();// ceil(v3.postion.get_y()) - 1;
 		int iy1 = FloatToInt(fy1);
 		int iy3 = FloatToInt(fy3);
+        if (iy1 > _y_max_clip || _y_min_clip > iy3) {
+            return;
+        }
+
+        LhVertexFloat3 normal = get_normal(v1.postion, v2.postion, v3.postion);
 		VertexColor v_left_1 = v1;
 		VertexColor v_right_1 = v1;
 		VertexColor v_left = v2;

@@ -23,9 +23,9 @@ namespace lh_pipeline {
 	private:
 		int outside(LhVertexInt3& sign, float a, float b, float c);
 		
-		int split_triangle_x(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
-		int split_triangle_y(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
-		int split_triangle_z(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
+		bool split_triangle_x(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
+		bool split_triangle_y(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
+		bool split_triangle_z(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
 
 		int one_triangle_x(std::vector<VertexColor>&,  VertexColor* v1, VertexColor* v2, VertexColor* v3);
 		int two_triangle_x(std::vector<VertexColor>&,  VertexColor* v1, VertexColor* v2, VertexColor* v3);

@@ -41,8 +41,8 @@ namespace lh_pipeline {
         _last_x = x;
         _last_y = y;
 
-        _angle_h -= (float)delta_x / 12.0f;
-        _angle_v -= (float)delta_y / 12.0f;
+        _angle_h -= (float)delta_x / 16.0f;
+        _angle_v -= (float)delta_y / 16.0f;
         if (delta_x == 0) {
             if (x <= MARGIN) {
                 _angle_h -= 1.0f;

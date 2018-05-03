@@ -147,13 +147,19 @@ namespace lh_pipeline {
     }
 
     LhVertexFloat4 LhPipeLine::transformation_homogeneous(const LhVertexFloat4& x) {
-		float rhw = 1.0f / x.get_w();
+		/*float rhw = 1.0f / x.get_w();
         LhVertexFloat4 r(
             x.get_x() * rhw,
             x.get_z() * rhw,
             x.get_z() * rhw,
+            1.0f);*/
+        float rhw = 1.0f / x.get_w();
+        LhVertexFloat4 r(
+            (x.get_x() * rhw + 1.0f) * _width * 0.5f,
+            (1.0f - x.get_y() * rhw) * _height * 0.5f,
+            x.get_z() * rhw,
             1.0f);
-		return r;
+        return r;
     }
 
     void LhPipeLine::set_windows_size(int w, int h) {

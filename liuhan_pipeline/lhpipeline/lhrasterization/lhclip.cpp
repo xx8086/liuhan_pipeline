@@ -17,8 +17,8 @@ namespace lh_pipeline {
          c == CLIP_CODE_L)) return 0; 
 
 #define TRIANGLE_OUTER_PROJECT(point_nums) \
-if (0 == point_nums || 3 == point_nums) {\
-	return point_nums;\
+if (0 == point_nums) {\
+	return true;\
 }
 
 
@@ -53,38 +53,50 @@ if (0 == point_nums || 3 == point_nums) {\
 
 	bool LhClip::backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir) {
 		return dot(normal, dir) > 0 ? false : true;//左手,大于零同向,不消除
-	}
+    }
 
-	int LhClip::split_triangle_x(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
-		LhVertexInt3 sign;
-		int point_nums = outside(sign, v1->postion.get_x(), v2->postion.get_x(), v3->postion.get_x());
-		TRIANGLE_OUTER_PROJECT(point_nums)
-		ORGANIZATION_POINTS
-		if (1 == point_nums) {
-			one_triangle_x(triangles, p0, p1, p2);
-		}
-		else if (2 == point_nums) {
-			two_triangle_x(triangles, p0, p1, p2);
-		}
-		return point_nums;
-	}
+    bool LhClip::split_triangle_x(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+        LhVertexInt3 sign;
+        int point_nums = outside(sign, v1->postion.get_x(), v2->postion.get_x(), v3->postion.get_x());
+        if (0 == point_nums)return true;
+        if (3 == point_nums) {
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v2);
+            triangles.emplace_back(*v3);
+            return true;
+        }
+        ORGANIZATION_POINTS
+            if (1 == point_nums) {
+                one_triangle_x(triangles, p0, p1, p2);
+            }
+            else if (2 == point_nums) {
+                two_triangle_x(triangles, p0, p1, p2);
+            }
+            return true;
+    }
 
-	int LhClip::split_triangle_y(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
-		LhVertexInt3 sign;
-		int point_nums = outside(sign, v1->postion.get_y(), v2->postion.get_y(), v3->postion.get_y());
-		TRIANGLE_OUTER_PROJECT(point_nums)
-			ORGANIZATION_POINTS
+    bool LhClip::split_triangle_y(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+        LhVertexInt3 sign;
+        int point_nums = outside(sign, v1->postion.get_y(), v2->postion.get_y(), v3->postion.get_y());
+        if (0 == point_nums)return true;
+        if (3 == point_nums) {
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v2);
+            triangles.emplace_back(*v3);
+            return true;
+        }
+        ORGANIZATION_POINTS
 
-			if (1 == point_nums) {
-				one_triangle_y(triangles, p0, p1, p2);
-			}
-			else if (2 == point_nums) {
-				two_triangle_y(triangles, p0, p1, p2);
-			}
-			return point_nums;
-	}
+            if (1 == point_nums) {
+                one_triangle_y(triangles, p0, p1, p2);
+            }
+            else if (2 == point_nums) {
+                two_triangle_y(triangles, p0, p1, p2);
+            }
+            return true;
+    }
 
-	int LhClip::split_triangle_z(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+	bool LhClip::split_triangle_z(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
 		LhVertexInt3 sign;
 		int point_nums = outside(sign, v1->postion.get_z(), v2->postion.get_z(), v3->postion.get_z());
 		TRIANGLE_OUTER_PROJECT(point_nums)
@@ -100,17 +112,15 @@ if (0 == point_nums || 3 == point_nums) {\
 	}
 
 	void LhClip::triangle_clip(std::vector<VertexColor>&triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
-		v1->rhw();
-		v2->rhw();
-		v3->rhw();
-
-		if (3 == split_triangle_x(triangles, v1, v2, v3) &&//三个点在左右截面内
-			3 == split_triangle_y(triangles, v1, v2, v3) &&//三个点在上下截面内
-			3 == split_triangle_z(triangles, v1, v2, v3)) {//三个点在前后截面内
-			triangles.emplace_back(*v1);
-			triangles.emplace_back(*v2);
-			triangles.emplace_back(*v3);
-		}
+        LhVertexInt3 sign;
+        int z_point_nums = outside(sign, v1->postion.get_z(), v2->postion.get_z(), v3->postion.get_z());
+        if (3 == z_point_nums) {
+            split_triangle_x(triangles, v1, v2, v3);
+            split_triangle_y(triangles, v1, v2, v3);
+        }
+        else {
+            split_triangle_z(triangles, v1, v2, v3);
+        }
 	}
 
 	int LhClip::two_triangle_z(std::vector<VertexColor>& triangles, VertexColor* p0, VertexColor* p1, VertexColor* p2) {
@@ -175,12 +185,10 @@ if (0 == point_nums || 3 == point_nums) {\
 		}
 		if (v2->postion.get_x() < -1.0f &&
 			v3->postion.get_x() <  -1.0f) {//left
-			float t;
-			VertexColor v;
-			t = (-1 - v2->postion.get_x()) / (v1->postion.get_x() - v2->postion.get_x());
-			*v2 = lerp(*v2, *v1, t);
-			t = (-1 - v3->postion.get_x()) / (v1->postion.get_x() - v3->postion.get_x());
-			*v3 = lerp(*v3, *v1, t);
+			float t2 = (-1 - v2->postion.get_x()) / (v1->postion.get_x() - v2->postion.get_x());
+            float t3 = (-1 - v3->postion.get_x()) / (v1->postion.get_x() - v3->postion.get_x());
+			*v2 = lerp(*v2, *v1, t2);
+			*v3 = lerp(*v3, *v1, t3);
 			triangles.emplace_back(*v1);
 			triangles.emplace_back(*v2);
 			triangles.emplace_back(*v3);
@@ -188,7 +196,6 @@ if (0 == point_nums || 3 == point_nums) {\
 		else if (1.0f < v2->postion.get_x() &&
 			1.0f < v3->postion.get_x()) {//right
 			float t;
-			VertexColor v;
 			t = (1 - v1->postion.get_x()) / (v2->postion.get_x() - v1->postion.get_x());
 			*v2 = lerp(*v1, *v2, t);
 			t = (1 - v1->postion.get_x()) / (v3->postion.get_x() - v1->postion.get_x());
@@ -197,8 +204,16 @@ if (0 == point_nums || 3 == point_nums) {\
 			triangles.emplace_back(*v3);
 			triangles.emplace_back(*v2);
 		}
-		/*else if (v3->postion.get_x() < -1.0f &&
-			1.0f < v2->postion.get_x()) {}*/
+		else if (v3->postion.get_x() < -1.0f &&
+			1.0f < v2->postion.get_x()) {
+            float t2 = (1 - v1->postion.get_x()) / (v2->postion.get_x() - v1->postion.get_x());
+            float t3 = (-1 - v3->postion.get_x()) / (v1->postion.get_x() - v3->postion.get_x());
+            *v2 = lerp(*v1, *v2, t2);
+            *v3 = lerp(*v3, *v1, t3);
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v3);
+            triangles.emplace_back(*v2);
+        }
 		else {
             triangles.emplace_back(*v1);
             triangles.emplace_back(*v2);
@@ -279,10 +294,16 @@ if (0 == point_nums || 3 == point_nums) {\
 			triangles.emplace_back(*v3);
 			triangles.emplace_back(*v2);
 		}
-		/*else if(v2->postion.get_y() > 1.0f &&
+		else if(v2->postion.get_y() > 1.0f &&
 			v3->postion.get_y() < -1.0f){ 
-            ;
-        }*/
+            float t2 = (1 - v1->postion.get_y()) / (v2->postion.get_y() - v1->postion.get_y());
+            float t3 = (-1 - v3->postion.get_y()) / (v1->postion.get_y() - v3->postion.get_y());
+            *v2 = lerp(*v1, *v2, t2);
+            *v3 = lerp(*v3, *v1, t3);
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v3);
+            triangles.emplace_back(*v2);
+        }
 		else {
             triangles.emplace_back(*v1);
             triangles.emplace_back(*v2);

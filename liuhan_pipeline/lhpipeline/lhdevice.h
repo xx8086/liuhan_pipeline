@@ -47,7 +47,7 @@ namespace lh_pipeline {
         void draw_triangles_fill();
         void draw_trangles_texture_fill();
         void draw_triangles(lh_color =(255, 0, 0));
-        void z_mip();
+        void z_mip(bool up = false);
         void draw_grid();
         void draw_floor();
         void draw_triangles_color(const float* v, const unsigned int* colors, const int counts);
@@ -58,7 +58,7 @@ namespace lh_pipeline {
         LHRENDER_STATE _render_state = LH_LINES;
         lh_pipeline::LhPipeLine _piple;
     private:
-        char _key[256] = {0};
+        volatile char _key[256] = {0};
         LhTimer _timer;
         float _draw_cost_time = 0.0f;
         float _fps = 0.0f;

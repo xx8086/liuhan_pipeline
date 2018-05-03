@@ -14,12 +14,9 @@ namespace lh_pipeline {
     void LhPipeLine::set_view_ward(VIEWWARD direction, float deltatime) {
         _camera.set_view_ward(direction, deltatime);
     }
-    void LhPipeLine::set_view_orientation(VIEWWARD direction, float deltatime) {
-        _camera.set_view_orientation(direction, deltatime);
-    }
 
     void LhPipeLine::set_front_begin(float xoffset, float yoffset) {
-        
+        _camera.set_front_begin(xoffset, yoffset);
     }
     void LhPipeLine::set_front(float xoffset, float yoffset) {
         _camera.set_front(xoffset, yoffset);

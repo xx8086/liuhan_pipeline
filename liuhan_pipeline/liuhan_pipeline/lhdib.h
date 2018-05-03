@@ -12,6 +12,8 @@ namespace lh_pipeline {
         void init(HWND hwnd, int w, int h);
         void bitblt(HWND hwnd);
         void specialkeyboard(unsigned int uchar, unsigned int utype);
+        void specialkeydown(unsigned int uchar, unsigned int utype);
+        void specialkeyup(unsigned int uchar, unsigned int utype);
         void destroy(HWND hwnd);
         void release();
     private:

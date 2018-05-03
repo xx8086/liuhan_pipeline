@@ -200,7 +200,10 @@ if (0 == point_nums || 3 == point_nums) {\
 		/*else if (v3->postion.get_x() < -1.0f &&
 			1.0f < v2->postion.get_x()) {}*/
 		else {
-			assert(false);
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v2);
+            triangles.emplace_back(*v3);
+			//assert(false);
 		}
 		return 1;
 	}
@@ -239,7 +242,10 @@ if (0 == point_nums || 3 == point_nums) {\
 			triangles.emplace_back(rigfht_p2);
 		}
 		else {
-			assert(false);
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v2);
+            triangles.emplace_back(*v3);
+			//assert(false);
 		}
 
 		return 2;
@@ -274,9 +280,13 @@ if (0 == point_nums || 3 == point_nums) {\
 			triangles.emplace_back(*v2);
 		}
 		/*else if(v2->postion.get_y() > 1.0f &&
-			v2->postion.get_y() < -1.0f){ }*/
+			v3->postion.get_y() < -1.0f){ 
+            ;
+        }*/
 		else {
-			assert(false);
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v2);
+            triangles.emplace_back(*v3);
 		}
 		return 1;
 	}
@@ -315,7 +325,10 @@ if (0 == point_nums || 3 == point_nums) {\
 			triangles.emplace_back(p2);
 		}
 		else {
-			assert(false);
+            triangles.emplace_back(*v1);
+            triangles.emplace_back(*v2);
+            triangles.emplace_back(*v3);
+            //assert(false);
 		}
 
 		return 2;

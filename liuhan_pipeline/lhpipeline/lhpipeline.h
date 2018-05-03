@@ -26,7 +26,6 @@ namespace lh_pipeline {
         void set_worldpos(float x, float y, float z);
         void set_camera_pos(LhVertexFloat3 pos, LhVertexFloat3 target, LhVertexFloat3 up);
         void set_view_ward(VIEWWARD direction, float deltatime);
-        void set_view_orientation(VIEWWARD direction, float deltatime);
         void set_orthographic_proj(const OrthoProjInfo& o);
         void set_perspective_proj(const PersProjInfo& p);
 		bool can_draw();

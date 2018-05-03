@@ -30,7 +30,8 @@ namespace lh_pipeline {
         void update_texture(unsigned char* texture_datas, int texture_size);
         void bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size);
         void draw();
-        void keyboard(/*char vk, */char key);
+        void keyboard_down(char vk, char key);
+        void keyboard_up(char vk, char key);
         void set_front_begin(float, float);
         void set_front(float, float);
 	protected:
@@ -39,6 +40,7 @@ namespace lh_pipeline {
 		LhVertexFloat3 get_world_pos() { return LhVertexFloat3(_m_x, _m_y, _m_z); };
         LhVertexFloat3 get_eyes_pos() { return _piple.get_view_pos(); }
     private:
+        void keyboard_update();
 		void draw_croe();
         void draw_line(bool loop = false);
         void draw_line(int x1, int y1, int x2, int y2, int color);
@@ -48,6 +50,7 @@ namespace lh_pipeline {
         void z_mip();
         void draw_grid();
         void draw_floor();
+        void draw_triangles_color(const float* v, const unsigned int* colors, const int counts);
         void draw_triangles_uv(const float* v, const float* uv, const int counts);
 		bool front(LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&);
 		bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
@@ -55,6 +58,7 @@ namespace lh_pipeline {
         LHRENDER_STATE _render_state = LH_LINES;
         lh_pipeline::LhPipeLine _piple;
     private:
+        char _key[256] = {0};
         LhTimer _timer;
         float _draw_cost_time = 0.0f;
         float _fps = 0.0f;

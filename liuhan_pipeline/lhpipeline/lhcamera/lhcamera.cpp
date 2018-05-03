@@ -15,7 +15,7 @@ namespace lh_pipeline {
         _pos(0.0f, 0.0f, 0.0f),
         _target(LhVertexFloat3(0.0f, 0.0f, 1.0f)),
         _up(LhVertexFloat3(0.0f, 1.0f, 0.0f)),
-        _view_speed(0.25f) {
+        _view_speed(0.1f) {
         init();
     }
 
@@ -28,6 +28,11 @@ namespace lh_pipeline {
         normalize(_target);
         normalize(up);
         init();
+    }
+
+    void LhCamera::set_front_begin(float x, float y) {
+        _last_x = x;
+        _last_y = y;
     }
 
     void LhCamera::set_front(float x, float y){
@@ -69,18 +74,9 @@ namespace lh_pipeline {
         update_camera_vectors();
     }
 
-    void LhCamera::set_view_orientation(VIEWWARD direction, float deltatime) {
-        ;
-    }
 
     void LhCamera::set_view_ward(VIEWWARD direction, float deltatime) {
         float velocity = _view_speed * deltatime;
-        if (velocity > 0.5f) {
-            velocity = 0.5f;
-        }
-        else if (velocity < 0.05f) {
-            velocity = 0.05f;
-        }
         switch (direction) {
         case VIEW_FORWARD:
             _pos.set_z(_pos.get_z() + velocity);
@@ -99,15 +95,12 @@ namespace lh_pipeline {
     }
 
     void LhCamera::update_camera_vectors() {
-        LhQuaternion quaternion;
         const LhVertexFloat3 vaxis(0.0f, 1.0f, 0.0f);
-
-        // Rotate the view vector by the horizontal angle around the vertical axis
         LhVertexFloat3 view(1.0f, 0.0f, 0.0f);
+        LhQuaternion quaternion;        
         view = quaternion.rotate(_angle_h, vaxis, view);
         normalize(view);
 
-        // Rotate the view vector by the vertical angle around the horizontal axis
         LhVertexFloat3 haxis = cross(vaxis, view);
         normalize(haxis);
         _target = quaternion.rotate(_angle_v, haxis, view);
@@ -121,27 +114,15 @@ namespace lh_pipeline {
         LhVertexFloat3 HTarget(_target.get_x(), 0.0, _target.get_z());
         normalize(HTarget);
 
-        if (HTarget.get_z() >= 0.0f)
-        {
-            if (HTarget.get_x() >= 0.0f)
-            {
-                _angle_h = 360.0f - TDegreeF(asin(HTarget.get_z()));
-            }
-            else
-            {
-                _angle_h = 180.0f + TDegreeF(asin(HTarget.get_z()));
-            }
+        if (HTarget.get_z() >= 0.0f){
+            _angle_h = HTarget.get_x() >= 0.0f ? 
+                360.0f - TDegreeF(asin(HTarget.get_z())) : 
+                180.0f + TDegreeF(asin(HTarget.get_z()));
         }
-        else
-        {
-            if (HTarget.get_x() >= 0.0f)
-            {
-                _angle_h = TDegreeF(asin(-HTarget.get_z()));
-            }
-            else
-            {
-                _angle_h = 180.0f - TDegreeF(asin(-HTarget.get_z()));
-            }
+        else{
+            _angle_h = HTarget.get_x() >= 0.0f ? 
+                TDegreeF(asin(-HTarget.get_z())) :
+                TDegreeF(asin(-HTarget.get_z()));
         }
 
         _angle_v = -TDegreeF(asin(_target.get_y()));

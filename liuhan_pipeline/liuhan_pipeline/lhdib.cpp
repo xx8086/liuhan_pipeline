@@ -66,8 +66,14 @@ namespace lh_pipeline {
         ReleaseDC(hwnd, hdc);
     }
 
+    void LhDib::specialkeydown(unsigned int uchar, unsigned int utype) {
+        keyboard_down(uchar, utype);
+    }
+    void LhDib::specialkeyup(unsigned int uchar, unsigned int utype) {
+        keyboard_up(uchar, utype);
+    }
     void LhDib::specialkeyboard(unsigned int uchar, unsigned int utype){
-        keyboard(char(uchar));
+        
     }
 
     void LhDib::release() {
@@ -374,8 +380,9 @@ namespace lh_pipeline {
         LhVertexFloat3 eyes = get_eyes_pos();
 		char str_fps[2048] = { 0 };
 		sprintf_s(str_fps,
-			"asdw控制世界坐标的移动；\n"
-            "方向键控制摄像机的移动；\n"
+			"方向键控制被观察对象的移动；\n"
+            "ASDW键控制摄像机的移动；\n"
+            "按住鼠标左键拖动修改镜头朝向；\n"
 			"空格键: 开关灯光；\n"
 			"V: 开关地板；\n"
 			"R: 开关自动旋转；\n"

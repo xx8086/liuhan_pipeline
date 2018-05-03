@@ -15,6 +15,10 @@ namespace lh_pipeline {
     {
     }
 
+    void LhDevice::update_size(int w, int h) {
+        ;
+    }
+
     void LhDevice::update_buffer(int w, int h, void* pbits) {
         LhDrawPrimitive::set_buffer(w, h, pbits);
         LhFrameBuffer::set_buffer(w, h, pbits);
@@ -29,11 +33,7 @@ namespace lh_pipeline {
         _last_y = ypos;
     }
     void LhDevice::set_front(float xpos, float ypos) {
-        float xoffset = xpos - _last_x;
-        float yoffset = _last_y - ypos; // reversed since y-coordinates go from bottom to top
-        _last_x = xpos;
-        _last_y = ypos;
-        _piple.set_front(xoffset, yoffset);
+        _piple.set_front(xpos, ypos);
     }
 
     void LhDevice::keyboard(/*char vk, */char key) {
@@ -49,33 +49,28 @@ namespace lh_pipeline {
 		}
         switch (key) {
         case 'W':
-            _m_z += speed;
-            //_piple.set_view_orientation(VIEW_BACKWARD, _draw_cost_time);
+            _piple.set_view_ward(VIEW_FORWARD, _draw_cost_time);
             break;
         case 0x26://VK_UP
-            _piple.set_view_ward(VIEW_BACKWARD, _draw_cost_time);
+            _m_z += speed;
             break;
         case 'S':
-            _m_z -= speed;
-            //_piple.set_view_orientation(VIEW_FORWARD, _draw_cost_time);
+            _piple.set_view_ward(VIEW_BACKWARD, _draw_cost_time);
             break;
         case 0x28://VK_DOWN
-            _piple.set_view_ward(VIEW_FORWARD, _draw_cost_time);
+            _m_z -= speed;
 			break;
         case 'A':
-            _m_x -= speed;
-            //_piple.set_view_orientation(VIEW_RIGHT, _draw_cost_time);
+            _piple.set_view_ward(VIEW_RIGHT, _draw_cost_time);
             break;
         case 0x25://VK_LEFT
-            _piple.set_view_ward(VIEW_RIGHT, _draw_cost_time);
-
+            _m_x -= speed;
 			break;
         case 'D':
-            _m_x += speed;
-            //_piple.set_view_orientation(VIEW_LEFT, _draw_cost_time);
+            _piple.set_view_ward(VIEW_LEFT, _draw_cost_time);
             break;
         case 0x27://VK_RIGHT
-            _piple.set_view_ward(VIEW_LEFT, _draw_cost_time);
+            _m_x += speed;
 			break;
         case 0x20:
             enablelight();
@@ -151,7 +146,9 @@ namespace lh_pipeline {
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_rotate(0.0f, 0.0f, 0.0f);
         _piple.set_worldpos(0.0f, 0.0f, 0.0f);
-        _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -4.0f));
+        _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -4.0f),
+            LhVertexFloat3(0, 0, 1),
+            LhVertexFloat3(0, 1, 0));
         PersProjInfo per(90.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
         set_view(&_piple.get_view_pos());
@@ -211,7 +208,7 @@ namespace lh_pipeline {
 		clear_buffer();
 		clear_deep();
 
-		//draw_floor();
+		draw_floor();
 		draw_croe();
 
         if (_timer.count_time()) {
@@ -329,28 +326,34 @@ namespace lh_pipeline {
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(0, -1.0f, 1.0f);
         _piple.get_wvp();
+        const float* v = floor_v;
+        const float* uv = floor_uv;
+        int counts = 18;
 		set_current_uv(get_floor(), 512);
-		std::vector<VertexColor> triangles;
-		int uv_count = 0;
-		for (int i = 0; i < 18; i += 9, uv_count += 6) {
-			LhVertexFloat4 p1;
-			LhVertexFloat4 p2;
-			LhVertexFloat4 p3;
-			if (get_pos(p1, LhVertexFloat3(floor_v[i], floor_v[i + 1], floor_v[i + 2])) &&
-				get_pos(p2, LhVertexFloat3(floor_v[i + 3], floor_v[i + 4], floor_v[i + 5])) &&
-				get_pos(p3, LhVertexFloat3(floor_v[i + 6], floor_v[i + 7], floor_v[i + 8]))) {
-				clip_triangle(triangles,
-					&VertexColor(LhVertexFloat3(p1.get_x(), p1.get_y(), p1.get_z()), TextureUV(floor_uv[uv_count], floor_uv[uv_count + 1]), 1.0f / p1.get_w()),
-					&VertexColor(LhVertexFloat3(p2.get_x(), p2.get_y(), p2.get_z()), TextureUV(floor_uv[uv_count + 2], floor_uv[uv_count + 3]), 1.0f / p2.get_w()),
-					&VertexColor(LhVertexFloat3(p3.get_x(), p3.get_y(), p3.get_z()), TextureUV(floor_uv[uv_count + 4], floor_uv[uv_count + 5]), 1.0f / p3.get_w()));
-			}
-		}
+        
+        int uv_count = 0;
+        std::vector<VertexColor> triangles;
+        for (int i = 0; i < counts; i += 9, uv_count += 6) {
+            LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
+            LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
+            LhVertexFloat4 p3 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]));
 
-		for (std::vector<VertexColor>::iterator iter = triangles.begin();
-			iter != triangles.end();
-			iter += 3) {
-			draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
-		}
+            LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
+            LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
+            LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
+            VertexColor vc1(v1, TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
+            VertexColor vc2(v2, TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
+            VertexColor vc3(v3, TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
+            clip_triangle(triangles, &vc1, &vc2, &vc3);
+
+        }
+
+        for (std::vector<VertexColor>::iterator iter = triangles.begin();
+            iter != triangles.end();
+            iter += 3) {
+            draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
+        }
+
 		set_current_uv(get_current_texutre_uv_buffers(), get_current_texture_uv_size());
     }
 
@@ -418,18 +421,18 @@ namespace lh_pipeline {
         set_texture(texture_datas, texture_size);
     }
 
-	bool LhDevice::front(LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3) {
+	bool LhDevice::front(LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3, LhVertexFloat3& look) {
 		LhVertexFloat3 n1 = v2 - v1;
 		LhVertexFloat3 n2 = v3 - v1;
 		LhVertexFloat3 normal = cross(n1, n2);
 		normalize(normal);
 		if (_front) {
-			if (backface_culling(normal, _piple.get_view_dir())) {
+			if (backface_culling(normal, look)) {
 				return false;
 			}
 		}
 		else {
-			if (!backface_culling(normal, _piple.get_view_dir())) {
+			if (!backface_culling(normal, look)) {
 				return false;
 			}
 		}
@@ -444,29 +447,35 @@ namespace lh_pipeline {
 		const unsigned int* colors = get_vertex_color_buffers();
 		const int counts = 3 * get_vertex_buffers_size();
 		const float* uv = ger_current_uv();
-		int uv_count = 0;
-		std::vector<VertexColor> triangles;
-		for (int i = 0; i < counts; i += 9, uv_count += 6) {
-			LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
-			LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
-			LhVertexFloat4 p3 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]));
-
-			LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
-			LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
-			LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
-			if (front(v1, v2, v3)) {
-				VertexColor vc1(v1, TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
-				VertexColor vc2(v2, TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
-				VertexColor vc3(v3, TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
-				clip_triangle(triangles, &vc1, &vc2, &vc3);
-			}
-
-		}
-		_print_log = false;
-		for (std::vector<VertexColor>::iterator iter = triangles.begin();
-			iter != triangles.end();
-			iter += 3) {
-			draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
-		}
+        draw_triangles_uv(v, uv, counts);
 	}
+
+    void LhDevice::draw_triangles_uv(const float* v, const float* uv, const int counts) {
+        int uv_count = 0;
+        LhVertexFloat3 look = _piple.get_view_dir();
+        std::vector<VertexColor> triangles;
+        for (int i = 0; i < counts; i += 9, uv_count += 6) {
+            LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
+            LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
+            LhVertexFloat4 p3 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]));
+
+            LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
+            LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
+            LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
+            if (front(v1, v2, v3, look)) {
+                VertexColor vc1(v1, TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
+                VertexColor vc2(v2, TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
+                VertexColor vc3(v3, TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
+                clip_triangle(triangles, &vc1, &vc2, &vc3);
+            }
+
+        }
+
+        for (std::vector<VertexColor>::iterator iter = triangles.begin();
+            iter != triangles.end();
+            iter += 3) {
+            draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
+        }
+    }
+
 }

@@ -25,6 +25,7 @@ namespace lh_pipeline {
         ~LhDevice();
     public:
         void set_render_state(LHRENDER_STATE state);
+        void update_size(int w, int h);
         void update_buffer(int w, int h, void* pbits);
         void update_texture(unsigned char* texture_datas, int texture_size);
         void bind_vertex(const float* vertex, const unsigned int* vertex_color, const float* vertex_uv, const int vertex_size);
@@ -47,7 +48,8 @@ namespace lh_pipeline {
         void z_mip();
         void draw_grid();
         void draw_floor();
-		bool front(LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&);
+        void draw_triangles_uv(const float* v, const float* uv, const int counts);
+		bool front(LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&);
 		bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
     public:
         LHRENDER_STATE _render_state = LH_LINES;

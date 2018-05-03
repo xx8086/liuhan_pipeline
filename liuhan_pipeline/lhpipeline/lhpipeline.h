@@ -18,12 +18,13 @@ namespace lh_pipeline {
         void set_front_begin(float xoffset, float yoffset);
         void set_front(float xoffset, float yoffset);
     public:
+        LhVertexFloat3 get_look();
         LhVertexFloat3& get_view_pos();
         LhVertexFloat3& get_view_dir();
         void set_rotate(float x, float y, float z);
         void set_sale(float x, float y, float z);
         void set_worldpos(float x, float y, float z);
-        void set_camera_pos(LhVertexFloat3 pos);
+        void set_camera_pos(LhVertexFloat3 pos, LhVertexFloat3 target, LhVertexFloat3 up);
         void set_view_ward(VIEWWARD direction, float deltatime);
         void set_view_orientation(VIEWWARD direction, float deltatime);
         void set_orthographic_proj(const OrthoProjInfo& o);

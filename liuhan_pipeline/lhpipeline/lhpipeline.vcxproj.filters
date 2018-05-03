@@ -54,6 +54,9 @@
       <Filter>lhlights</Filter>
     </ClCompile>
     <ClCompile Include="lhtimer.cpp" />
+    <ClCompile Include="lhmath\lhdetail\lhquaternion.cpp">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
@@ -107,6 +110,9 @@
       <Filter>lhlights</Filter>
     </ClInclude>
     <ClInclude Include="lhtimer.h" />
+    <ClInclude Include="lhmath\lhdetail\lhquaternion.h">
+      <Filter>lhmath\lhdetail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lhrasterization\lhtools.inl">

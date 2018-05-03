@@ -23,6 +23,7 @@
     <ClCompile Include="lhdevice.cpp" />
     <ClCompile Include="lhframe_buffer\lhframe_buffer.cpp" />
     <ClCompile Include="lhmath\lhdetail\lhmatrix_float4.cpp" />
+    <ClCompile Include="lhmath\lhdetail\lhquaternion.cpp" />
     <ClCompile Include="lhmath\lhdetail\lhvertex.cpp" />
     <ClCompile Include="lhpipeline.cpp" />
     <ClCompile Include="lhrasterization\lhclip.cpp" />
@@ -39,6 +40,7 @@
     <ClInclude Include="lhmath\lhdetail\lhmatrix\lhmatrix.hpp" />
     <ClInclude Include="lhmath\lhdetail\lhmatrix\lhmatrix_operator.hpp" />
     <ClInclude Include="lhmath\lhdetail\lhmatrix_float4.h" />
+    <ClInclude Include="lhmath\lhdetail\lhquaternion.h" />
     <ClInclude Include="lhmath\lhdetail\lhvertex.h" />
     <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex.hpp" />
     <ClInclude Include="lhmath\lhdetail\lhvertex\lhvertex_binary.hpp" />

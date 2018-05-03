@@ -50,5 +50,4 @@ namespace lh_pipeline {
 		return MIN(MAX(x, minVal), maxVal);
 	}
 
-
 }

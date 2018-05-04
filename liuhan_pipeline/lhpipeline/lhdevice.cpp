@@ -231,6 +231,10 @@ namespace lh_pipeline {
 		if (!_floor) {
 			return;
 		}
+        /*if (get_eyes_pos().get_z() < 1.6f && -1.5f < get_eyes_pos().get_z()) {
+            return;
+        }*/
+
         _piple.set_rotate(45.0f, 0, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(0, -1.0f, 1.0f);
@@ -332,7 +336,7 @@ namespace lh_pipeline {
     }
 
 	bool LhDevice::front(LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3, LhVertexFloat3& look) {
-		//return;
+		return true;
 		LhVertexFloat3 n1 = v2 - v1;
 		LhVertexFloat3 n2 = v3 - v1;
 		LhVertexFloat3 normal = cross(n1, n2);

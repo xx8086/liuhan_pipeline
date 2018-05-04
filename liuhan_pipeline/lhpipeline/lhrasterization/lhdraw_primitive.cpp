@@ -306,6 +306,16 @@ namespace lh_pipeline {
 
 
 	void LhDrawPrimitive::draw_line(int x1, int y1, int x2, int y2, lh_color c) {
+        if (x1 < _x_min_clip) x1 = _x_min_clip;
+        if (x2 < _x_min_clip) x2 = _x_min_clip;
+        if (x1 > _x_max_clip) x1 = _x_max_clip;
+        if (x2 > _x_max_clip) x2 = _x_max_clip;
+
+        if (y1 < _y_min_clip) y1 = _y_min_clip;
+        if (y2 < _y_min_clip) y2 = _y_min_clip;
+        if (y1 > _y_max_clip) y1 = _y_max_clip;
+        if (y2 > _y_max_clip) y2 = _y_max_clip;
+
         line(x1, y1, x2, y2, c);
 	}
 
@@ -359,7 +369,7 @@ namespace lh_pipeline {
         v1->rhw();
         v2->rhw();
         v3->rhw();
-		_clip.triangle_clip(triangles, v1, v2, v3);
+		_clip.triangle_clip_single_plane(triangles, v1, v2, v3);
 	}
 
 	bool LhDrawPrimitive::backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir) {

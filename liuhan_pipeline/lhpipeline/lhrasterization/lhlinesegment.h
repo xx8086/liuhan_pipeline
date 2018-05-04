@@ -12,28 +12,31 @@ public:
 		Point() {}
 		Point(float a, float b) : x(a), y(b) {}
 	};
-	struct stline
-	{
-		Point a;
-		Point b;
-	} line1, line2;
+
+    struct Line
+    {
+        Point p1;
+        Point p2;
+        float a;
+        float b;
+        float c;
+
+        Line() {}
+        Line(Point _p1, Point _p2) :p1(_p1), p2(_p2) {}
+    };
 
 public:
 	bool line_segment_cross(float a_x, float a_y, float b_x, float b_y, 
 		float c_x, float c_y, float d_x, float d_y,
 		float& x, float & y);
-	bool line__cross(float a_x, float a_y, float b_x, float b_y,
+	bool line_cross(float a_x, float a_y, float b_x, float b_y,
 		float c_x, float c_y, float d_x, float d_y,
 		float& x, float & y);
-	bool point_on_line_segment(float x, float  y, float a_x, float a_y, float b_x, float b_y);
 private:
-	int dblcmp(float a, float b);
-	float dot(float x1, float y1, float x2, float y2);
 
-	int point_on_line(Point a, Point b, Point c);
-	float cross(float x1, float y1, float x2, float y2);
-	float ab_cross_ac(Point a, Point b, Point c);
-	int ab_cross_cd(Point& p, Point a, Point b, Point c, Point d);
+    void getlinepara(Line &l);
+    bool getcrosspoint(Line &l1, Line &l2, Point& p);
+    bool on_segment(Point Pi, Point Pj, Point Q);
 };
 
 ////////////////

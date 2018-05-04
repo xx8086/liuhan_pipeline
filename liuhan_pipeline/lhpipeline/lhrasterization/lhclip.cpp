@@ -22,7 +22,7 @@ if (0 == point_nums) {\
 }
 
 
-#define ORGANIZATION_POINTS\
+#define ORGANIZATION_POINTS(sign)\
     VertexColor* p0;\
 	VertexColor* p1;\
 	VertexColor* p2;\
@@ -65,7 +65,7 @@ if (0 == point_nums) {\
             triangles.emplace_back(*v3);
             return true;
         }
-        ORGANIZATION_POINTS
+        ORGANIZATION_POINTS(sign)
             if (1 == point_nums) {
                 one_triangle_x(triangles, p0, p1, p2);
             }
@@ -85,7 +85,7 @@ if (0 == point_nums) {\
             triangles.emplace_back(*v3);
             return true;
         }
-        ORGANIZATION_POINTS
+        ORGANIZATION_POINTS(sign)
 
             if (1 == point_nums) {
                 one_triangle_y(triangles, p0, p1, p2);
@@ -100,7 +100,7 @@ if (0 == point_nums) {\
 		LhVertexInt3 sign;
 		int point_nums = outside(sign, v1->postion.get_z(), v2->postion.get_z(), v3->postion.get_z());
 		TRIANGLE_OUTER_PROJECT(point_nums)
-		ORGANIZATION_POINTS
+		ORGANIZATION_POINTS(sign)
 
 		if (1 == point_nums) {
 			one_triangle_z(triangles, p0, p1, p2);
@@ -368,5 +368,49 @@ if (0 == point_nums) {\
         }
 
 		return sign;
+	}
+
+	//////////////////////
+	void LhClip::on_xy_space(std::vector<VertexColor>& triangles,
+		VertexColor* v1, VertexColor* v2, VertexColor* v3,
+		LhVertexInt3 sign, int nums) {
+		ORGANIZATION_POINTS(sign)
+			if (1 == nums) {
+				one_triangle_z(triangles, p0, p1, p2);
+			}
+			else if (2 == nums) {
+				two_triangle_z(triangles, p0, p1, p2);
+			}
+	}
+
+	void LhClip::on_yz_space(std::vector<VertexColor>& triangles,
+		VertexColor* v1, VertexColor* v2, VertexColor* v3,
+		LhVertexInt3 sign, int nums) {
+		ORGANIZATION_POINTS(sign)
+			if (1 == nums) {
+				one_triangle_y(triangles, p0, p1, p2);
+			}
+			else if (2 == nums) {
+				two_triangle_y(triangles, p0, p1, p2);
+			}
+	}
+	void LhClip::triangle_clip_plane(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+		LhVertexInt3 sign_both;
+		LhVertexInt3 sign_updown;
+		LhVertexInt3 sign_near;
+		int nums_both = outside(sign_both, v1->postion.get_x(), v2->postion.get_x(), v3->postion.get_x());
+		int nums_updown = outside(sign_updown, v1->postion.get_y(), v2->postion.get_y(), v3->postion.get_y());
+		int nums_near = outside(sign_near, v1->postion.get_z(), v2->postion.get_z(), v3->postion.get_z());
+		if (0 == nums_both || 0 == nums_updown || 0 == nums_near)return;
+		if (3 == nums_both || 3 == nums_updown || 3 == nums_near) {
+			triangles.emplace_back(*v1);
+			triangles.emplace_back(*v2);
+			triangles.emplace_back(*v3);
+		}
+		if (3 == nums_both) {
+			if(3 == nums_updown)on_xy_space(triangles, v1, v2, v3, sign_near, nums_near);
+			if(3 == nums_near)on_yz_space(triangles, v1, v2, v3, sign_near, nums_updown);
+		}
+		
 	}
 }

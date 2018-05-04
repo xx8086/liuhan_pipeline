@@ -57,6 +57,9 @@
     <ClCompile Include="lhmath\lhdetail\lhquaternion.cpp">
       <Filter>lhmath\lhdetail</Filter>
     </ClCompile>
+    <ClCompile Include="lhrasterization\lhlinesegment.cpp">
+      <Filter>lhrasterization</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lhframe_buffer\lhframe_buffer.h">
@@ -112,6 +115,9 @@
     <ClInclude Include="lhtimer.h" />
     <ClInclude Include="lhmath\lhdetail\lhquaternion.h">
       <Filter>lhmath\lhdetail</Filter>
+    </ClInclude>
+    <ClInclude Include="lhrasterization\lhlinesegment.h">
+      <Filter>lhrasterization</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

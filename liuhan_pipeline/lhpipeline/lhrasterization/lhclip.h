@@ -18,11 +18,18 @@ namespace lh_pipeline {
 		~LhClip();
 
 	public:
+		void triangle_clip_plane(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
 		void triangle_clip(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
 		bool backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir);
 	private:
+		void on_xy_space(std::vector<VertexColor>& triangles, 
+			VertexColor* v1, VertexColor* v2, VertexColor* v3,
+			LhVertexInt3 sign, int nums);
+		void on_yz_space(std::vector<VertexColor>& triangles,
+			VertexColor* v1, VertexColor* v2, VertexColor* v3,
+			LhVertexInt3 sign, int nums);
+	private:
 		int outside(LhVertexInt3& sign, float a, float b, float c);
-		
 		bool split_triangle_x(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
 		bool split_triangle_y(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);
 		bool split_triangle_z(std::vector<VertexColor>&, VertexColor* v1, VertexColor* v2, VertexColor* v3);

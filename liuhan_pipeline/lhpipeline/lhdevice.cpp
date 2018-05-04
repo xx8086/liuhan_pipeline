@@ -60,7 +60,7 @@ namespace lh_pipeline {
         if (_key['A']) { _piple.set_view_ward(VIEW_RIGHT, 1.0f); z_mip(); }
         if (_key['S']) { _piple.set_view_ward(VIEW_BACKWARD, 1.0f); z_mip(); }
         if (_key['D']) { _piple.set_view_ward(VIEW_LEFT, 1.0f); z_mip(); }
-        if (_key['W']) { _piple.set_view_ward(VIEW_FORWARD, 1.0f); z_mip(true); }
+        if (_key['W']) { _piple.set_view_ward(VIEW_FORWARD, 1.0f); z_mip(); }
         if (_key['X']) _r_x += roateangle;
         if (_key['Y']) _r_y += roateangle;
         if (_key['Z']) _r_z += roateangle;
@@ -70,14 +70,8 @@ namespace lh_pipeline {
         if (_key[0x28]) _m_z -= speed;
     }
 
-    void LhDevice::z_mip(bool up) {
-        float viewz = _piple.get_view_pos().get_z();
-        if (viewz > -1.1f && 1.1f > viewz) {
-            if(up)viewz = 1.1f;
-            else viewz = -1.1f;
-            _piple.get_view_pos().set_z(viewz);
-        }
-        float z = _m_z - viewz;
+    void LhDevice::z_mip() {
+        float z = _m_z - _piple.get_view_pos().get_z();;
         if (z >= 5.0f) {
             set_current_texture_uv(TEXTURE_LEVEL_128);
         }
@@ -116,7 +110,6 @@ namespace lh_pipeline {
             f4 = model;
             return false;
         }*/
-        
 
         f4 = _piple.transformation_homogeneous(model);
 		f4.set_w(model.get_w());
@@ -339,6 +332,7 @@ namespace lh_pipeline {
     }
 
 	bool LhDevice::front(LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3, LhVertexFloat3& look) {
+		//return;
 		LhVertexFloat3 n1 = v2 - v1;
 		LhVertexFloat3 n2 = v3 - v1;
 		LhVertexFloat3 normal = cross(n1, n2);
@@ -369,7 +363,7 @@ namespace lh_pipeline {
 
     void LhDevice::draw_triangles_color(const float* v, const unsigned int* colors, const int counts) {
         int uv_count = 0;
-        LhVertexFloat3 look = _piple.get_view_dir();// (0.0f, 0.0f, 1.0f);// = _piple.get_view_dir();
+        LhVertexFloat3 look(0.0f, 0.0f, 1.0f);// = _piple.get_view_dir();
         std::vector<VertexColor> triangles;
         for (int i = 0; i < counts; i += 9, uv_count += 6) {
             LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
@@ -400,7 +394,7 @@ namespace lh_pipeline {
 
     void LhDevice::draw_triangles_uv(const float* v, const float* uv, const int counts) {
         int uv_count = 0;
-        LhVertexFloat3 look = _piple.get_view_dir();// (0.0f, 0.0f, 1.0f);// = _piple.get_view_dir();
+        LhVertexFloat3 look (0.0f, 0.0f, 1.0f);// = _piple.get_view_dir();
         std::vector<VertexColor> triangles;
         for (int i = 0; i < counts; i += 9, uv_count += 6) {
             LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));

@@ -47,7 +47,7 @@ namespace lh_pipeline {
         void draw_triangles_fill();
         void draw_trangles_texture_fill();
         void draw_triangles(lh_color =(255, 0, 0));
-        void z_mip(bool up = false);
+        void z_mip();
         void draw_grid();
         void draw_floor();
         void draw_triangles_color(const float* v, const unsigned int* colors, const int counts);

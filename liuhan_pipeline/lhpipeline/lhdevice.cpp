@@ -65,9 +65,9 @@ namespace lh_pipeline {
         if (_key['Y']) _r_y += roateangle;
         if (_key['Z']) _r_z += roateangle;
         if (_key[0x25]) _m_x -= speed;
-        if (_key[0x26]) _m_z += speed;
+		if (_key[0x26]) { _m_z += speed; z_mip();}
         if (_key[0x27]) _m_x += speed;
-        if (_key[0x28]) _m_z -= speed;
+		if (_key[0x28]) { _m_z -= speed; z_mip(); }
     }
 
     void LhDevice::z_mip() {
@@ -75,7 +75,7 @@ namespace lh_pipeline {
         if (z >= 5.0f) {
             set_current_texture_uv(TEXTURE_LEVEL_128);
         }
-        else if (5.0f > z && z >= 3.0f) {
+        else if (5.0f > z && z >= 2.0f) {
             set_current_texture_uv(TEXTURE_LEVEL_256);
         }
         else if (2.0f > z) {
@@ -96,7 +96,7 @@ namespace lh_pipeline {
         _piple.set_camera_pos(LhVertexFloat3(0.0f, 0.0f, -4.0f),
             LhVertexFloat3(0, 0, 1),
             LhVertexFloat3(0, 1, 0));
-        PersProjInfo per(90.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
+        PersProjInfo per(60.0f, static_cast<float>(get_width()), static_cast<float>(get_height()), 1.0f, 100.0f);
         _piple.set_perspective_proj(per);
         set_view(&_piple.get_view_pos());
 
@@ -199,13 +199,13 @@ namespace lh_pipeline {
 	}
 
     float floor_v[] = {
-        -1.5f, -1.5f, -0.5f,//b
-        1.5f, -1.5f, -0.5f,//c
-        -1.5f, 1.5f, -0.5f,//a
+        -1.0f, -1.0f, -0.5f,//b
+        1.0f, -1.0f, -0.5f,//c
+        -1.0f, 1.0f, -0.5f,//a
 
-        1.5f, -1.5f, -0.5f,//c
-        1.5f, 1.5f, -0.5f,//d
-        -1.5f, 1.5f, -0.5f,//a
+        1.0f, -1.0f, -0.5f,//c
+        1.0f, 1.0f, -0.5f,//d
+        -1.0f, 1.0f, -0.5f,//a
     };
 
     unsigned int  floor_colors[] = {
@@ -336,7 +336,7 @@ namespace lh_pipeline {
     }
 
 	bool LhDevice::front(LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3, LhVertexFloat3& look) {
-		return true;
+		//return true;
 		LhVertexFloat3 n1 = v2 - v1;
 		LhVertexFloat3 n2 = v3 - v1;
 		LhVertexFloat3 normal = cross(n1, n2);
@@ -417,7 +417,7 @@ namespace lh_pipeline {
 
         }
 
-        for (std::vector<VertexColor>::iterator iter = triangles.begin();
+        for (std::vector<VertexColor>::iterator  iter = triangles.begin();
             iter != triangles.end();
             iter += 3) {
             draw_triangle(*iter, *(iter + 1), *(iter + 2), true);

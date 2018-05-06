@@ -376,8 +376,10 @@ namespace lh_pipeline {
     }
 
 	void LhDib::profile(HDC& hdc) {
+		//return;
 		LhVertexFloat3 pos = get_world_pos();
-        LhVertexFloat3 eyes = get_eyes_pos();
+        LhVertexFloat3 eye = get_eye_pos();
+		LhVertexFloat3 target = get_dir();;
 		char str_fps[2048] = { 0 };
 		sprintf_s(str_fps,
 			"方向键控制被观察对象的移动；\n"
@@ -390,11 +392,13 @@ namespace lh_pipeline {
 			"F: 切换正反面消除；\n"
 			"I: 线框； O: Gouraud； P: uv贴图；\n"
 			"XYZ: 绕xyz轴旋转；\n"
-			"world_pos: (%.3f, %.3f, %.3f)；\n"
-            "eyes_pos: (%.3f, %.3f, %.3f)；\n"
+			"cube_pos: (%.3f, %.3f, %.3f)；\n"
+            "eye_pos: (%.3f, %.3f, %.3f)；\n"
+			"eye_target: (%.3f, %.3f, %.3f)；\n"
 			"每一帧耗时：%.3fms;  fps: %.3f；\n",
 			pos.get_x(), pos.get_y(), pos.get_z(),
-            eyes.get_x(), eyes.get_y(), eyes.get_z(),
+			eye.get_x(), eye.get_y(), eye.get_z(),
+			target.get_x(), target.get_y(), target.get_z(),
 			1000 * get_draw_cost(), get_fps());
 		_old_font = SelectObject(hdc, _font);
 		SetBkColor(hdc, RGB(0, 0, 0));

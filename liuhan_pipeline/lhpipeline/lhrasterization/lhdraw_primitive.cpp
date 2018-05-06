@@ -366,9 +366,12 @@ namespace lh_pipeline {
 	}
 
 	void LhDrawPrimitive::clip_triangle(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
-        v1->rhw();
-        v2->rhw();
-        v3->rhw();
+		if (v1->_rhw < 0.0f || v2->_rhw < 0.0f || v3->_rhw < 0.0f) {
+			return;
+		}
+		v1->rhw();
+		v2->rhw();
+		v3->rhw();
 		_clip.triangle_clip_single_plane(triangles, v1, v2, v3);
 	}
 
@@ -629,7 +632,7 @@ namespace lh_pipeline {
 
 	void LhDrawPrimitive::set_current_uv(unsigned char* uv, int  uv_size) {
 		_current_uv_size = uv_size;
-		_max_uv_size = uv_size;
+		_max_uv_size = uv_size - 1;
 		_current_uv_texture_datas = (unsigned int*)(uv);
 	}
 

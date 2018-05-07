@@ -372,6 +372,7 @@ namespace lh_pipeline {
 		v1->rhw();
 		v2->rhw();
 		v3->rhw();
+        //LhVertexFloat3 normal = get_normal(v1->postion, v2->postion, v3->postion);
 		_clip.triangle_clip_single_plane(triangles, v1, v2, v3);
 	}
 
@@ -444,7 +445,7 @@ namespace lh_pipeline {
         }*/
 
 
-		LhVertexFloat3 normal = -get_normal(v1.postion, v2.postion, v3.postion);
+		LhVertexFloat3 normal = get_normal(v1.postion, v2.postion, v3.postion);
 		float dy = /*v3.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v3.postion.get_y() - v1.postion.get_y());
 		float fy1 = v1.postion.get_y();
 		float fy3 = v3.postion.get_y();

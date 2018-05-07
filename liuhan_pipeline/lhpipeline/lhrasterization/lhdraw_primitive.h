@@ -28,7 +28,7 @@ namespace lh_pipeline {
 		void setpixel(int x, int y, lh_color color);
 		void enablelight();
 		LhVertexFloat3 screen_to_view(float x, float y, float z);
-        
+        bool toscreen(VertexColor& v1, VertexColor& v2, VertexColor& v3);
 	private:
 		bool deeptest(int x, int y, float w);
 		void setpixel(float x, float y, lh_color color);
@@ -41,7 +41,7 @@ namespace lh_pipeline {
 		void top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
 		void bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
 		void toscreen(LhVertexFloat3& v);
-        bool toscreen(VertexColor& v1, VertexColor& v2, VertexColor& v3);
+        
 		int lh_min(int x, int min, int max);
 		VertexColor insert_lerp(VertexColor& v1, VertexColor& v2, float t);
 		VertexColor interp_step(const VertexColor& left, const VertexColor& right);

@@ -17,6 +17,10 @@ namespace lh_pipeline {
     //单位化
     bool normalize(LhVertexFloat3& vf3);
 
+    static float length_float3(LhVertexFloat3 vf3) {
+        return sqrtf(vf3.get_x() * vf3.get_x() + vf3.get_y() * vf3.get_y() + vf3.get_z() * vf3.get_z());
+    }
+
     //点乘
     static float dot(const LhVertexFloat3& left, const LhVertexFloat3& right) {
         return left.get_x() * right.get_x() +

@@ -26,7 +26,8 @@ namespace lh_pipeline {
         LhVertexFloat3 _pos;
         LhVertexFloat3 _target;
         LhVertexFloat3 _up;
-        float _view_speed = 0.002f;
+        LhVertexFloat3 _right;
+        float _view_speed = 0.0005f;
         int _width = 0;
         int _height = 0;
         float _angle_h;

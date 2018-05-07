@@ -15,6 +15,7 @@ namespace lh_pipeline {
         _pos(0.0f, 0.0f, 0.0f),
         _target(LhVertexFloat3(0.0f, 0.0f, 1.0f)),
         _up(LhVertexFloat3(0.0f, 1.0f, 0.0f)),
+        _right(LhVertexFloat3(1.0f, 0.0f, 0.0f)),
         _view_speed(0.1f) {
         init();
     }
@@ -27,6 +28,7 @@ namespace lh_pipeline {
         _up = up;
         normalize(_target);
         normalize(up);
+        _right = cross(up, _target);
         init();
     }
 
@@ -79,16 +81,16 @@ namespace lh_pipeline {
         float velocity = _view_speed * deltatime;
         switch (direction) {
         case VIEW_FORWARD:
-            _pos.set_z(_pos.get_z() + velocity);
+            _pos = _pos + _target* velocity;
             break;
         case VIEW_BACKWARD:
-            _pos.set_z(_pos.get_z() - velocity);
+            _pos = _pos - _target * velocity;
             break;
         case VIEW_LEFT:
-            _pos.set_x(_pos.get_x() - velocity);
+            _pos = _pos + _right * velocity;
             break;
         case VIEW_RIGHT:
-            _pos.set_x(_pos.get_x() + velocity);
+            _pos = _pos - _right * velocity;
             break;
         default:break;
         }
@@ -108,6 +110,7 @@ namespace lh_pipeline {
 
         _up = cross(_target, haxis);
         normalize(_up);
+        _right = haxis;
     }
 
     void LhCamera::init() {

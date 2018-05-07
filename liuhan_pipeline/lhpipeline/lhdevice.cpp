@@ -118,9 +118,9 @@ namespace lh_pipeline {
 
 	void LhDevice::draw_croe() {
 		if (_rotate) {
-			_r_x += 0.5f;
-			_r_y += 0.5f;
-			_r_z += 0.5f;
+			_r_x += 0.05f;
+			_r_y += 0.05f;
+			_r_z += 0.05f;
 		}
 		_piple.set_rotate(_r_x, _r_y, _r_z);
 		_piple.set_worldpos(_m_x, _m_y, _m_z);
@@ -231,11 +231,8 @@ namespace lh_pipeline {
 		if (!_floor) {
 			return;
 		}
-        /*if (get_eyes_pos().get_z() < 1.6f && -1.5f < get_eyes_pos().get_z()) {
-            return;
-        }*/
 
-        _piple.set_rotate(45.0f, 0, 0.0f);
+        _piple.set_rotate(60, 0, 0.0f);
         _piple.set_sale(1.0f, 1.0f, 1.0f);
         _piple.set_worldpos(0, -1.0f, 1.0f);
         _piple.get_wvp();
@@ -243,9 +240,9 @@ namespace lh_pipeline {
         const float* uv = floor_uv;
         int counts = 18;
 		set_current_uv(get_floor(), 512);
-        
+        LhVertexFloat3 look = _piple.get_view_dir();
+        std::vector<VertexColorNormal> triangles;
         int uv_count = 0;
-        std::vector<VertexColor> triangles;
         for (int i = 0; i < counts; i += 9, uv_count += 6) {
             LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
             LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
@@ -257,16 +254,27 @@ namespace lh_pipeline {
             VertexColor vc1(v1, TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
             VertexColor vc2(v2, TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
             VertexColor vc3(v3, TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
-            clip_triangle(triangles, &vc1, &vc2, &vc3);
+
+            LhVertexFloat3 normal;
+            front(p1, p2, p3, look, normal);
+            VertexColorNormal triangle;
+
+            clip_triangle(triangle, &vc1, &vc2, &vc3, normal);
+            if (triangle.triangles.size() > 0) {
+                triangles.emplace_back(triangle);
+            }
 
         }
 
-        for (std::vector<VertexColor>::iterator iter = triangles.begin();
-            iter != triangles.end();
-            iter += 3) {
-            draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
+        for (std::vector<VertexColorNormal>::iterator  iter_triangles = triangles.begin();
+            iter_triangles != triangles.end();
+            iter_triangles++) {
+            for (std::vector<VertexColor>::iterator iter = iter_triangles->triangles.begin();
+                iter != iter_triangles->triangles.end();
+                iter += 3) {
+                draw_triangle(iter_triangles->normal, *iter, *(iter + 1), *(iter + 2), true);
+            }
         }
-
 		set_current_uv(get_current_texutre_uv_buffers(), get_current_texture_uv_size());
     }
 
@@ -311,7 +319,8 @@ namespace lh_pipeline {
     void LhDevice::draw_triangles(lh_color lc) {
         const float* v = get_vertex_buffers();
         const int counts = 3 * get_vertex_buffers_size();
-        std::vector<VertexColor> triangles;
+        LhVertexFloat3 look = _piple.get_view_dir();
+        std::vector<VertexColorNormal> triangles;
         for (int i = 0; i < counts; i += 9) {
             LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
             LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
@@ -319,29 +328,35 @@ namespace lh_pipeline {
             LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
             LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
             LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
-            clip_triangle(triangles,
+            LhVertexFloat3 normal;
+            front(p1, p2, p3, look, normal);
+            VertexColorNormal triangle;
+            clip_triangle(triangle,
                 &VertexColor(v1, lc, TextureUV(), 1.0f / p1.get_w()),
                 &VertexColor(v2, lc, TextureUV(), 1.0f / p2.get_w()),
-                &VertexColor(v3, lc, TextureUV(), 1.0f / p3.get_w()));
-            /*
-            draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p2.get_x(), (int)p2.get_y(), color);
-            draw_line((int)p2.get_x(), (int)p2.get_y(), (int)p3.get_x(), (int)p3.get_y(), color);
-            draw_line((int)p1.get_x(), (int)p1.get_y(), (int)p3.get_x(), (int)p3.get_y(), color);*/
+                &VertexColor(v3, lc, TextureUV(), 1.0f / p3.get_w()), normal);
+            if (triangle.triangles.size() > 0) {
+                triangles.emplace_back(triangle);
+            }
         }
 
         int color = lc.get_t<int>();
-        for (std::vector<VertexColor>::iterator iter = triangles.begin();
-            iter != triangles.end();
-            iter += 3) {
-            VertexColor& v1 = *iter;
-            VertexColor& v2 = *(iter + 1);
-            VertexColor& v3 = *(iter + 2);
-            if (!toscreen(v1, v2, v3)) {
-                continue;
+        for (std::vector<VertexColorNormal>::iterator  iter_triangles = triangles.begin();
+            iter_triangles != triangles.end();
+            iter_triangles++) {
+            for (std::vector<VertexColor>::iterator iter = iter_triangles->triangles.begin();
+                iter != iter_triangles->triangles.end();
+                iter += 3) {
+                VertexColor& v1 = *iter;
+                VertexColor& v2 = *(iter + 1);
+                VertexColor& v3 = *(iter + 2);
+                if (!toscreen(v1, v2, v3)) {
+                    continue;
+                }
+                draw_line(v1.postion.get_x(), v1.postion.get_y(), v2.postion.get_x(), v2.postion.get_y(), color);
+                draw_line(v2.postion.get_x(), v2.postion.get_y(), v3.postion.get_x(), v3.postion.get_y(), color);
+                draw_line(v1.postion.get_x(), v1.postion.get_y(), v3.postion.get_x(), v3.postion.get_y(), color);
             }
-            draw_line(v1.postion.get_x(), v1.postion.get_y(), v2.postion.get_x(), v2.postion.get_y(), color);
-            draw_line(v2.postion.get_x(), v2.postion.get_y(), v3.postion.get_x(), v3.postion.get_y(), color);
-            draw_line(v1.postion.get_x(), v1.postion.get_y(), v3.postion.get_x(), v3.postion.get_y(), color);
         }
     }
 
@@ -353,23 +368,26 @@ namespace lh_pipeline {
         set_texture(texture_datas, texture_size);
     }
 
-	bool LhDevice::front(LhVertexFloat3& v1, LhVertexFloat3& v2, LhVertexFloat3& v3, LhVertexFloat3& look) {
+	bool LhDevice::front(LhVertexFloat4& v1, LhVertexFloat4& v2, LhVertexFloat4& v3, LhVertexFloat3& look, LhVertexFloat3& normal) {
 		//return true;
-		LhVertexFloat3 n1 = v2 - v1;
-		LhVertexFloat3 n2 = v3 - v2;
-		LhVertexFloat3 normal = cross(n1, n2);
-		normalize(normal);
+        float w1 = 1.0f / v1.get_w();
+        float w2 = 1.0f / v2.get_w();
+        float w3 = 1.0f / v3.get_w();
+        LhVertexFloat3 p1(v1.get_x() * w1, v1.get_y() * w1, v1.get_z() * w1);
+        LhVertexFloat3 p2(v2.get_x() * w2, v2.get_y() * w2, v2.get_z() * w2);
+        LhVertexFloat3 p3(v3.get_x() * w3, v3.get_y() * w3, v3.get_z() * w3);
+        normal = get_normal(p1, p2, p3);//应该在归一化之后做背面剔除，因为w分量可能为负数
 		if (_front) {
-			if (!backface_culling(normal, look)) {
-				return false;
+			if (backface_culling(normal, look)) {
+				return true;
 			}
 		}
 		else {
-			if (backface_culling(normal, look)) {
-				return false;
+			if (!backface_culling(normal, look)) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	void LhDevice::draw_trangles_texture_fill() {
@@ -386,7 +404,7 @@ namespace lh_pipeline {
     void LhDevice::draw_triangles_color(const float* v, const unsigned int* colors, const int counts) {
         int uv_count = 0;
         LhVertexFloat3 look = _piple.get_view_dir();
-        std::vector<VertexColor> triangles;
+        std::vector<VertexColorNormal> triangles;
         for (int i = 0; i < counts; i += 9, uv_count += 6) {
             LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
             LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
@@ -395,50 +413,66 @@ namespace lh_pipeline {
             LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
             LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
             LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
-            if (front(v1, v2, v3, look)) {
+            LhVertexFloat3 normal;
+            if (front(p1, p2, p3, look, normal)) {
+                VertexColorNormal triangle;
                 lh_color c1((float)colors[i], (float)colors[i + 1], (float)colors[i + 2]);
                 lh_color c2((float)colors[i + 3], (float)colors[i + 4], (float)colors[i + 5]);
                 lh_color c3((float)colors[i + 6], (float)colors[i + 7], (float)colors[i + 8]);
-                clip_triangle(triangles,
+                clip_triangle(triangle,
                     &VertexColor(v1, c1, TextureUV(), 1.0f / p1.get_w()),
                     &VertexColor(v2, c2, TextureUV(), 1.0f / p2.get_w()),
-                    &VertexColor(v3, c3, TextureUV(), 1.0f / p3.get_w()));
+                    &VertexColor(v3, c3, TextureUV(), 1.0f / p3.get_w()), normal);
+                if (triangle.triangles.size() > 0) {
+                    triangles.emplace_back(triangle);
+                }
             }
-
         }
 
-        for (std::vector<VertexColor>::iterator iter = triangles.begin();
-            iter != triangles.end();
-            iter += 3) {
-            draw_triangle(*iter, *(iter + 1), *(iter + 2));
+        for (std::vector<VertexColorNormal>::iterator  iter_triangles = triangles.begin();
+            iter_triangles != triangles.end();
+            iter_triangles++) {
+            for (std::vector<VertexColor>::iterator iter = iter_triangles->triangles.begin();
+                iter != iter_triangles->triangles.end();
+                iter += 3) {
+                draw_triangle(iter_triangles->normal, *iter, *(iter + 1), *(iter + 2), true);
+            }
         }
     }
 
     void LhDevice::draw_triangles_uv(const float* v, const float* uv, const int counts) {
         int uv_count = 0;
-        LhVertexFloat3 look (0.0f, 0.0f, 1.0f);// = _piple.get_view_dir();
-        std::vector<VertexColor> triangles;
+        LhVertexFloat3 look = _piple.get_view_dir();
+        std::vector<VertexColorNormal> triangles;
         for (int i = 0; i < counts; i += 9, uv_count += 6) {
             LhVertexFloat4 p1 = _piple.transformation_in_mvp(LhVertexFloat3(v[i], v[i + 1], v[i + 2]));
             LhVertexFloat4 p2 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 3], v[i + 4], v[i + 5]));
             LhVertexFloat4 p3 = _piple.transformation_in_mvp(LhVertexFloat3(v[i + 6], v[i + 7], v[i + 8]));
-
             LhVertexFloat3 v1(p1.get_x(), p1.get_y(), p1.get_z());
             LhVertexFloat3 v2(p2.get_x(), p2.get_y(), p2.get_z());
             LhVertexFloat3 v3(p3.get_x(), p3.get_y(), p3.get_z());
-            if (front(v1, v2, v3, look)) {
+            LhVertexFloat3 normal;
+            if (front(p1, p2, p3, look, normal)) {
+                VertexColorNormal triangle;
                 VertexColor vc1(v1, TextureUV(uv[uv_count], uv[uv_count + 1]), 1.0f / p1.get_w());
                 VertexColor vc2(v2, TextureUV(uv[uv_count + 2], uv[uv_count + 3]), 1.0f / p2.get_w());
                 VertexColor vc3(v3, TextureUV(uv[uv_count + 4], uv[uv_count + 5]), 1.0f / p3.get_w());
-                clip_triangle(triangles, &vc1, &vc2, &vc3);
+                clip_triangle(triangle, &vc1, &vc2, &vc3, normal);
+                if (triangle.triangles.size() > 0) {
+                    triangles.emplace_back(triangle);
+                }
             }
 
         }
 
-        for (std::vector<VertexColor>::iterator  iter = triangles.begin();
-            iter != triangles.end();
-            iter += 3) {
-            draw_triangle(*iter, *(iter + 1), *(iter + 2), true);
+        for (std::vector<VertexColorNormal>::iterator  iter_triangles = triangles.begin();
+            iter_triangles != triangles.end();
+            iter_triangles++) {
+            for (std::vector<VertexColor>::iterator iter = iter_triangles->triangles.begin();
+                iter != iter_triangles->triangles.end();
+                iter += 3) {
+                draw_triangle(iter_triangles->normal, *iter, *(iter + 1), *(iter + 2), true);
+            }
         }
     }
 

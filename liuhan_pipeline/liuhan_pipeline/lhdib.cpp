@@ -253,11 +253,50 @@ namespace lh_pipeline {
 
     void LhDib::update_vertex() {
 #if 1
+        const float vertex_buffer_data[] = {
+            -1.0f,-1.0f,-1.0f,
+            -1.0f,-1.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f,-1.0f,
+            -1.0f,-1.0f,-1.0f,
+            -1.0f, 1.0f,-1.0f,
+            1.0f,-1.0f, 1.0f,
+            -1.0f,-1.0f,-1.0f,
+            1.0f,-1.0f,-1.0f,
+            1.0f, 1.0f,-1.0f,
+            1.0f,-1.0f,-1.0f,
+            -1.0f,-1.0f,-1.0f,
+            -1.0f,-1.0f,-1.0f,
+            -1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f,-1.0f,
+            1.0f,-1.0f, 1.0f,
+            -1.0f,-1.0f, 1.0f,
+            -1.0f,-1.0f,-1.0f,
+            -1.0f, 1.0f, 1.0f,
+            -1.0f,-1.0f, 1.0f,
+            1.0f,-1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f,-1.0f,-1.0f,
+            1.0f, 1.0f,-1.0f,
+            1.0f,-1.0f,-1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f,-1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f,-1.0f,
+            -1.0f, 1.0f,-1.0f,
+            1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f,-1.0f,
+            -1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f,
+            1.0f,-1.0f, 1.0f
+        };
         float vertex[8][3] = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
             -0.5f, 0.5f, -0.5f,
             0.5f, 0.5f, -0.5f,//
+
             -0.5f, -0.5f, 0.5f,
             0.5f, -0.5f, 0.5f,
             -0.5f, 0.5f, 0.5f,
@@ -267,7 +306,7 @@ namespace lh_pipeline {
             255, 0, 0,
             0, 255, 0,
             0, 0, 255,
-            0, 255, 0,//
+            0, 255, 0,
             0, 0, 255,
             255, 0, 0,
             0, 255, 0,
@@ -275,20 +314,18 @@ namespace lh_pipeline {
         };
         std::vector<float> vecs;
         std::vector<unsigned int> vecs_color;
-        
-        insert_quadrilateral<float>(vecs, vertex[0], vertex[2], vertex[3], vertex[1]);
-        insert_quadrilateral<float>(vecs, vertex[0], vertex[4], vertex[6], vertex[2]);
-        insert_quadrilateral<float>(vecs, vertex[0], vertex[1], vertex[5], vertex[4]);
-        insert_quadrilateral<float>(vecs, vertex[4], vertex[5], vertex[7], vertex[6]);
-        insert_quadrilateral<float>(vecs, vertex[1], vertex[3], vertex[7], vertex[5]);
+        insert_quadrilateral<float>(vecs, vertex[2], vertex[3], vertex[1], vertex[0]);
+        insert_quadrilateral<float>(vecs, vertex[6], vertex[4], vertex[5], vertex[7]);
+        insert_quadrilateral<float>(vecs, vertex[6], vertex[2], vertex[0], vertex[4]);
+        insert_quadrilateral<float>(vecs, vertex[7], vertex[5], vertex[1], vertex[3]);
         insert_quadrilateral<float>(vecs, vertex[2], vertex[6], vertex[7], vertex[3]);
-        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[0], vertex_color[2], vertex_color[3], vertex_color[1]);
-        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[0], vertex_color[4], vertex_color[6], vertex_color[2]);
-        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[0], vertex_color[1], vertex_color[5], vertex_color[4]);
-        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[4], vertex_color[5], vertex_color[7], vertex_color[6]);
-        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[1], vertex_color[3], vertex_color[7], vertex_color[5]);
+        insert_quadrilateral<float>(vecs, vertex[0], vertex[1], vertex[5], vertex[4]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[2], vertex_color[3], vertex_color[1], vertex_color[0]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[6], vertex_color[4], vertex_color[5], vertex_color[7]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[6], vertex_color[2], vertex_color[0], vertex_color[4]);
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[7], vertex_color[5], vertex_color[1], vertex_color[3]);
         insert_quadrilateral<unsigned int>(vecs_color, vertex_color[2], vertex_color[6], vertex_color[7], vertex_color[3]);
-
+        insert_quadrilateral<unsigned int>(vecs_color, vertex_color[0], vertex_color[1], vertex_color[5], vertex_color[4]);
 
 		const float uvs[72] = {
 			0.0f,  0.0f,

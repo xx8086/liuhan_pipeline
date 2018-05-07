@@ -6,6 +6,12 @@
 
 namespace lh_pipeline {
 
+    struct VertexColorNormal
+    {
+        LhVertexFloat3 normal;
+        std::vector<VertexColor> triangles;
+    };
+
 	class LhDrawPrimitive
 	{
 	public:
@@ -16,9 +22,9 @@ namespace lh_pipeline {
 		void set_view(LhVertexFloat3* view);
 		void draw_line(int x1, int y1, int x2, int y2, lh_color c);
 		void draw_triangle_line(int x1, int y1, int x2, int y2, int x3, int y3, lh_color color);
-		void draw_triangle(VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv = false);
+		void draw_triangle(LhVertexFloat3& normal, VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv = false);
 		void draw_3dline(LhVertexFloat3& left, LhVertexFloat3& right, lh_color c);
-		void clip_triangle(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3);
+		void clip_triangle(VertexColorNormal& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3, LhVertexFloat3& normal);
 		void set_draw_triangle_line();
 		bool backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir);
 
@@ -38,8 +44,8 @@ namespace lh_pipeline {
 		void line_dda(int x1, int y1, int x2, int y2, lh_color color);
 		void line_bresenham(float x1, float y1, float x2, float y2, lh_color color);
 		void line(int x1, int y1, int x2, int y2, lh_color c);
-		void top_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
-		void bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
+		void top_triangle(LhVertexFloat3 normal, VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
+		void bottom_triangle(LhVertexFloat3 normal, VertexColor v1, VertexColor v2, VertexColor v3, bool = false);
 		void toscreen(LhVertexFloat3& v);
         
 		int lh_min(int x, int min, int max);

@@ -55,7 +55,7 @@ if (0 == point_nums) {\
 	}
 
 	bool LhClip::backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir) {
-		return dot(normal, dir) > 0 ? false : true;//左手,大于零同向,不消除
+		return dot(dir, normal) >= 0 ? false : true;//左手,小于零是正面
 	}
 
 	bool LhClip::split_triangle_x(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {

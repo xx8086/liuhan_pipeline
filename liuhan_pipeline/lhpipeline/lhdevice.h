@@ -53,7 +53,7 @@ namespace lh_pipeline {
         void draw_floor();
         void draw_triangles_color(const float* v, const unsigned int* colors, const int counts);
         void draw_triangles_uv(const float* v, const float* uv, const int counts);
-		bool front(LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&, LhVertexFloat3&);
+		bool front(LhVertexFloat4&, LhVertexFloat4&, LhVertexFloat4&, LhVertexFloat3&, LhVertexFloat3&);
 		bool get_pos(LhVertexFloat4& f4, LhVertexFloat3 f3);
     public:
         LHRENDER_STATE _render_state = LH_LINES;

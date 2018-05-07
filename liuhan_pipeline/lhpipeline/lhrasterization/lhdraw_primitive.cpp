@@ -345,17 +345,6 @@ namespace lh_pipeline {
 		toscreen(v1.postion);
 		toscreen(v2.postion);
 		toscreen(v3.postion);
-
-		if (v2.postion.get_y() < v1.postion.get_y()) {
-			swap_vaue(v1, v2);
-		}
-		if (v3.postion.get_y() < v1.postion.get_y()) {
-			swap_vaue(v1, v3);
-		}
-		if (v3.postion.get_y() < v2.postion.get_y()) {
-			swap_vaue(v2, v3);
-		}//v3.y > v2.y > v1.y
-
 		if (/*v1.postion.get_y() >= _y_max_clip || v3.postion.get_y() <= _y_min_clip ||*/
 			(v1.postion.get_x() < _x_min_clip && v2.postion.get_x() < _x_min_clip && v3.postion.get_x() < _x_min_clip) ||
 			(v1.postion.get_x() > _x_max_clip && v2.postion.get_x() > _x_max_clip && v3.postion.get_x() > _x_max_clip)) {
@@ -365,37 +354,47 @@ namespace lh_pipeline {
 		return true;
 	}
 
-	void LhDrawPrimitive::clip_triangle(std::vector<VertexColor>& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3) {
+	void LhDrawPrimitive::clip_triangle(VertexColorNormal& triangles, VertexColor* v1, VertexColor* v2, VertexColor* v3, LhVertexFloat3& normal) {
 		if (v1->_rhw < 0.0f || v2->_rhw < 0.0f || v3->_rhw < 0.0f) {
 			return;
 		}
 		v1->rhw();
 		v2->rhw();
 		v3->rhw();
-        //LhVertexFloat3 normal = get_normal(v1->postion, v2->postion, v3->postion);
-		_clip.triangle_clip_single_plane(triangles, v1, v2, v3);
+		_clip.triangle_clip_single_plane(triangles.triangles, v1, v2, v3);
+        if (triangles.triangles.size() > 0) {
+            triangles.normal = normal;
+        }
 	}
 
 	bool LhDrawPrimitive::backface_culling(LhVertexFloat3& normal, LhVertexFloat3& dir) {
 		return _clip.backface_culling(normal, dir);
 	}
 
-	void LhDrawPrimitive::draw_triangle(VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv) {
+	void LhDrawPrimitive::draw_triangle(LhVertexFloat3& normal, VertexColor& v1, VertexColor& v2, VertexColor& v3, bool use_uv) {
 		if (!toscreen(v1, v2, v3)) {
 			return;
 		}
 
+        if (v2.postion.get_y() < v1.postion.get_y()) {
+            swap_vaue(v1, v2);
+        }
+        if (v3.postion.get_y() < v1.postion.get_y()) {
+            swap_vaue(v1, v3);
+        }
+        if (v3.postion.get_y() < v2.postion.get_y()) {
+            swap_vaue(v2, v3);
+        }//v3.y > v2.y > v1.y
+
 		if (v2.postion.get_y() == v1.postion.get_y()) {//Æ½¶¥
-			top_triangle(v1, v2, v3,
-				use_uv);
+			top_triangle(normal, v1, v2, v3, use_uv);
 			draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
 				(int)v2.postion.get_x(), (int)v2.postion.get_y(),
 				(int)v3.postion.get_x(), (int)v3.postion.get_y(),
 				lh_color(255, 0, 0));
 		}
 		else if (v3.postion.get_y() == v2.postion.get_y()) {
-			bottom_triangle(v1, v2, v3,
-				use_uv);
+			bottom_triangle(normal, v1, v2, v3, use_uv);
 			draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
 				(int)v2.postion.get_x(), (int)v2.postion.get_y(),
 				(int)v3.postion.get_x(), (int)v3.postion.get_y(),
@@ -409,10 +408,8 @@ namespace lh_pipeline {
 			float dy = v3.postion.get_y() == v1.postion.get_y() ? 0.0f : 1.0f / (v3.postion.get_y() - v1.postion.get_y());
             float t = (v2.postion.get_y() - v1.postion.get_y())* dy;
 			VertexColor interp_v = lerp(v1, v3, t);
-			bottom_triangle(v1, interp_v, v2,
-				use_uv);
-			top_triangle(interp_v, v2, v3,
-				use_uv);
+			bottom_triangle(normal, v1, interp_v, v2, use_uv);
+			top_triangle(normal, interp_v, v2, v3, use_uv);
 
 			draw_triangle_line((int)v1.postion.get_x(), (int)v1.postion.get_y(),
 				(int)interp_v.postion.get_x(), (int)interp_v.postion.get_y(),
@@ -426,7 +423,7 @@ namespace lh_pipeline {
 		}
 	}
 
-	void LhDrawPrimitive::top_triangle(VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv) {
+	void LhDrawPrimitive::top_triangle(LhVertexFloat3 normal, VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv) {
 		if ((int)v1.postion.get_y() == (int)v3.postion.get_y()) {
 			return;
 		}
@@ -444,8 +441,6 @@ namespace lh_pipeline {
             v2 = lerp(v3, v2, t2);
         }*/
 
-
-		LhVertexFloat3 normal = get_normal(v1.postion, v2.postion, v3.postion);
 		float dy = /*v3.postion.get_y() == v1.postion.get_y() ? 0.0f : */1.0f / (v3.postion.get_y() - v1.postion.get_y());
 		float fy1 = v1.postion.get_y();
 		float fy3 = v3.postion.get_y();
@@ -492,7 +487,7 @@ namespace lh_pipeline {
 		}
 		return lerp(v1, v2, t);
 	}
-	void LhDrawPrimitive::bottom_triangle(VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv) {
+	void LhDrawPrimitive::bottom_triangle(LhVertexFloat3 normal, VertexColor v1, VertexColor v2, VertexColor v3,  bool use_uv) {
 		if ((int)v1.postion.get_y() == (int)v2.postion.get_y()) {
 			return;
 		}
@@ -521,7 +516,6 @@ namespace lh_pipeline {
             return;
         }
 
-        LhVertexFloat3 normal = get_normal(v1.postion, v2.postion, v3.postion);
 		VertexColor v_left_1 = v1;
 		VertexColor v_right_1 = v1;
 		VertexColor v_left = v2;

@@ -49,6 +49,7 @@ namespace lh_pipeline {
     public:
         void scale_transform(float, float, float);
         void rotate_transform(float, float, float);
+        void rotate_transform(float, float, float, float);
         void translation_transform(float, float, float);
         void persproj_transform(const PersProjInfo& p);
         void orthoproj_transform(const OrthoProjInfo& p);

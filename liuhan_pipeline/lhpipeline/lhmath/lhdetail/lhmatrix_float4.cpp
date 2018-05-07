@@ -126,6 +126,30 @@ namespace lh_pipeline {
         _m[3][0] = 0.0f;    _m[3][1] = 0.0f;    _m[3][2] = 0.0f;    _m[3][3] = 1.0f;
     }
 
+    void LhMatrixFloat4::rotate_transform(float agnle, float x, float y, float z) {
+        float qsin = (float)sinf(ToRadianF(agnle) * 0.5f);
+        float qcos = (float)cosf(ToRadianF(agnle) * 0.5f);
+        LhVertexFloat3 vec(x, y, z);
+        float w = qcos;
+        normalize(vec);
+        x = vec.get_x() * qsin;
+        y = vec.get_y() * qsin;
+        z = vec.get_z() * qsin;
+        _m[0][0] = 1 - 2 * y * y - 2 * z * z;
+        _m[1][0] = 2 * x * y - 2 * w * z;
+        _m[2][0] = 2 * x * z + 2 * w * y;
+        _m[0][1] = 2 * x * y + 2 * w * z;
+        _m[1][1] = 1 - 2 * x * x - 2 * z * z;
+        _m[2][1] = 2 * y * z - 2 * w * x;
+        _m[0][2] = 2 * x * z - 2 * w * y;
+        _m[1][2] = 2 * y * z + 2 * w * x;
+        _m[2][2] = 1 - 2 * x * x - 2 * y * y;
+        _m[0][3] = _m[1][3] = _m[2][3] = 0.0f;
+        _m[3][0] = _m[3][1] = _m[3][2] = 0.0f;
+        _m[3][3] = 1.0f;
+
+    }
+
     void LhMatrixFloat4::rotate_transform(float rotate_x, float rotate_y, float rotate_z) {
         LhMatrixFloat4 rx;
         LhMatrixFloat4 ry;
@@ -141,9 +165,9 @@ namespace lh_pipeline {
         rx._m[3][0] = 0.0f; rx._m[3][1] = 0.0f;     rx._m[3][2] = 0.0f;     rx._m[3][3] = 1.0f;
 
         //绕Y轴旋转y度
-        ry._m[0][0] = cosf(y);  ry._m[0][1] = 0.0f; ry._m[0][2] = -sinf(y); ry._m[0][3] = 0.0f;
+        ry._m[0][0] = cosf(y);  ry._m[0][1] = 0.0f; ry._m[0][2] = sinf(y); ry._m[0][3] = 0.0f;
         ry._m[1][0] = 0.0f;     ry._m[1][1] = 1.0f; ry._m[1][2] = 0.0f;     ry._m[1][3] = 0.0f;
-        ry._m[2][0] = sinf(y);  ry._m[2][1] = 0.0f; ry._m[2][2] = cosf(y);  ry._m[2][3] = 0.0f;
+        ry._m[2][0] = -sinf(y);  ry._m[2][1] = 0.0f; ry._m[2][2] = cosf(y);  ry._m[2][3] = 0.0f;
         ry._m[3][0] = 0.0f;     ry._m[3][1] = 0.0f; ry._m[3][2] = 0.0f;     ry._m[3][3] = 1.0f;
 
         //绕Z轴旋转z度

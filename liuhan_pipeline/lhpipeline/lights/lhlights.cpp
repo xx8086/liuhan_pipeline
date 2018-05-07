@@ -18,7 +18,7 @@ namespace lh_pipeline {
 	}
 
 	LhVertexFloat3 LhLights::dirlight(LhVertexFloat3 tex_color, LhVertexFloat3 normal, LhVertexFloat3 fragpos) {
-		LhVertexFloat3 lights_dir = _light_pos - fragpos;
+        LhVertexFloat3 lights_dir = _light_pos - fragpos;
 		normalize(lights_dir);
 		float accept = dot(lights_dir, normal);//Âþ·´Éä
 		float spec = 0.0f;
@@ -82,7 +82,7 @@ namespace lh_pipeline {
     }
 
 	LhVertexFloat3 LhLights::spotlight(LhVertexFloat3 tex_color, LhVertexFloat3 normal, LhVertexFloat3 fragpos) {
-		LhVertexFloat3 lights_dir = _light_pos - fragpos;
+        LhVertexFloat3 lights_dir = _light_pos - fragpos;
 		normalize(lights_dir);
 		float accept = dot(lights_dir, normal);//Âþ·´Éä
 		float spec = 0.0f;
@@ -130,7 +130,9 @@ namespace lh_pipeline {
 		_lights_dir = light_dir;
 		normalize(_lights_dir);
 		_viewpos = viewpos;
-        _lightcolor = color;
+        _lightcolor.set_x(color.get_x() / 255.0f);
+        _lightcolor.set_y(color.get_y() / 255.0f);
+        _lightcolor.set_z(color.get_z() / 255.0f);
     }
     void LhLights::set_point(LhVertexFloat3 light_pos, float kc, float kl, float kq) {
         _light_pos = light_pos;

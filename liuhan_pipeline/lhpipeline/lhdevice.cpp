@@ -435,7 +435,7 @@ namespace lh_pipeline {
             for (std::vector<VertexColor>::iterator iter = iter_triangles->triangles.begin();
                 iter != iter_triangles->triangles.end();
                 iter += 3) {
-                draw_triangle(iter_triangles->normal, *iter, *(iter + 1), *(iter + 2), true);
+                draw_triangle(iter_triangles->normal, *iter, *(iter + 1), *(iter + 2));
             }
         }
     }

@@ -52,11 +52,11 @@ namespace lh_pipeline {
 		set_clip_window(0.0f, 0.0f, (float)w, (float)h);
 
 		_light.set_type(LIGHT_TYPE_POINT, 1);
-		_light.set_light_color(LhVertexFloat3(1.0f, 1.0f, 1.0f),//color
-			LhVertexFloat3(0.0f, 0.0f, 1.0f), //light_dir
+		_light.set_light_color(LhVertexFloat3(255.0f, 255.0f, 255.0f),//color
+			LhVertexFloat3(0.0f, -1.0f, 0.0f), //light_dir
 			LhVertexFloat3(0.0f, 0.0f, -4.0f),//viewps
 			0.7f, 0.7f, 0.8f);//float ambient, float diff, float spec) 
-		_light.set_point(LhVertexFloat3(2.0f, 2.0f, -2.0f), //light_pos
+		_light.set_point(LhVertexFloat3(0.0f, 1.0f, 0.0f), //light_pos
 			1.0f, 0.1f, 0.05f);
 		LhMaterial material(LhVertexFloat3(0.6f, 0.6f, 0.6f),
 			LhVertexFloat3(0.7f, 0.7f, 0.7f), 

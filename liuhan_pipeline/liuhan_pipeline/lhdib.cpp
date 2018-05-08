@@ -48,11 +48,11 @@ namespace lh_pipeline {
 
         LhDevice::update_buffer(w, h, ptr);
         LhDevice::set_render_state(LH_TRIANGLES_TEXTURE_FILL);
-        
-        load_level_texture((TCHAR*)"../res/128.bmp", 128);
-        load_level_texture((TCHAR*)"../res/256.bmp", 256);
-        load_level_texture((TCHAR*)"../res/512.bmp", 512);
-		load_floor_texture((TCHAR*)"../res/512_f.bmp", 512);
+        load_level_texture((TCHAR*)_T("../res/128.bmp"), 128);
+        load_level_texture((TCHAR*)_T("../res/256.bmp"), 256);
+        load_level_texture((TCHAR*)_T("../res/512.bmp"), 512);
+        load_floor_texture((TCHAR*)_T("../res/512_f.bmp"), 512);
+
         update_vertex();
 #endif
         ReleaseDC(hwnd, hdc);
@@ -417,22 +417,23 @@ namespace lh_pipeline {
 		LhVertexFloat3 pos = get_world_pos();
         LhVertexFloat3 eye = get_eye_pos();
 		LhVertexFloat3 target = get_dir();;
-		char str_fps[2048] = { 0 };
-		sprintf_s(str_fps,
-			"方向键控制被观察对象的移动；\n"
+		TCHAR str_fps[2048] = { 0 };
+        _stprintf_s(str_fps,
+            2047,
+            _T("方向键控制被观察对象的移动；\n"
             "ASDW键控制摄像机的移动；\n"
             "按住鼠标左键拖动修改镜头朝向；\n"
-			"空格键: 开关灯光；\n"
-			"V: 开关地板；\n"
-			"R: 开关自动旋转；\n"
-			"L: 开关画片元三角形；\n"
-			"F: 切换正反面消除；\n"
-			"I: 线框； O: Gouraud； P: uv贴图；\n"
-			"XYZ: 绕xyz轴旋转；\n"
-			"cube_pos: (%.3f, %.3f, %.3f)；\n"
+            "空格键: 开关灯光；\n"
+            "V: 开关地板；\n"
+            "R: 开关自动旋转；\n"
+            "L: 开关画片元三角形；\n"
+            "F: 切换正反面消除；\n"
+            "I: 线框； O: Gouraud； P: uv贴图；\n"
+            "XYZ: 绕xyz轴旋转；\n"
+            "cube_pos: (%.3f, %.3f, %.3f)；\n"
             "eye_pos: (%.3f, %.3f, %.3f)；\n"
-			"eye_target: (%.3f, %.3f, %.3f)；\n"
-			"每一帧耗时：%.3fms;  fps: %.3f；\n",
+            "eye_target: (%.3f, %.3f, %.3f)；\n"
+            "每一帧耗时：%.3fms;  fps: %.3f；\n"),
 			pos.get_x(), pos.get_y(), pos.get_z(),
 			eye.get_x(), eye.get_y(), eye.get_z(),
 			target.get_x(), target.get_y(), target.get_z(),
@@ -440,7 +441,7 @@ namespace lh_pipeline {
 		_old_font = SelectObject(hdc, _font);
 		SetBkColor(hdc, RGB(0, 0, 0));
 		SetTextColor(hdc, RGB(255, 0, 0));
-		DrawText(hdc, str_fps, strlen(str_fps) * sizeof(char), &_rc, DT_LEFT);
+		DrawText(hdc, str_fps, _tcslen(str_fps) * sizeof(char), &_rc, DT_LEFT);
 		SelectObject(hdc, _old_font);
 	}
 

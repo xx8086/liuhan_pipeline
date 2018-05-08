@@ -165,9 +165,9 @@ namespace lh_pipeline {
         rx._m[3][0] = 0.0f; rx._m[3][1] = 0.0f;     rx._m[3][2] = 0.0f;     rx._m[3][3] = 1.0f;
 
         //绕Y轴旋转y度
-        ry._m[0][0] = cosf(y);  ry._m[0][1] = 0.0f; ry._m[0][2] = sinf(y); ry._m[0][3] = 0.0f;
+        ry._m[0][0] = cosf(y);  ry._m[0][1] = 0.0f; ry._m[0][2] = -sinf(y); ry._m[0][3] = 0.0f;
         ry._m[1][0] = 0.0f;     ry._m[1][1] = 1.0f; ry._m[1][2] = 0.0f;     ry._m[1][3] = 0.0f;
-        ry._m[2][0] = -sinf(y);  ry._m[2][1] = 0.0f; ry._m[2][2] = cosf(y);  ry._m[2][3] = 0.0f;
+        ry._m[2][0] = sinf(y);  ry._m[2][1] = 0.0f; ry._m[2][2] = cosf(y);  ry._m[2][3] = 0.0f;
         ry._m[3][0] = 0.0f;     ry._m[3][1] = 0.0f; ry._m[3][2] = 0.0f;     ry._m[3][3] = 1.0f;
 
         //绕Z轴旋转z度
@@ -230,12 +230,12 @@ namespace lh_pipeline {
     void LhMatrixFloat4::persproj_transform(const PersProjInfo& p) {
         const float ar = p.width / p.height;
         const float zrange = p.z_near - p.z_far;
-        const float tan_half_fov = tanf(ToRadianF(p.fov / 2.0f));
+        const float thf = tanf(ToRadianF(p.fov / 2.0f));//than_half_fov
 
-        _m[0][0] = 1.0f / (tan_half_fov * ar); _m[0][1] = 0.0f;            _m[0][2] = 0.0f;            _m[0][3] = 0.0;
-        _m[1][0] = 0.0f;                   _m[1][1] = 1.0f / tan_half_fov; _m[1][2] = 0.0f;            _m[1][3] = 0.0;
-        _m[2][0] = 0.0f;                   _m[2][1] = 0.0f;            _m[2][2] = (-p.z_near - p.z_far) / zrange; _m[2][3] = 2.0f*p.z_far*p.z_near / zrange;
-        _m[3][0] = 0.0f;                   _m[3][1] = 0.0f;            _m[3][2] = 1.0f;            _m[3][3] = 0.0;
+        _m[0][0] = 1.0f / (thf * ar); _m[0][1] = 0.0f;            _m[0][2] = 0.0f;            _m[0][3] = 0.0;
+        _m[1][0] = 0.0f;                   _m[1][1] = 1.0f / thf; _m[1][2] = 0.0f;            _m[1][3] = 0.0;
+        _m[2][0] = 0.0f;                   _m[2][1] = 0.0f;       _m[2][2] = (-p.z_near - p.z_far) / zrange; _m[2][3] = 2.0f*p.z_far*p.z_near / zrange;
+        _m[3][0] = 0.0f;                   _m[3][1] = 0.0f;       _m[3][2] = 1.0f;            _m[3][3] = 0.0;
     }
 
     void LhMatrixFloat4::orthoproj_transform(const OrthoProjInfo& p) {

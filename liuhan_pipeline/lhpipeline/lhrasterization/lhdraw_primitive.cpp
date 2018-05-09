@@ -613,7 +613,7 @@ namespace lh_pipeline {
 				//clip_left._rhw = clip_left._rhw + step._rhw;
 				if (_light.is_visible()) {
 					lh_color txcolor(color);
-					LhVertexFloat3 mxcolor = _light.dirlight(LhVertexFloat3(txcolor.red, txcolor.green, txcolor.blue),
+					LhVertexFloat3 mxcolor = _light.spotlight(LhVertexFloat3(txcolor.red, txcolor.green, txcolor.blue),
 						normal, 
 						screen_to_view(i, y, z));
 					txcolor = mxcolor;

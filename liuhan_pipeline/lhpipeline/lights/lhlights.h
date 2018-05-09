@@ -29,7 +29,10 @@ namespace lh_pipeline {
         void visible() { _visible = true; };
         void invisible() { _visible = false; };
         bool is_visible() { return _visible; };
-
+    private:
+        LhVertexFloat3 dir_light_factor(LhVertexFloat3& lights_negative_dir, LhVertexFloat3& normal, LhVertexFloat3& fragpos);
+        LhVertexFloat3 point_light_factor(LhVertexFloat3& normal, LhVertexFloat3& fragpos);
+        LhVertexFloat3 spot_light_factor(LhVertexFloat3& normal, LhVertexFloat3& fragpos);
     private:
         unsigned int _id;
         bool _visible = false;
@@ -49,7 +52,7 @@ namespace lh_pipeline {
         LIGHT_TYPE _type;
         LhVertexFloat3 _lightcolor;
         LhVertexFloat3 _light_pos;
-        LhVertexFloat3 _lights_dir;
+        LhVertexFloat3 _lights_negative_dir;
 		LhVertexFloat3 _viewpos;
 		LhMaterial _material;
     };
